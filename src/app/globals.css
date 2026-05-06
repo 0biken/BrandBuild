@@ -1,0 +1,138 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-brand-green: #119e48;
+  --color-brand-green-hover: #0e853c;
+  --color-brand-green-soft: #85E3AE;
+  --color-brand-black: #111111;
+  --color-brand-white: #FFFFFF;
+  --color-brand-offwhite: #fcfcfc;
+  --color-brand-softblack: #333333;
+  --color-brand-midgray: #888888;
+  
+  --font-display: var(--font-syne);
+  --font-body: var(--font-dm-sans);
+}
+
+:root {
+  --background: #fcfcfc;
+  --foreground: #111111;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-body), sans-serif;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Wavy abstract background pattern */
+.bg-wavy-pattern {
+  background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 50 Q 25 25, 50 50 T 100 50' fill='none' stroke='rgba(0,0,0,0.03)' stroke-width='4'/%3E%3C/svg%3E");
+  background-size: 150px 150px;
+}
+
+/* Brutalist Solid Black Drop Shadow */
+.shadow-brutalist {
+  box-shadow: 6px 6px 0px 0px #111111;
+  border: 2px solid #111111;
+}
+
+/* Cutout Corner Shapes (Top Right Cutout) */
+.cutout-tr {
+  clip-path: polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 0 100%);
+}
+.cutout-tr-shadow {
+  filter: drop-shadow(6px 6px 0px #111111);
+}
+
+/* Cutout Corner Shapes (Bottom Right Cutout) */
+.cutout-br {
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 24px), calc(100% - 24px) 100%, 0 100%);
+}
+.cutout-br-shadow {
+  filter: drop-shadow(6px 6px 0px #111111);
+}
+
+
+/* Section eyebrow badges */
+.section-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-body), sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-brand-green);
+  padding: 6px 14px;
+  border-radius: 9999px;
+  border: 1px solid rgba(17, 158, 72, 0.35);
+  background: rgba(17, 158, 72, 0.08);
+  margin-bottom: 20px;
+}
+
+/* Primary Black CTA Button */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--color-brand-black);
+  color: var(--color-brand-white);
+  font-family: var(--font-body), sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  padding: 14px 28px;
+  border-radius: 9999px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+  text-decoration: none;
+}
+.btn-primary:hover { 
+  background: var(--color-brand-softblack); 
+  transform: translateY(-2px); 
+}
+
+/* Green Ghost CTA Button */
+.btn-ghost-green {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: transparent;
+  color: var(--color-brand-green);
+  font-family: var(--font-body), sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  padding: 13px 24px;
+  border-radius: 9999px;
+  border: 1px solid var(--color-brand-green);
+  cursor: pointer;
+  transition: background 0.2s ease;
+  text-decoration: none;
+}
+.btn-ghost-green:hover { 
+  background: rgba(17, 158, 72, 0.05); 
+}
+
+/* Marquee animation for partner logos */
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(calc(-50% - 1rem)); } /* -1rem to account for gap */
+}
+
+.animate-marquee {
+  animation: marquee 25s linear infinite;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { 
+    animation-duration: 0.01ms !important; 
+    transition-duration: 0.01ms !important; 
+  }
+}
