@@ -41,7 +41,15 @@ body {
 
 /* Cutout Corner Shapes (Top Right Cutout) */
 .cutout-tr {
-  clip-path: polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 0 100%);
+  border-radius: 20px;
+  clip-path: polygon(
+    0% 0%,
+    60% 0%,
+    60% 40%,
+    100% 40%,
+    100% 100%,
+    0% 100%
+  );
 }
 .cutout-tr-shadow {
   filter: drop-shadow(6px 6px 0px #111111);
