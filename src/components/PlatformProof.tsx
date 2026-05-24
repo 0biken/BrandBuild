@@ -58,7 +58,7 @@ export function PlatformProof() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="bg-wavy-pattern flex flex-col lg:flex-row min-h-[600px] border-y-2 border-brand-black relative">
+    <section id="brands" ref={sectionRef} className="bg-wavy-pattern flex flex-col lg:flex-row min-h-[600px] border-y-2 border-brand-black relative">
       
       {/* Left Side (White) */}
       <div className="flex-1 px-6 py-20 lg:py-32 lg:px-20 flex flex-col justify-center items-start border-b-2 lg:border-b-0 lg:border-r-2 border-brand-black bg-[#fcfcfc]">
@@ -81,17 +81,17 @@ export function PlatformProof() {
         <div ref={cardsRef} className="relative w-full h-[500px] max-w-[600px]">
           
           {/* Mockup Widget 1 */}
-          <div className="absolute top-[10%] right-[10%] bg-white rounded-[16px] shadow-brutalist border-2 border-black p-4 px-6 flex items-center justify-center z-10 w-fit">
-             <span className="font-display font-black text-[32px] text-brand-black">500M+</span>
+          <div className="absolute top-[5%] right-[5%] sm:top-[10%] sm:right-[10%] bg-white rounded-[16px] shadow-brutalist border-2 border-black p-3 px-5 sm:p-4 sm:px-6 flex items-center justify-center z-10 w-fit">
+             <span className="font-display font-black text-2xl sm:text-[32px] text-brand-black">500M+</span>
           </div>
 
           {/* Mockup Widget 2 */}
-          <div className="absolute top-[35%] right-[5%] bg-white rounded-[16px] shadow-brutalist border-2 border-black p-4 px-6 flex items-center justify-center z-20 w-fit">
-             <span className="font-display font-black text-[32px] text-brand-black">$200+</span>
+          <div className="absolute top-[75%] right-[5%] sm:top-[35%] sm:right-[5%] bg-white rounded-[16px] shadow-brutalist border-2 border-black p-3 px-5 sm:p-4 sm:px-6 flex items-center justify-center z-20 w-fit">
+             <span className="font-display font-black text-2xl sm:text-[32px] text-brand-black">$200+</span>
           </div>
 
            {/* Mockup Widget 3 */}
-          <div className="absolute top-[25%] left-[5%] bg-white rounded-[16px] shadow-brutalist border-2 border-black p-4 flex flex-col z-30 w-[240px]">
+          <div className="absolute top-[32%] left-[5%] sm:top-[25%] bg-white rounded-[16px] shadow-brutalist border-2 border-black p-4 flex flex-col z-30 w-[200px] sm:w-[240px]">
              <div className="flex items-center gap-3 mb-2">
                <div className="w-10 h-10 bg-gray-200 rounded-full" />
                <div className="flex flex-col">

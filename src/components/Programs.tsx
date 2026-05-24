@@ -4,7 +4,7 @@ import Image from "next/image";
 
 export function Programs() {
   return (
-    <section className="bg-brand-green py-20 lg:py-[100px] relative z-10 -mt-1 pt-[80px]">
+    <section id="how-it-works" className="bg-brand-green py-20 lg:py-[100px] relative z-10 -mt-1 pt-[80px]">
       <div className="max-w-[1440px] mx-auto px-6 lg:px-20 text-center flex flex-col items-center">
         
         <h2 className="font-display font-black text-[40px] lg:text-[56px] text-white mb-2">

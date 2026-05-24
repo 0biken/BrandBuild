@@ -8,7 +8,7 @@ export function Footer() {
   return (
     <>
       {/* Footer CTA Section */}
-      <section id="waitlist" className="relative py-[160px] flex items-center justify-center overflow-hidden border-y-2 border-brand-black">
+      <section id="waitlist" className="relative py-24 lg:py-[160px] flex items-center justify-center overflow-hidden border-y-2 border-brand-black">
         <div className="absolute inset-0 z-0">
           <Image
             src="/assets/footer_image.png"
@@ -22,7 +22,7 @@ export function Footer() {
         <div className="absolute inset-0 bg-black/50 z-0" />
         
         <div className="relative z-10 max-w-[1440px] mx-auto px-6 lg:px-20 w-full flex flex-col items-center text-center">
-          <h2 className="font-display font-black text-[48px] lg:text-[64px] leading-[1.05] text-white mb-10 max-w-[800px] shadow-sm">
+          <h2 className="font-display font-black text-[32px] sm:text-[48px] lg:text-[64px] leading-[1.05] text-white mb-10 max-w-[800px] shadow-sm">
             Build with us and level up your business
           </h2>
           

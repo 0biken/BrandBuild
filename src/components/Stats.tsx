@@ -86,7 +86,7 @@ export function Stats() {
     <section ref={sectionRef} className="bg-wavy-pattern py-20 lg:py-[100px]">
       <div className="max-w-[1440px] mx-auto px-6 lg:px-20 text-center">
         
-        <h2 className="font-display font-black text-[40px] text-brand-black mb-16">
+        <h2 className="font-display font-black text-[32px] sm:text-[40px] text-brand-black mb-16">
           Numbers don't lie!
         </h2>
 

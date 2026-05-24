@@ -104,7 +104,7 @@ export function Testimonial() {
 
           {/* Quote Right */}
           <div className="testimonial-content w-full lg:w-[40%] flex flex-col relative">
-            <span className="font-display font-black text-[80px] leading-none text-[#2DBF6E] opacity-40 absolute -top-8 -left-4 pointer-events-none select-none">
+            <span className="font-display font-black text-[60px] lg:text-[80px] leading-none text-[#2DBF6E] opacity-40 absolute -top-6 lg:-top-8 -left-4 pointer-events-none select-none">
               "
             </span>
             

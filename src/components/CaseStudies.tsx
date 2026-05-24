@@ -49,7 +49,7 @@ export function CaseStudies() {
           {BRANDS.map((brand, i) => (
             <button 
               key={i} 
-              className={`font-display font-bold text-[32px] text-left transition-colors ${i === 0 ? 'text-white' : 'text-white/40 hover:text-white/80'}`}
+              className={`font-display font-bold text-[24px] sm:text-[32px] text-left transition-colors ${i === 0 ? 'text-white' : 'text-white/40 hover:text-white/80'}`}
             >
               {brand}
             </button>

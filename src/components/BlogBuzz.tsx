@@ -76,7 +76,7 @@ export function BlogBuzz() {
     <section ref={sectionRef} className="bg-[#fcfcfc] py-20 lg:py-[100px]">
       <div className="max-w-[1440px] mx-auto px-6 lg:px-20">
         
-        <h2 className="blog-header font-display font-black text-[40px] text-brand-black mb-12 text-center">
+        <h2 className="blog-header font-display font-black text-[32px] sm:text-[40px] text-brand-black mb-12 text-center">
           Keep up with the latest buzz.
         </h2>
 
@@ -112,10 +112,10 @@ export function BlogBuzz() {
               <Link 
                 key={i} 
                 href="#"
-                className="group relative w-full h-[200px]"
+                className="group relative w-full min-h-[200px] h-auto sm:h-[200px]"
               >
                 <div className="absolute inset-0 bg-brand-black rounded-[24px] translate-x-[8px] translate-y-[8px]" />
-                <div className="relative bg-brand-green rounded-[24px] border-2 border-brand-black p-6 flex items-center gap-6 h-full transition-transform hover:-translate-y-1 hover:-translate-x-1 duration-200">
+                <div className="relative bg-brand-green rounded-[24px] border-2 border-brand-black p-6 flex flex-col-reverse sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-6 h-full transition-transform hover:-translate-y-1 hover:-translate-x-1 duration-200">
                   
                   <div className="flex-1 flex flex-col">
                     <div className="mb-4">
@@ -128,7 +128,7 @@ export function BlogBuzz() {
                     </h3>
                   </div>
 
-                  <div className="relative w-[120px] h-[120px] rounded-xl overflow-hidden border-2 border-black shrink-0">
+                  <div className="relative w-[80px] h-[80px] sm:w-[120px] sm:h-[120px] rounded-xl overflow-hidden border-2 border-black shrink-0">
                     <Image src={blog.image} alt="" fill className="object-cover" />
                   </div>
 

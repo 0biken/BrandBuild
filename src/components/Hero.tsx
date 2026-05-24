@@ -42,11 +42,11 @@ export function Hero() {
         
         {/* Copy Column */}
         <div ref={copyRef} className="flex-1 w-full flex flex-col items-start max-w-[600px]">
-          <h1 className="font-display font-black text-[56px] lg:text-[72px] leading-[1.05] tracking-tight text-brand-black mb-6">
+          <h1 className="font-display font-black text-[36px] sm:text-[56px] lg:text-[72px] leading-[1.05] tracking-tight text-brand-black mb-6">
             Unforgettable campaigns start with insight!
           </h1>
 
-          <p className="font-body font-medium text-[18px] lg:text-[22px] leading-[1.5] text-brand-black/80 mb-10">
+          <p className="font-body font-medium text-[16px] sm:text-[18px] lg:text-[22px] leading-[1.5] text-brand-black/80 mb-6 sm:mb-10">
             Social media management built for brands and designed for growth.
           </p>
 

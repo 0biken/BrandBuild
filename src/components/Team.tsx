@@ -39,7 +39,7 @@ export function Team() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="relative py-[160px] overflow-hidden flex items-center justify-start border-y-2 border-brand-black">
+    <section ref={sectionRef} className="relative py-20 lg:py-[160px] overflow-hidden flex items-center justify-start border-y-2 border-brand-black">
       
       {/* Background Image */}
       <div className="absolute inset-0 z-0">
@@ -65,7 +65,7 @@ export function Team() {
             </button>
           </div>
 
-          <div className="bg-[#6b9a2d]/90 backdrop-blur-sm rounded-[24px] p-4 px-8 border-2 border-white/20 text-white translate-x-12">
+          <div className="bg-[#6b9a2d]/90 backdrop-blur-sm rounded-[24px] p-4 px-8 border-2 border-white/20 text-white sm:translate-x-12">
             <h2 className="font-display font-black text-[32px] lg:text-[40px] leading-none">
               The team behind your campaigns
             </h2>
