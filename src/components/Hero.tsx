@@ -62,28 +62,52 @@ export function Hero() {
         </div>
 
         {/* Image Column */}
-        <div ref={imageRef} className="flex-1 w-full relative h-[400px] sm:h-[500px] lg:h-[600px] flex items-center justify-center lg:justify-end">
+        <div ref={imageRef} className="flex-1 w-full relative flex items-center justify-center lg:justify-end min-h-[400px] sm:min-h-[500px] lg:min-h-[600px]">
           
-          {/* Main larger card */}
-          <div className="absolute right-[5%] sm:right-[15%] lg:right-0 top-0 w-[60%] sm:w-[50%] lg:w-[320px] aspect-[3/4] rounded-[32px] overflow-hidden shadow-brutalist z-10">
-            <Image
-              src="/assets/hero_image_1.png"
-              alt="Creator"
-              fill
-              className="object-cover bg-[#FFD7BA]"
-              priority
-            />
-          </div>
+          <div className="relative w-full max-w-[495px] aspect-[495/571] mr-0 lg:mr-4">
+            
+            {/* Secondary overlapping card (hero_image_2, bottom left) */}
+            <div 
+              className="absolute z-20 overflow-hidden"
+              style={{
+                width: '60.87%',
+                height: '65.07%',
+                left: '0%',
+                top: '34.93%',
+                borderRadius: '20px',
+                clipPath: 'polygon(0% 0%, 60% 0%, 60% 40%, 100% 40%, 100% 100%, 0% 100%)'
+              }}
+            >
+              <Image
+                src="/assets/hero_image_2.png"
+                alt="Creator showing phone"
+                fill
+                className="object-cover bg-[#DCD8FF]"
+                priority
+              />
+            </div>
 
-          {/* Secondary overlapping card */}
-          <div className="absolute left-[5%] sm:left-[20%] lg:left-10 bottom-[10%] w-[55%] sm:w-[45%] lg:w-[280px] aspect-[4/5] rounded-[32px] overflow-hidden shadow-brutalist z-20">
-            <Image
-              src="/assets/hero_image_2.png"
-              alt="Creator showing phone"
-              fill
-              className="object-cover bg-[#DCD8FF]"
-              priority
-            />
+            {/* Main larger card (hero_image_1, top right) */}
+            <div 
+              className="absolute z-10 overflow-hidden"
+              style={{
+                width: '60.87%',
+                height: '65.07%',
+                left: '39.13%',
+                top: '0%',
+                borderRadius: '20px',
+                clipPath: 'polygon(0% 0%, 60% 0%, 60% 40%, 100% 40%, 100% 100%, 0% 100%)'
+              }}
+            >
+              <Image
+                src="/assets/hero_image_1.png"
+                alt="Creator"
+                fill
+                className="object-cover bg-[#FFD7BA]"
+                priority
+              />
+            </div>
+
           </div>
 
         </div>
