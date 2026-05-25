@@ -62,48 +62,28 @@ export function Hero() {
         </div>
 
         {/* Image Column */}
-        <div ref={imageRef} className="flex-1 w-full relative flex items-center justify-center lg:justify-end min-h-[400px] sm:min-h-[500px] lg:min-h-[600px]">
+        <div ref={imageRef} className="flex-1 w-full relative flex items-center justify-center lg:justify-end min-h-[400px] sm:min-h-[500px]">
           
-          <div className="relative w-full max-w-[495px] aspect-[495/571] mr-0 lg:mr-4">
+          <div className="relative w-full max-w-[500px] h-[400px] sm:h-[500px] mx-auto lg:mr-0">
             
-            {/* Secondary overlapping card (hero_image_2, bottom left) */}
-            <div 
-              className="absolute z-20 overflow-hidden"
-              style={{
-                width: '60.87%',
-                height: '65.07%',
-                left: '0%',
-                top: '34.93%',
-                borderRadius: '20px',
-                clipPath: 'polygon(0% 0%, 60% 0%, 60% 40%, 100% 40%, 100% 100%, 0% 100%)'
-              }}
-            >
+            {/* Image 1 (Right side - Skincare) */}
+            <div className="absolute z-10 right-0 top-0 w-[60%] sm:w-[300px] h-[75%] sm:h-[370px] rounded-[30px] overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.1)] transition-transform duration-300 hover:scale-105 hover:z-30 bg-[#FDE8D4]">
               <Image
-                src="/assets/hero_image_2.png"
-                alt="Creator showing phone"
+                src="/assets/hero_image_1.png"
+                alt="Woman with skincare patches"
                 fill
-                className="object-cover bg-[#DCD8FF]"
+                className="object-cover"
                 priority
               />
             </div>
 
-            {/* Main larger card (hero_image_1, top right) */}
-            <div 
-              className="absolute z-10 overflow-hidden"
-              style={{
-                width: '60.87%',
-                height: '65.07%',
-                left: '39.13%',
-                top: '0%',
-                borderRadius: '20px',
-                clipPath: 'polygon(0% 0%, 60% 0%, 60% 40%, 100% 40%, 100% 100%, 0% 100%)'
-              }}
-            >
+            {/* Image 2 (Left side - Pink jacket/Girl) */}
+            <div className="absolute z-20 left-0 top-[20%] sm:top-[130px] w-[60%] sm:w-[300px] h-[75%] sm:h-[370px] rounded-[30px] overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.1)] border-[6px] sm:border-[8px] border-[#fcfcfc] transition-transform duration-300 hover:scale-105 hover:z-30 bg-[#E3E6F3]">
               <Image
-                src="/assets/hero_image_1.png"
-                alt="Creator"
+                src="/assets/hero_image_2.png"
+                alt="Girl taking selfie"
                 fill
-                className="object-cover bg-[#FFD7BA]"
+                className="object-cover"
                 priority
               />
             </div>
