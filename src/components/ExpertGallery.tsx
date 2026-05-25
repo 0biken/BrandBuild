@@ -74,19 +74,21 @@ export function ExpertGallery() {
                 <div className={`absolute inset-0 bg-brand-black cutout-tr translate-x-[8px] translate-y-[8px]`} />
                 
                 {/* Card */}
-                <div className={`absolute inset-0 bg-brand-green cutout-tr border-2 border-brand-black flex flex-col p-4 items-center transition-transform hover:-translate-y-2 duration-300`}>
+                <div className={`absolute inset-0 bg-brand-green cutout-tr flex flex-col pt-0 px-0 pb-4 items-center transition-transform hover:-translate-y-2 duration-300`}>
                   
                   {/* Photo area */}
-                  <div className="w-full h-[60%] bg-[#cc5500] rounded-lg border-2 border-black mb-auto overflow-hidden relative">
+                  <div className="w-full h-[65%] mb-auto overflow-hidden relative">
                     <Image src="/assets/hero_image_1.png" alt="" fill className="object-cover" />
                   </div>
                   
-                  <h3 className={`font-display font-bold text-white leading-tight mt-4 ${isCenter ? 'text-[20px]' : 'text-[16px]'}`}>
-                    {creator.name}
-                  </h3>
-                  <span className={`font-body text-white/80 ${isCenter ? 'text-[14px]' : 'text-[12px]'}`}>
-                    {creator.handle}
-                  </span>
+                  <div className="px-4 text-center mt-2 flex flex-col items-center">
+                    <h3 className={`font-display font-bold text-white leading-tight ${isCenter ? 'text-[20px]' : 'text-[16px]'}`}>
+                      {creator.name}
+                    </h3>
+                    <span className={`font-body text-white/80 ${isCenter ? 'text-[14px]' : 'text-[12px]'}`}>
+                      {creator.handle}
+                    </span>
+                  </div>
                   
                 </div>
               </div>

@@ -100,7 +100,7 @@ export function Stats() {
               <div className="absolute inset-0 bg-[#111] cutout-tr translate-x-[8px] translate-y-[8px]" />
               
               {/* Main Card (Green) */}
-              <div className="absolute inset-0 bg-brand-green cutout-tr border-2 border-brand-black flex flex-col p-6 items-start justify-end transition-transform hover:-translate-y-1 hover:-translate-x-1 duration-200">
+              <div className="absolute inset-0 bg-brand-green cutout-tr flex flex-col p-6 items-start justify-end transition-transform hover:-translate-y-1 hover:-translate-x-1 duration-200">
                 
                 <div className="absolute top-6 left-6 h-10 w-10 flex items-center justify-center">
                   <Image src={stat.icon} alt="" width={32} height={32} className="object-contain" />
