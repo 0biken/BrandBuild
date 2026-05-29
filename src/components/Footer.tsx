@@ -38,28 +38,13 @@ export function Footer() {
           
           <div className="flex flex-col lg:flex-row justify-between gap-16 mb-20">
             {/* Links Columns */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 lg:gap-16 w-full max-w-[800px]">
-              {[
-                { title: "Product", links: ["Features", "Pricing", "Integrations", "Changelog"] },
-                { title: "Use Case", links: ["For Brands", "For Agencies", "For Creators", "Startups"] },
-                { title: "Resources", links: ["Blog", "Guides", "Help Center", "Community"] },
-                { title: "Company", links: ["About", "Careers", "Legal", "Contact"] },
-              ].map((column, i) => (
-                <div key={i} className="flex flex-col">
-                  <h4 className="font-display font-bold text-[15px] text-white mb-6">
-                    {column.title}
-                  </h4>
-                  <ul className="flex flex-col gap-4">
-                    {column.links.map((link, j) => (
-                      <li key={j}>
-                        <a href="#" className="font-body text-[14px] text-white/60 hover:text-white transition-colors">
-                          {link}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
+            <div className="flex flex-col gap-4 w-full max-w-[400px]">
+              <h4 className="font-display font-bold text-[20px] text-white">
+                Contact Us
+              </h4>
+              <a href="mailto:hello@brandbuild.com" className="font-body text-[16px] text-white/80 hover:text-white transition-colors">
+                hello@brandbuild.com
+              </a>
             </div>
 
             {/* Social / Legal Column */}

@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 
 export function Programs() {
   return (
@@ -35,31 +36,33 @@ export function Programs() {
             {/* Left Copy Area */}
             <div className="flex-1 flex flex-col justify-center">
               <h3 className="font-display font-black text-[32px] text-brand-black mb-4">
-                Full-service programs.
+                How It Works
               </h3>
               <p className="font-body text-[16px] text-brand-black/70 mb-8 max-w-[400px]">
-                We match you with the right creators for your brand category.
+                We make finding and working with creators as easy as booking a flight.
               </p>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-8 mb-8">
+              <div className="flex flex-col gap-6 mb-8">
                 {[
-                  "Verified Influencers",
-                  "Performance Driven",
-                  "Guaranteed Safety",
-                  "Transparent Analytics"
-                ].map((feature, i) => (
-                  <div key={i} className="flex items-center gap-3">
-                    <div className="w-5 h-5 rounded-full bg-brand-green flex items-center justify-center text-white">
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  { title: "1. Tell us your budget", desc: "No minimum spend required. Just set your goals." },
+                  { title: "2. Get matched", desc: "We connect you with creators who fit your niche." },
+                  { title: "3. Track results", desc: "See exactly who is driving sales in real-time." }
+                ].map((step, i) => (
+                  <div key={i} className="flex items-start gap-4">
+                    <div className="w-8 h-8 rounded-full bg-brand-green flex-shrink-0 flex items-center justify-center text-white mt-1">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
                     </div>
-                    <span className="font-body text-[14px] font-medium text-brand-black">{feature}</span>
+                    <div className="flex flex-col">
+                      <span className="font-display font-bold text-[18px] text-brand-black">{step.title}</span>
+                      <span className="font-body text-[14px] text-brand-black/70">{step.desc}</span>
+                    </div>
                   </div>
                 ))}
               </div>
 
-              <a href="#" className="font-body font-bold text-brand-green underline underline-offset-4 decoration-2 hover:text-brand-green-hover w-fit">
-                Learn More →
-              </a>
+              <Link href="#waitlist" className="font-body font-bold text-brand-green underline underline-offset-4 decoration-2 hover:text-brand-green-hover w-fit">
+                Join the Waitlist →
+              </Link>
             </div>
 
             {/* Right Image/Widget Area */}

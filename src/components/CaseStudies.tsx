@@ -79,7 +79,7 @@ export function CaseStudies() {
             <div className="relative bg-brand-green rounded-[24px] border-2 border-brand-black p-8 text-white flex flex-col h-full">
               <span className="font-display font-black text-[64px] leading-none mb-4 opacity-50">"</span>
               <p className="font-body font-medium text-[16px] leading-[1.6] mb-8">
-                Brandbuild literally changed how we approach creator partnerships. The revenue tracking showed us exactly what was working, allowing us to double down on top performers and scale our campaigns effortlessly.
+                BrandBuild's matching algorithm connected us with creators we would have never found otherwise. Our conversion rate tripled in the first month without increasing our ad spend.
               </p>
               
               <div className="mt-auto grid grid-cols-2 gap-4">

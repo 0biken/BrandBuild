@@ -8,11 +8,12 @@ export function WaitlistForm({ isFooter = false }: { isFooter?: boolean }) {
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [waitlistData, setWaitlistData] = useState<{ position: number, referralId: string } | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
 
-    // Simple email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       setStatus("error");
@@ -23,22 +24,57 @@ export function WaitlistForm({ isFooter = false }: { isFooter?: boolean }) {
     setStatus("loading");
     setErrorMessage("");
 
-    // Simulate API Call
-    setTimeout(() => {
+    try {
+      const res = await fetch("/api/waitlist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email })
+      });
+      
+      const data = await res.json();
+      
+      if (!res.ok) {
+        setStatus("error");
+        setErrorMessage(data.error || "Something went wrong.");
+        return;
+      }
+      
+      setWaitlistData({ position: data.position, referralId: data.referralId });
       setStatus("success");
-    }, 1500);
+    } catch (err) {
+      setStatus("error");
+      setErrorMessage("Network error. Please try again.");
+    }
   };
 
   return (
     <div className={`max-w-[480px] mx-auto w-full ${!isFooter ? 'bg-white p-8 rounded-[20px] shadow-sm border border-black/5' : ''}`}>
       
-      {status === "success" ? (
+      {status === "success" && waitlistData ? (
         <div className="flex flex-col items-center text-center animate-in fade-in zoom-in duration-300">
           <div className="w-16 h-16 rounded-full bg-[#2DBF6E]/10 flex items-center justify-center mb-4">
             <Image src="/assets/checkmark.svg" alt="Success" width={32} height={32} />
           </div>
           <h3 className="font-display font-bold text-2xl text-brand-black mb-2">You're on the list!</h3>
-          <p className="font-body text-[#555]">You're #47. We'll be in touch soon.</p>
+          <p className="font-body text-[#555] mb-4">You're #{waitlistData.position} in line.</p>
+          
+          <div className="bg-[#F5F5F5] border border-black/10 rounded-xl p-4 w-full flex flex-col gap-2">
+            <span className="font-display font-bold text-[14px]">Skip 10 spots for every referral!</span>
+            <div className="flex items-center gap-2">
+              <input 
+                type="text" 
+                readOnly 
+                value={`brandbuild.co/waitlist?ref=${waitlistData.referralId}`} 
+                className="w-full bg-white border border-black/10 rounded-md px-3 py-2 text-[13px] font-body text-gray-600 outline-none"
+              />
+              <button 
+                className="bg-brand-black text-white px-4 py-2 rounded-md text-[13px] font-bold hover:bg-brand-black/80 transition-colors whitespace-nowrap"
+                onClick={() => navigator.clipboard.writeText(`brandbuild.co/waitlist?ref=${waitlistData.referralId}`)}
+              >
+                Copy
+              </button>
+            </div>
+          </div>
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">

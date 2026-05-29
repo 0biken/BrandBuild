@@ -71,7 +71,7 @@ export function PlatformProof() {
             Our platform tracks what creators actually sell — not just what they post. See exact ROI on every campaign you run with confidence.
           </p>
           <Link href="#waitlist" className="font-body font-bold text-brand-green underline underline-offset-4 decoration-2 hover:text-brand-green-hover text-[16px]">
-            Learn More →
+            Join the Waitlist →
           </Link>
         </div>
       </div>
@@ -81,13 +81,15 @@ export function PlatformProof() {
         <div ref={cardsRef} className="relative w-full h-[500px] max-w-[600px]">
           
           {/* Mockup Widget 1 */}
-          <div className="absolute top-[5%] right-[5%] sm:top-[10%] sm:right-[10%] bg-white rounded-[16px] shadow-brutalist border-2 border-black p-3 px-5 sm:p-4 sm:px-6 flex items-center justify-center z-10 w-fit">
-             <span className="font-display font-black text-2xl sm:text-[32px] text-brand-black">500M+</span>
+          <div className="absolute top-[5%] right-[5%] sm:top-[10%] sm:right-[10%] bg-white rounded-[16px] shadow-brutalist border-2 border-black p-3 px-5 sm:p-4 sm:px-6 flex flex-col items-center justify-center z-10 w-fit">
+             <span className="font-display font-black text-2xl sm:text-[32px] text-brand-black leading-none">500M+</span>
+             <span className="font-body text-[12px] font-medium text-brand-black/60 mt-1">Audience Reached</span>
           </div>
 
           {/* Mockup Widget 2 */}
-          <div className="absolute top-[75%] right-[5%] sm:top-[35%] sm:right-[5%] bg-white rounded-[16px] shadow-brutalist border-2 border-black p-3 px-5 sm:p-4 sm:px-6 flex items-center justify-center z-20 w-fit">
-             <span className="font-display font-black text-2xl sm:text-[32px] text-brand-black">$200+</span>
+          <div className="absolute top-[75%] right-[5%] sm:top-[35%] sm:right-[5%] bg-white rounded-[16px] shadow-brutalist border-2 border-black p-3 px-5 sm:p-4 sm:px-6 flex flex-col items-center justify-center z-20 w-fit">
+             <span className="font-display font-black text-2xl sm:text-[32px] text-brand-black leading-none">$200+</span>
+             <span className="font-body text-[12px] font-medium text-brand-black/60 mt-1">Average ROI</span>
           </div>
 
            {/* Mockup Widget 3 */}

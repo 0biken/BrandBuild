@@ -42,22 +42,32 @@ export function Hero() {
         
         {/* Copy Column */}
         <div ref={copyRef} className="flex-1 w-full flex flex-col items-start max-w-[600px]">
-          <h1 className="font-display font-black text-[36px] sm:text-[56px] lg:text-[72px] leading-[1.05] tracking-tight text-brand-black mb-6">
-            Unforgettable campaigns start with insight!
+          <h1 className="font-display font-black text-[40px] sm:text-[56px] lg:text-[64px] leading-[1.05] tracking-tight text-brand-black mb-6">
+            Find creators who drive sales. <br/>
+            <span className="text-brand-green">Get brands that pay fairly.</span>
           </h1>
 
-          <p className="font-body font-medium text-[16px] sm:text-[18px] lg:text-[22px] leading-[1.5] text-brand-black/80 mb-6 sm:mb-10">
-            Social media management built for brands and designed for growth.
+          <p className="font-body font-medium text-[16px] sm:text-[18px] lg:text-[20px] leading-[1.5] text-brand-black/80 mb-6 sm:mb-8 max-w-[500px]">
+            No minimum spend. No agency fees. The only platform built for small businesses and independent creators to grow together.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
-            <Link href="#waitlist" className="btn-primary w-full sm:w-auto justify-center">
-              Start your Campaign
+          <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto mb-6">
+            <Link href="#waitlist" className="btn-primary w-full sm:w-auto justify-center text-[16px] py-4 px-8">
+              Join the Waitlist
             </Link>
-            <Link href="#waitlist" className="btn-ghost-green w-full sm:w-auto justify-center">
-              Join the Beta
-              <span className="text-xl leading-none">↗</span>
-            </Link>
+          </div>
+          
+          <div className="flex items-center gap-3">
+            <div className="flex -space-x-3">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="w-8 h-8 rounded-full border-2 border-white bg-gray-200 overflow-hidden relative">
+                  <Image src={`/assets/hero_image_1.png`} alt="User" fill className="object-cover" />
+                </div>
+              ))}
+            </div>
+            <p className="font-body text-[14px] font-medium text-brand-black/70">
+              Join <strong className="text-brand-black">500+</strong> local businesses and creators.
+            </p>
           </div>
         </div>
 

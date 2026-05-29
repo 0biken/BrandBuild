@@ -14,45 +14,7 @@ const STATS = [
   { icon: "/assets/star_icon.svg", value: 99.9, suffix: "%", label: "brand safety rate", decimals: 1 },
 ];
 
-function CountUp({ end, prefix = "", suffix = "", decimals = 0 }: { end: number, prefix?: string, suffix?: string, decimals?: number }) {
-  const ref = useRef<HTMLSpanElement>(null);
 
-  useEffect(() => {
-    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (prefersReduced) {
-      if (ref.current) ref.current.innerText = `${prefix}${end}${suffix}`;
-      return;
-    }
-
-    const ctx = gsap.context(() => {
-      if (ref.current) {
-        ScrollTrigger.create({
-          trigger: ref.current,
-          start: "top 85%",
-          onEnter: () => {
-            gsap.to({ val: 0 }, {
-              val: end,
-              duration: 2,
-              ease: "power3.out",
-              onUpdate: function() {
-                if (ref.current) {
-                  const currentVal = this.targets()[0].val;
-                  const displayVal = decimals > 0 ? currentVal.toFixed(decimals) : Math.round(currentVal);
-                  ref.current.innerText = `${prefix}${displayVal}${suffix}`;
-                }
-              }
-            });
-          },
-          once: true
-        });
-      }
-    });
-
-    return () => ctx.revert();
-  }, [end, prefix, suffix, decimals]);
-
-  return <span ref={ref}>{prefix}0{suffix}</span>;
-}
 
 export function Stats() {
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -107,7 +69,7 @@ export function Stats() {
                 </div>
                 
                 <div className="font-display font-black text-[40px] text-white leading-none mb-2 mt-auto">
-                  <CountUp end={stat.value} suffix={stat.suffix} decimals={stat.decimals} />
+                  {stat.value}{stat.suffix}
                 </div>
                 
                 <div className="font-body text-[13px] font-medium text-white/90 leading-snug text-left">

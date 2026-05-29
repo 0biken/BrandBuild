@@ -1,14 +1,15 @@
 import { Navbar } from "@/components/Navbar";
 import { Hero } from "@/components/Hero";
-import { PartnerLogos } from "@/components/PartnerLogos";
 import { Programs } from "@/components/Programs";
 import { Stats } from "@/components/Stats";
+import { DualAudience } from "@/components/DualAudience";
 import { PlatformProof } from "@/components/PlatformProof";
 import { ExpertGallery } from "@/components/ExpertGallery";
 import { CaseStudies } from "@/components/CaseStudies";
 import { Testimonial } from "@/components/Testimonial";
 import { Team } from "@/components/Team";
 import { BlogBuzz } from "@/components/BlogBuzz";
+import { FAQ } from "@/components/FAQ";
 import { Footer } from "@/components/Footer";
 
 export default function Home() {
@@ -17,15 +18,16 @@ export default function Home() {
       <Navbar />
       
       <Hero />
-      <PartnerLogos />
       <Programs />
       <Stats />
+      <DualAudience />
       <PlatformProof />
       <ExpertGallery />
       <CaseStudies />
       <Testimonial />
       <Team />
       <BlogBuzz />
+      <FAQ />
       
       <Footer />
     </main>

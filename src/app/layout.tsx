@@ -14,9 +14,27 @@ const dmSans = DM_Sans({
   weight: ["300", "400", "500", "700"],
 });
 
+import Script from "next/script";
+
 export const metadata: Metadata = {
-  title: "BrandBuild — Social Media Management for Ambitious Brands",
-  description: "Unforgettable campaigns start with insight. Built for brands, designed for results. Join the waitlist.",
+  title: "BrandBuild — Waitlist for Small Business Creator Marketing",
+  description: "No minimum spend. No agency fees. Join the waitlist to find creators who drive sales and get matched with brands that pay fairly.",
+  openGraph: {
+    title: "BrandBuild — Waitlist for Small Business Creator Marketing",
+    description: "No minimum spend. No agency fees. Join the waitlist to find creators who drive sales and get matched with brands that pay fairly.",
+    url: "https://brandbuild.co",
+    siteName: "BrandBuild",
+    images: [
+      {
+        url: "/assets/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "BrandBuild Platform",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
@@ -29,6 +47,26 @@ export default function RootLayout({
       lang="en"
       className={`${syne.variable} ${dmSans.variable} h-full antialiased`}
     >
+      <head>
+        {/* Placeholder for Plausible/Fathom Analytics */}
+        <Script defer data-domain="brandbuild.co" src="https://plausible.io/js/script.js" strategy="afterInteractive" />
+        
+        {/* Placeholder for Meta Pixel */}
+        <Script id="meta-pixel" strategy="afterInteractive">
+          {`
+            !function(f,b,e,v,n,t,s)
+            {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+            n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+            if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+            n.queue=[];t=b.createElement(e);t.async=!0;
+            t.src=v;s=b.getElementsByTagName(e)[0];
+            s.parentNode.insertBefore(t,s)}(window, document,'script',
+            'https://connect.facebook.net/en_US/fbevents.js');
+            fbq('init', 'YOUR_PIXEL_ID');
+            fbq('track', 'PageView');
+          `}
+        </Script>
+      </head>
       <body className="min-h-full flex flex-col font-body bg-white text-brand-black">
         <div className="grain-overlay" />
         <svg width="0" height="0" style={{ position: 'absolute', pointerEvents: 'none' }}>

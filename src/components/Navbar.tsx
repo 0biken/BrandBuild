@@ -32,8 +32,8 @@ export function Navbar() {
 
   const navLinks = [
     { name: "How It Works", href: "#how-it-works" },
-    { name: "Creators", href: "#creators" },
-    { name: "Brands", href: "#brands" },
+    { name: "For Small Biz", href: "#brands" },
+    { name: "For Creators", href: "#creators" },
   ];
 
   return (

@@ -12,10 +12,9 @@ const LOGOS = [
 export function PartnerLogos() {
   return (
     <section className="bg-brand-green py-6 border-y-2 border-brand-black overflow-hidden relative z-20 flex">
-      {/* Container that animates */}
-      <div className="flex w-max animate-marquee gap-8 lg:gap-16 items-center px-4">
-        {/* We map twice to create a seamless scrolling loop */}
-        {[...LOGOS, ...LOGOS, ...LOGOS, ...LOGOS].map((logo, i) => (
+      <div className="flex w-full justify-center gap-8 lg:gap-16 items-center px-4">
+        {/* Cap at 4 logos, single loop */}
+        {LOGOS.map((logo, i) => (
           <div key={i} className="flex items-center gap-8 lg:gap-16 shrink-0">
             {/* Logo image and text */}
             <div className="flex items-center gap-3">
