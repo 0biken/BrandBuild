@@ -60,9 +60,9 @@ export function Programs() {
                 ))}
               </div>
 
-              <Link href="#waitlist" className="font-body font-bold text-brand-green underline underline-offset-4 decoration-2 hover:text-brand-green-hover w-fit">
+              <a href="https://docs.google.com/forms/d/1rsoSzN4C5JzlHdBaZkEPtP_MAm2cshrcp5icvFeobbw/viewform" target="_blank" rel="noopener noreferrer" className="font-body font-bold text-brand-green underline underline-offset-4 decoration-2 hover:text-brand-green-hover w-fit">
                 Join the Waitlist →
-              </Link>
+              </a>
             </div>
 
             {/* Right Image/Widget Area */}

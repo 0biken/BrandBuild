@@ -68,9 +68,9 @@ export function Navbar() {
           </div>
 
           <div className="hidden md:block">
-            <Link href="#waitlist" className="btn-primary !px-5 !py-2.5 !text-[13px]">
+            <a href="https://docs.google.com/forms/d/1rsoSzN4C5JzlHdBaZkEPtP_MAm2cshrcp5icvFeobbw/viewform" target="_blank" rel="noopener noreferrer" className="btn-primary !px-5 !py-2.5 !text-[13px]">
               Join the Waitlist
-            </Link>
+            </a>
           </div>
 
           <button 
@@ -106,9 +106,9 @@ export function Navbar() {
                 {link.name}
               </Link>
             ))}
-            <Link href="#waitlist" onClick={() => setIsMobileMenuOpen(false)} className="btn-primary mt-4 mx-auto text-lg w-full max-w-sm">
+            <a href="https://docs.google.com/forms/d/1rsoSzN4C5JzlHdBaZkEPtP_MAm2cshrcp5icvFeobbw/viewform" target="_blank" rel="noopener noreferrer" onClick={() => setIsMobileMenuOpen(false)} className="btn-primary mt-4 mx-auto text-lg w-full max-w-sm">
               Join the Waitlist
-            </Link>
+            </a>
           </div>
         </div>
       )}

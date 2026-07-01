@@ -58,7 +58,7 @@ export function DualAudience() {
                     <li className="flex items-center gap-2">✓ No platform fees for 90 days</li>
                   </ul>
                 </div>
-                <Link href="#waitlist" className="btn-primary inline-flex">Join the Waitlist</Link>
+                <a href="https://docs.google.com/forms/d/1rsoSzN4C5JzlHdBaZkEPtP_MAm2cshrcp5icvFeobbw/viewform" target="_blank" rel="noopener noreferrer" className="btn-primary inline-flex">Join the Waitlist</a>
               </div>
               <div className="flex-1 w-full flex justify-center">
                 <div className="w-full max-w-[300px] aspect-square relative rounded-[30px] overflow-hidden bg-brand-green border-4 border-brand-black shadow-brutalist">
@@ -82,7 +82,7 @@ export function DualAudience() {
                     <li className="flex items-center gap-2">✓ Direct brand inbox access</li>
                   </ul>
                 </div>
-                <Link href="#waitlist" className="btn-primary inline-flex">Join the Waitlist</Link>
+                <a href="https://docs.google.com/forms/d/1rsoSzN4C5JzlHdBaZkEPtP_MAm2cshrcp5icvFeobbw/viewform" target="_blank" rel="noopener noreferrer" className="btn-primary inline-flex">Join the Waitlist</a>
               </div>
               <div className="flex-1 w-full flex justify-center">
                 <div className="w-full max-w-[300px] aspect-square relative rounded-[30px] overflow-hidden bg-brand-black border-4 border-brand-black shadow-brutalist">

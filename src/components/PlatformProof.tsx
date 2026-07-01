@@ -70,9 +70,9 @@ export function PlatformProof() {
           <p className="font-body text-[18px] text-brand-black/70 mb-8 leading-[1.6]">
             Our platform tracks what creators actually sell — not just what they post. See exact ROI on every campaign you run with confidence.
           </p>
-          <Link href="#waitlist" className="font-body font-bold text-brand-green underline underline-offset-4 decoration-2 hover:text-brand-green-hover text-[16px]">
+          <a href="https://docs.google.com/forms/d/1rsoSzN4C5JzlHdBaZkEPtP_MAm2cshrcp5icvFeobbw/viewform" target="_blank" rel="noopener noreferrer" className="font-body font-bold text-brand-green underline underline-offset-4 decoration-2 hover:text-brand-green-hover text-[16px]">
             Join the Waitlist →
-          </Link>
+          </a>
         </div>
       </div>
 
