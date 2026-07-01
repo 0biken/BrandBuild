@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { WaitlistForm } from "./WaitlistForm";
 
 export function Footer() {
   return (
@@ -26,8 +25,15 @@ export function Footer() {
             Build with us and level up your business
           </h2>
           
-          <div className="w-full max-w-[480px]">
-            <WaitlistForm isFooter={true} />
+          <div className="flex justify-center w-full">
+            <a 
+              href="https://docs.google.com/forms/d/1rsoSzN4C5JzlHdBaZkEPtP_MAm2cshrcp5icvFeobbw/viewform" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="btn-primary justify-center text-[18px] py-5 px-10 shadow-lg hover:scale-105 transition-transform"
+            >
+              Join the Waitlist
+            </a>
           </div>
         </div>
       </section>

@@ -52,9 +52,9 @@ export function Hero() {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto mb-6">
-            <Link href="#waitlist" className="btn-primary w-full sm:w-auto justify-center text-[16px] py-4 px-8">
+            <a href="https://docs.google.com/forms/d/1rsoSzN4C5JzlHdBaZkEPtP_MAm2cshrcp5icvFeobbw/viewform" target="_blank" rel="noopener noreferrer" className="btn-primary w-full sm:w-auto justify-center text-[16px] py-4 px-8">
               Join the Waitlist
-            </Link>
+            </a>
           </div>
           
           <div className="flex items-center gap-3">
