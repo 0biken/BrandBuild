@@ -7,7 +7,7 @@ export function Footer() {
   return (
     <>
       {/* Footer CTA Section */}
-      <section id="waitlist" className="relative py-24 lg:py-[160px] flex items-center justify-center overflow-hidden border-y-2 border-brand-black">
+      <section id="waitlist" className="relative py-16 lg:py-[100px] flex items-center justify-center overflow-hidden border-y-2 border-brand-black">
         <div className="absolute inset-0 z-0">
           <Image
             src="/assets/footer_image.png"
@@ -21,7 +21,7 @@ export function Footer() {
         <div className="absolute inset-0 bg-black/50 z-0" />
         
         <div className="relative z-10 max-w-[1440px] mx-auto px-6 lg:px-20 w-full flex flex-col items-center text-center">
-          <h2 className="font-display font-black text-[32px] sm:text-[48px] lg:text-[64px] leading-[1.05] text-white mb-10 max-w-[800px] shadow-sm">
+          <h2 className="font-display font-black text-[32px] sm:text-[48px] lg:text-[64px] leading-[1.05] text-white mb-8 max-w-[800px] shadow-sm">
             Build with us and level up your business
           </h2>
           
@@ -39,12 +39,12 @@ export function Footer() {
       </section>
 
       {/* Main Footer */}
-      <footer className="bg-brand-black pt-20 overflow-hidden relative">
+      <footer className="bg-brand-black pt-12 overflow-hidden relative">
         <div className="max-w-[1440px] mx-auto px-6 lg:px-20 relative z-10">
           
-          <div className="flex flex-col lg:flex-row justify-between gap-16 mb-20">
+          <div className="flex flex-col lg:flex-row justify-between gap-8 mb-12">
             {/* Links Columns */}
-            <div className="flex flex-col gap-4 w-full max-w-[400px]">
+            <div className="flex flex-col gap-2 w-full max-w-[400px]">
               <h4 className="font-display font-bold text-[20px] text-white">
                 Contact Us
               </h4>
@@ -55,7 +55,7 @@ export function Footer() {
 
             {/* Social / Legal Column */}
             <div className="flex flex-col items-start lg:items-end min-w-[200px]">
-              <div className="flex flex-wrap gap-4 mb-12">
+              <div className="flex flex-wrap gap-3 mb-8">
                 {[1, 2, 3, 4, 5, 6].map((num) => (
                   <a key={num} href="#" className="opacity-60 hover:opacity-100 transition-opacity">
                     <Image src={`/assets/social-${num}.png`} alt={`Social ${num}`} width={24} height={24} />
@@ -63,7 +63,7 @@ export function Footer() {
                 ))}
               </div>
 
-              <div className="flex flex-col lg:items-end gap-2 text-left lg:text-right">
+              <div className="flex flex-col lg:items-end gap-1 text-left lg:text-right">
                 <span className="font-body text-[13px] text-white/40">
                   © 2026 BrandBuild.
                 </span>

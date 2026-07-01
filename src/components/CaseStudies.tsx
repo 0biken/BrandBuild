@@ -69,29 +69,23 @@ export function CaseStudies() {
           />
         </div>
 
-        {/* Column 3: Green Quote Card */}
-        <div className="case-col w-full">
-          <div className="relative w-full max-w-[400px] mx-auto lg:ml-auto">
-            {/* Shadow */}
-            <div className="absolute inset-0 bg-[#000] rounded-[24px] translate-x-[8px] translate-y-[8px]" />
-            
-            {/* Card */}
-            <div className="relative bg-brand-green rounded-[24px] border-2 border-brand-black p-8 text-white flex flex-col h-full">
-              <span className="font-display font-black text-[64px] leading-none mb-4 opacity-50">"</span>
-              <p className="font-body font-medium text-[16px] leading-[1.6] mb-8">
-                BrandBuild's matching algorithm connected us with creators we would have never found otherwise. Our conversion rate tripled in the first month without increasing our ad spend.
-              </p>
-              
-              <div className="mt-auto grid grid-cols-2 gap-4">
-                <div className="flex flex-col">
-                  <span className="font-display font-bold text-[24px]">200+</span>
-                  <span className="font-body text-[12px] opacity-80">Campaigns Run</span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="font-display font-bold text-[24px]">99%</span>
-                  <span className="font-body text-[12px] opacity-80">Creator Match</span>
-                </div>
-              </div>
+        {/* Column 3: Quote (Standardized to Testimonial style) */}
+        <div className="case-col w-full flex flex-col relative">
+          <span className="font-display font-black text-[60px] lg:text-[80px] leading-none text-[#2DBF6E] opacity-40 absolute -top-6 lg:-top-8 -left-4 pointer-events-none select-none">
+            "
+          </span>
+          <p className="font-body font-light text-[18px] leading-[1.6] text-white/80 mb-8 relative z-10">
+            BrandBuild's matching algorithm connected us with creators we would have never found otherwise. Our conversion rate tripled in the first month without increasing our ad spend.
+          </p>
+          
+          <div className="grid grid-cols-2 gap-4">
+            <div className="flex flex-col">
+              <span className="font-display font-bold text-[24px] text-white">200+</span>
+              <span className="font-body text-[12px] text-[#888]">Campaigns Run</span>
+            </div>
+            <div className="flex flex-col">
+              <span className="font-display font-bold text-[24px] text-white">99%</span>
+              <span className="font-body text-[12px] text-[#888]">Creator Match</span>
             </div>
           </div>
         </div>

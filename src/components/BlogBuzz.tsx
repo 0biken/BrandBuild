@@ -80,12 +80,12 @@ export function BlogBuzz() {
           Keep up with the latest buzz.
         </h2>
 
-        <div ref={gridRef} className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-[1000px] mx-auto">
+        <div ref={gridRef} className="flex flex-col items-center gap-8 max-w-[600px] mx-auto w-full">
           
           {/* Main Large Blog Card */}
           <Link 
             href="#"
-            className="group relative h-full min-h-[400px] flex flex-col md:row-span-2"
+            className="group relative w-full min-h-[400px] flex flex-col"
           >
             <div className="absolute inset-0 bg-brand-black rounded-[24px] translate-x-[8px] translate-y-[8px]" />
             <div className="relative bg-brand-green rounded-[24px] border-2 border-brand-black p-8 flex flex-col h-full transition-transform hover:-translate-y-1 hover:-translate-x-1 duration-200">
@@ -96,7 +96,7 @@ export function BlogBuzz() {
                 </span>
               </div>
 
-              <div className="relative w-full aspect-square mb-6 rounded-xl overflow-hidden border-2 border-black">
+              <div className="relative w-full aspect-[16/9] mb-6 rounded-xl overflow-hidden border-2 border-black">
                 <Image src={BLOGS[0].image} alt="" fill className="object-cover" />
               </div>
 
@@ -106,36 +106,10 @@ export function BlogBuzz() {
             </div>
           </Link>
 
-          {/* Secondary Stacked Blog Cards */}
-          <div className="flex flex-col gap-8">
-            {BLOGS.slice(1).map((blog, i) => (
-              <Link 
-                key={i} 
-                href="#"
-                className="group relative w-full min-h-[200px] h-auto sm:h-[200px]"
-              >
-                <div className="absolute inset-0 bg-brand-black rounded-[24px] translate-x-[8px] translate-y-[8px]" />
-                <div className="relative bg-brand-green rounded-[24px] border-2 border-brand-black p-6 flex flex-col-reverse sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-6 h-full transition-transform hover:-translate-y-1 hover:-translate-x-1 duration-200">
-                  
-                  <div className="flex-1 flex flex-col">
-                    <div className="mb-4">
-                      <span className="font-body text-[11px] font-bold text-brand-green bg-white px-3 py-1 rounded-full border border-black uppercase tracking-wide">
-                        {blog.label}
-                      </span>
-                    </div>
-                    <h3 className="font-display font-bold text-[18px] text-white leading-tight">
-                      {blog.title}
-                    </h3>
-                  </div>
-
-                  <div className="relative w-[80px] h-[80px] sm:w-[120px] sm:h-[120px] rounded-xl overflow-hidden border-2 border-black shrink-0">
-                    <Image src={blog.image} alt="" fill className="object-cover" />
-                  </div>
-
-                </div>
-              </Link>
-            ))}
-          </div>
+          {/* CTA Link */}
+          <Link href="#" className="btn-primary mt-4">
+            See more events
+          </Link>
 
         </div>
 

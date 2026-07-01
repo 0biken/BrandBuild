@@ -10,8 +10,8 @@ gsap.registerPlugin(ScrollTrigger);
 const STATS = [
   { icon: "/assets/binocular_icon.svg", value: 15, suffix: "K+", label: "verified creators" },
   { icon: "/assets/rocket_icon.svg", value: 200, suffix: "+", label: "brand campaigns run" },
-  { icon: "/assets/link_icon.svg", value: 99.9, suffix: "%", label: "ROI tracking overall", decimals: 1 },
-  { icon: "/assets/star_icon.svg", value: 99.9, suffix: "%", label: "brand safety rate", decimals: 1 },
+  { icon: "/assets/coin_icon.svg", value: 99.9, suffix: "%", label: "ROI tracking overall", decimals: 1 },
+  { icon: "/assets/checkmark.svg", value: 99.9, suffix: "%", label: "brand safety rate", decimals: 1 },
 ];
 
 
