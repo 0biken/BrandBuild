@@ -22,7 +22,7 @@ export function Footer() {
         
         <div className="relative z-10 max-w-[1440px] mx-auto px-6 lg:px-20 w-full flex flex-col items-center text-center">
           <h2 className="font-display font-black text-[32px] sm:text-[48px] lg:text-[64px] leading-[1.05] text-white mb-8 max-w-[800px] shadow-sm">
-            Build with us and level up your business
+            Ready to put your social media on autopilot?
           </h2>
           
           <div className="flex justify-center w-full">

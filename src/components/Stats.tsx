@@ -8,10 +8,10 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 gsap.registerPlugin(ScrollTrigger);
 
 const STATS = [
-  { icon: "/assets/binocular_icon.svg", value: 15, suffix: "K+", label: "verified creators" },
-  { icon: "/assets/rocket_icon.svg", value: 200, suffix: "+", label: "brand campaigns run" },
-  { icon: "/assets/coin_icon.svg", value: 99.9, suffix: "%", label: "ROI tracking overall", decimals: 1 },
-  { icon: "/assets/checkmark.svg", value: 99.9, suffix: "%", label: "brand safety rate", decimals: 1 },
+  { icon: "/assets/rocket_icon.svg", value: 1, suffix: "M+", label: "posts published automatically" },
+  { icon: "/assets/binocular_icon.svg", value: 50, suffix: "+", label: "native platform integrations" },
+  { icon: "/assets/coin_icon.svg", value: 15, suffix: "", label: "hours average time saved weekly" },
+  { icon: "/assets/checkmark.svg", value: 99.9, suffix: "%", label: "platform uptime reliability", decimals: 1 },
 ];
 
 

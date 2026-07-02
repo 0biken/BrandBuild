@@ -4,16 +4,16 @@ import { useState } from "react";
 
 const FAQS = [
   {
-    question: "Is there a minimum campaign spend?",
-    answer: "No. Small businesses can start with whatever budget they are comfortable with. You only pay for the creators you hire, with zero hidden platform fees for the first 90 days."
+    question: "What is Brandbuild?",
+    answer: "Brandbuild is an AI-powered social media management platform built specifically for small and medium businesses. It brings content creation, scheduling, analytics, and a unified inbox into one simple dashboard."
   },
   {
-    question: "How do creators get paid?",
-    answer: "Creators are paid directly through the platform via Stripe. We guarantee net-15 payments upon campaign completion, so you never have to chase invoices again."
+    question: "Which social platforms do you support?",
+    answer: "We support Instagram, TikTok, Facebook, X (Twitter), LinkedIn, and Pinterest at launch. YouTube Shorts and Threads support will be added shortly after."
   },
   {
-    question: "What platforms do you support?",
-    answer: "Currently, we focus on TikTok and Instagram Reels, as they drive the highest ROI for short-form video campaigns. We will be adding YouTube Shorts later this year."
+    question: "How does the AI content generation work?",
+    answer: "Our AI learns your brand voice, audience, and past performance to generate captions, hashtags, and visual suggestions tailored to each platform. You review, tweak if needed, and publish — all in minutes."
   },
   {
     question: "When do you launch?",
@@ -29,7 +29,7 @@ export function FAQ() {
   };
 
   return (
-    <section className="bg-wavy-pattern py-20 lg:py-[100px]">
+    <section id="faq" className="bg-wavy-pattern py-20 lg:py-[100px]">
       <div className="max-w-[800px] mx-auto px-6 lg:px-20">
         <h2 className="font-display font-black text-[32px] sm:text-[48px] text-brand-black mb-12 text-center">
           Got questions?

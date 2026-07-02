@@ -9,10 +9,10 @@ export function Programs() {
       <div className="max-w-[1440px] mx-auto px-6 lg:px-20 text-center flex flex-col items-center">
         
         <h2 className="font-display font-black text-[40px] lg:text-[56px] text-white mb-2">
-          Go big! We've got you.
+          Social media management on autopilot.
         </h2>
         <p className="font-body text-[18px] text-white/90 mb-12">
-          Resources to scale your growth with BrandBuild!
+          Everything you need to scale your online presence, seamlessly integrated.
         </p>
 
         {/* Outer White Card Container */}
@@ -21,13 +21,13 @@ export function Programs() {
           {/* Top Tabs (Simulated) */}
           <div className="flex flex-wrap gap-4 mb-10 pb-4 border-b border-black/10">
             <span className="font-body font-bold text-brand-green border-b-2 border-brand-green pb-1 px-2 cursor-pointer">
-              Creator Matching
+              AI Generation
             </span>
             <span className="font-body font-medium text-brand-midgray hover:text-brand-black px-2 cursor-pointer transition-colors">
-              Campaign Strategy
+              Visual Planner
             </span>
             <span className="font-body font-medium text-brand-midgray hover:text-brand-black px-2 cursor-pointer transition-colors">
-              Performance Tracking
+              Smart Analytics
             </span>
           </div>
 
@@ -39,14 +39,14 @@ export function Programs() {
                 How It Works
               </h3>
               <p className="font-body text-[16px] text-brand-black/70 mb-8 max-w-[400px]">
-                We make finding and working with creators as easy as booking a flight.
+                From AI-powered content creation to one-click publishing — your entire social workflow, simplified.
               </p>
 
               <div className="flex flex-col gap-6 mb-8">
                 {[
-                  { title: "1. Tell us your budget", desc: "No minimum spend required. Just set your goals." },
-                  { title: "2. Get matched", desc: "We connect you with creators who fit your niche." },
-                  { title: "3. Track results", desc: "See exactly who is driving sales in real-time." }
+                  { title: "1. Generate with AI", desc: "Instantly create high-converting captions and visuals tailored to your brand voice." },
+                  { title: "2. Schedule visually", desc: "Drag and drop posts onto our intuitive calendar and let us handle the publishing." },
+                  { title: "3. Measure & Grow", desc: "Understand your performance with simple, actionable insights that actually make sense." }
                 ].map((step, i) => (
                   <div key={i} className="flex items-start gap-4">
                     <div className="w-8 h-8 rounded-full bg-brand-green flex-shrink-0 flex items-center justify-center text-white mt-1">

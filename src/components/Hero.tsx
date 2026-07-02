@@ -43,12 +43,12 @@ export function Hero() {
         {/* Copy Column */}
         <div ref={copyRef} className="flex-1 w-full flex flex-col items-start max-w-[600px]">
           <h1 className="font-display font-black text-[40px] sm:text-[56px] lg:text-[64px] leading-[1.05] tracking-tight text-brand-black mb-6">
-            Find creators who drive sales. <br/>
-            <span className="text-brand-green">Get brands that pay fairly.</span>
+            Manage all your socials in one place. <br/>
+            <span className="text-brand-green">Powered by AI.</span>
           </h1>
 
           <p className="font-body font-medium text-[16px] sm:text-[18px] lg:text-[20px] leading-[1.5] text-brand-black/80 mb-6 sm:mb-8 max-w-[500px]">
-            No minimum spend. No agency fees. The only platform built for small businesses and independent creators to grow together.
+            Ditch the endless tabs and overwhelming dashboards. Brandbuild is the all-in-one AI social media manager that helps busy SMB owners create, schedule, and analyze content in minutes, not hours.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto mb-6">
@@ -66,7 +66,7 @@ export function Hero() {
               ))}
             </div>
             <p className="font-body text-[14px] font-medium text-brand-black/70">
-              Join <strong className="text-brand-black">500+</strong> local businesses and creators.
+              Join <strong className="text-brand-black">500+</strong> local businesses and founders taking their time back.
             </p>
           </div>
         </div>

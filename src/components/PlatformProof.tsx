@@ -64,11 +64,11 @@ export function PlatformProof() {
       <div className="flex-1 px-6 py-20 lg:py-32 lg:px-20 flex flex-col justify-center items-start border-b-2 lg:border-b-0 lg:border-r-2 border-brand-black bg-[#fcfcfc]">
         <div className="platform-header max-w-[500px]">
           <h2 className="font-display font-black text-[48px] leading-[1.05] tracking-tight text-brand-black mb-6">
-            Other brands are guessing. <br />
-            You don't have to.
+            Stop guessing what works. <br />
+            Let data drive your growth.
           </h2>
           <p className="font-body text-[18px] text-brand-black/70 mb-8 leading-[1.6]">
-            Our platform tracks what creators actually sell — not just what they post. See exact ROI on every campaign you run with confidence.
+            Stop posting into the void. Brandbuild's AI analyzes your audience's engagement to tell you exactly when to post and what content actually converts followers into customers.
           </p>
           <a href="https://docs.google.com/forms/d/1rsoSzN4C5JzlHdBaZkEPtP_MAm2cshrcp5icvFeobbw/viewform" target="_blank" rel="noopener noreferrer" className="font-body font-bold text-brand-green underline underline-offset-4 decoration-2 hover:text-brand-green-hover text-[16px]">
             Join the Waitlist →
@@ -82,14 +82,14 @@ export function PlatformProof() {
           
           {/* Mockup Widget 1 */}
           <div className="absolute top-[5%] right-[5%] sm:top-[10%] sm:right-[10%] bg-white rounded-[16px] shadow-brutalist border-2 border-black p-3 px-5 sm:p-4 sm:px-6 flex flex-col items-center justify-center z-10 w-fit">
-             <span className="font-display font-black text-2xl sm:text-[32px] text-brand-black leading-none">500M+</span>
-             <span className="font-body text-[12px] font-medium text-brand-black/60 mt-1">Audience Reached</span>
+             <span className="font-display font-black text-2xl sm:text-[32px] text-brand-black leading-none">1M+</span>
+             <span className="font-body text-[12px] font-medium text-brand-black/60 mt-1">Posts Scheduled</span>
           </div>
 
           {/* Mockup Widget 2 */}
           <div className="absolute top-[75%] right-[5%] sm:top-[35%] sm:right-[5%] bg-white rounded-[16px] shadow-brutalist border-2 border-black p-3 px-5 sm:p-4 sm:px-6 flex flex-col items-center justify-center z-20 w-fit">
-             <span className="font-display font-black text-2xl sm:text-[32px] text-brand-black leading-none">$200+</span>
-             <span className="font-body text-[12px] font-medium text-brand-black/60 mt-1">Average ROI</span>
+             <span className="font-display font-black text-2xl sm:text-[32px] text-brand-black leading-none">15 hrs</span>
+             <span className="font-body text-[12px] font-medium text-brand-black/60 mt-1">Saved Per Week</span>
           </div>
 
            {/* Mockup Widget 3 */}
@@ -97,8 +97,8 @@ export function PlatformProof() {
              <div className="flex items-center gap-3 mb-2">
                <div className="w-10 h-10 bg-gray-200 rounded-full" />
                <div className="flex flex-col">
-                 <span className="font-display font-bold text-[14px]">Gia Johnson</span>
-                 <span className="font-body text-[12px] text-brand-green">15x Content ROI</span>
+                  <span className="font-display font-bold text-[14px]">Sarah J.</span>
+                  <span className="font-body text-[12px] text-brand-green">Engagement up 300%</span>
                </div>
              </div>
              <div className="w-full h-2 bg-gray-100 rounded-full mt-2">

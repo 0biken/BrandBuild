@@ -75,17 +75,17 @@ export function CaseStudies() {
             "
           </span>
           <p className="font-body font-light text-[18px] leading-[1.6] text-white/80 mb-8 relative z-10">
-            BrandBuild's matching algorithm connected us with creators we would have never found otherwise. Our conversion rate tripled in the first month without increasing our ad spend.
+            Brandbuild literally gave me my weekends back. The AI drafts my posts for the whole week in 10 minutes, and the analytics finally make sense. Our engagement has never been higher.
           </p>
           
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col">
-              <span className="font-display font-bold text-[24px] text-white">200+</span>
-              <span className="font-body text-[12px] text-[#888]">Campaigns Run</span>
+              <span className="font-display font-bold text-[24px] text-white">10 hrs</span>
+              <span className="font-body text-[12px] text-[#888]">Saved Weekly</span>
             </div>
             <div className="flex flex-col">
-              <span className="font-display font-bold text-[24px] text-white">99%</span>
-              <span className="font-body text-[12px] text-[#888]">Creator Match</span>
+              <span className="font-display font-bold text-[24px] text-white">300%</span>
+              <span className="font-body text-[12px] text-[#888]">Audience Growth</span>
             </div>
           </div>
         </div>
