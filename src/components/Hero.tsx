@@ -36,12 +36,12 @@ export function Hero() {
   return (
     <section 
       ref={containerRef}
-      className="relative min-h-[90vh] w-full bg-wavy-pattern overflow-hidden pt-32 pb-16 lg:pt-[160px]"
+      className="relative min-h-[80vh] sm:min-h-[90vh] w-full bg-wavy-pattern overflow-hidden pt-28 sm:pt-32 pb-12 sm:pb-16 lg:pt-[160px]"
     >
-      <div className="max-w-[1440px] mx-auto px-6 lg:px-20 h-full flex flex-col lg:flex-row items-center justify-between relative z-10 gap-16 lg:gap-8">
+      <div className="max-w-[1440px] mx-auto px-5 sm:px-6 lg:px-20 h-full flex flex-col lg:flex-row items-center justify-between relative z-10 gap-10 sm:gap-16 lg:gap-8">
         
         {/* Copy Column */}
-        <div ref={copyRef} className="flex-1 w-full flex flex-col items-start max-w-[600px]">
+        <div ref={copyRef} className="flex-1 w-full flex flex-col items-center text-center lg:items-start lg:text-left max-w-[600px]">
           <h1 className="font-display font-black text-[40px] sm:text-[56px] lg:text-[64px] leading-[1.05] tracking-tight text-brand-black mb-6">
             Your brand, everywhere. <br/>
             <span className="text-brand-green">Without the burnout.</span>
@@ -51,13 +51,13 @@ export function Hero() {
             One dashboard. Every platform. Posts that write themselves, a calendar that fills itself, and insights that actually make sense. Get back to running your business.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto mb-6">
+          <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto mb-6 justify-center lg:justify-start">
             <a href="https://docs.google.com/forms/d/1rsoSzN4C5JzlHdBaZkEPtP_MAm2cshrcp5icvFeobbw/viewform" target="_blank" rel="noopener noreferrer" className="btn-primary w-full sm:w-auto justify-center text-[16px] py-4 px-8">
               Join the Waitlist
             </a>
           </div>
           
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 justify-center lg:justify-start">
             <div className="flex -space-x-3">
               {[1, 2, 3, 4].map((i) => (
                 <div key={i} className="w-8 h-8 rounded-full border-2 border-white bg-gray-200 overflow-hidden relative">
@@ -74,7 +74,7 @@ export function Hero() {
         {/* Image Column */}
         <div ref={imageRef} className="flex-1 w-full relative flex items-center justify-center lg:justify-end min-h-[400px] sm:min-h-[500px]">
           
-          <div className="relative w-full max-w-[500px] h-[400px] sm:h-[500px] mx-auto lg:mr-0">
+          <div className="relative w-full max-w-[400px] sm:max-w-[500px] h-[320px] sm:h-[500px] mx-auto lg:mr-0">
             
             {/* Image 1 (Right side - Skincare) */}
             <div className="absolute z-10 right-0 top-0 w-[60%] sm:w-[300px] h-[75%] sm:h-[370px] rounded-[30px] overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.1)] transition-transform duration-300 hover:scale-105 hover:z-30 bg-[#FDE8D4]">

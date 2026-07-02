@@ -9,7 +9,7 @@ export function DualAudience() {
 
   return (
     <section className="bg-[#fcfcfc] py-20 lg:py-[100px] relative z-10 border-y-2 border-brand-black">
-      <div className="max-w-[1000px] mx-auto px-6 lg:px-20 flex flex-col items-center">
+      <div className="max-w-[1000px] mx-auto px-5 sm:px-6 lg:px-20 flex flex-col items-center">
         
         <h2 className="font-display font-black text-[32px] sm:text-[48px] text-brand-black mb-8 text-center">
           Built for you. <br className="sm:hidden" />
@@ -20,7 +20,7 @@ export function DualAudience() {
         <div className="flex items-center bg-gray-100 p-1 rounded-full border border-black/10 mb-12">
           <button
             onClick={() => setActiveTab("solo")}
-            className={`px-6 py-3 rounded-full font-display font-bold text-[16px] transition-all ${
+            className={`px-4 sm:px-6 py-2.5 sm:py-3 rounded-full font-display font-bold text-[14px] sm:text-[16px] transition-all ${
               activeTab === "solo" 
                 ? "bg-white text-brand-black shadow-sm" 
                 : "text-brand-black/50 hover:text-brand-black"
@@ -30,7 +30,7 @@ export function DualAudience() {
           </button>
           <button
             onClick={() => setActiveTab("team")}
-            className={`px-6 py-3 rounded-full font-display font-bold text-[16px] transition-all ${
+            className={`px-4 sm:px-6 py-2.5 sm:py-3 rounded-full font-display font-bold text-[14px] sm:text-[16px] transition-all ${
               activeTab === "team" 
                 ? "bg-brand-green text-white shadow-sm" 
                 : "text-brand-black/50 hover:text-brand-black"
@@ -45,13 +45,13 @@ export function DualAudience() {
           {activeTab === "solo" ? (
             <div className="flex flex-col md:flex-row gap-8 items-center animate-in fade-in slide-in-from-bottom-4 duration-500">
               <div className="flex-1">
-                <h3 className="font-display font-bold text-[28px] mb-4">
+                <h3 className="font-display font-bold text-[24px] sm:text-[28px] mb-4">
                   Get your weekends back.
                 </h3>
                 <p className="font-body text-[16px] text-brand-black/70 mb-6">
                   A week of content in 10 minutes. Schedule once, stay consistent everywhere, and finally stop scrambling for what to post next.
                 </p>
-                <div className="bg-[#FDE8D4] p-6 rounded-[20px] border-2 border-brand-black shadow-brutalist mb-6">
+                <div className="bg-[#FDE8D4] p-4 sm:p-6 rounded-[20px] border-2 border-brand-black shadow-brutalist mb-6">
                   <h4 className="font-bold text-[14px] uppercase tracking-wider mb-2">What You Get</h4>
                   <ul className="flex flex-col gap-2 font-medium">
                     <li className="flex items-center gap-2">✓ Posts that write themselves</li>
@@ -70,13 +70,13 @@ export function DualAudience() {
           ) : (
             <div className="flex flex-col md:flex-row gap-8 items-center animate-in fade-in slide-in-from-bottom-4 duration-500">
               <div className="flex-1">
-                <h3 className="font-display font-bold text-[28px] mb-4">
+                <h3 className="font-display font-bold text-[24px] sm:text-[28px] mb-4">
                   Scale without the chaos.
                 </h3>
                 <p className="font-body text-[16px] text-brand-black/70 mb-6">
                   Multiple accounts, one team, zero confusion. Everyone knows what's going live, when, and where — before it happens.
                 </p>
-                <div className="bg-[#E3E6F3] p-6 rounded-[20px] border-2 border-brand-black shadow-brutalist mb-6">
+                <div className="bg-[#E3E6F3] p-4 sm:p-6 rounded-[20px] border-2 border-brand-black shadow-brutalist mb-6">
                   <h4 className="font-bold text-[14px] uppercase tracking-wider mb-2">What You Get</h4>
                   <ul className="flex flex-col gap-2 font-medium">
                     <li className="flex items-center gap-2">✓ Everyone on the same page</li>

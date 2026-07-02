@@ -97,6 +97,19 @@ body {
   transform: translateY(-2px); 
 }
 
+/* Ensure accessible touch targets on mobile */
+@media (max-width: 640px) {
+  .btn-primary {
+    min-height: 48px;
+    font-size: 14px;
+    padding: 12px 24px;
+  }
+  .btn-ghost-green {
+    min-height: 48px;
+    font-size: 14px;
+  }
+}
+
 /* Green Ghost CTA Button */
 .btn-ghost-green {
   display: inline-flex;

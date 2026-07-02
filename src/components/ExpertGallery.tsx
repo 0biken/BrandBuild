@@ -57,12 +57,12 @@ export function ExpertGallery() {
         {/* Center focused layout */}
         <div 
           ref={carouselRef} 
-          className="flex justify-center items-end gap-4 lg:gap-8 mb-16 h-[320px]"
+          className="flex justify-center items-end gap-3 sm:gap-4 lg:gap-8 mb-12 sm:mb-16 h-[250px] sm:h-[320px]"
         >
           {CREATORS.map((creator, i) => {
             // Make the middle item larger
             const isCenter = i === 2;
-            const sizeClass = isCenter ? "w-[240px] h-[300px]" : "w-[180px] h-[220px] hidden sm:flex";
+            const sizeClass = isCenter ? "w-[160px] sm:w-[240px] h-[200px] sm:h-[300px]" : "w-[100px] sm:w-[180px] h-[150px] sm:h-[220px] hidden xs:flex sm:flex";
             const mobileSizeClass = isCenter ? "flex" : "hidden sm:flex";
 
             return (

@@ -38,8 +38,8 @@ export function CaseStudies() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="bg-brand-black py-20 lg:py-[100px] text-white">
-      <div className="max-w-[1440px] mx-auto px-6 lg:px-20 grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-8 items-center">
+    <section ref={sectionRef} className="bg-brand-black py-12 sm:py-20 lg:py-[100px] text-white">
+      <div className="max-w-[1440px] mx-auto px-5 sm:px-6 lg:px-20 grid grid-cols-1 lg:grid-cols-3 gap-8 sm:gap-12 lg:gap-8 items-center">
         
         {/* Column 1: Links */}
         <div className="case-col flex flex-col items-start gap-4">
@@ -49,7 +49,7 @@ export function CaseStudies() {
           {BRANDS.map((brand, i) => (
             <button 
               key={i} 
-              className={`font-display font-bold text-[24px] sm:text-[32px] text-left transition-colors ${i === 0 ? 'text-white' : 'text-white/40 hover:text-white/80'}`}
+              className={`font-display font-bold text-[20px] sm:text-[24px] md:text-[32px] text-left transition-colors ${i === 0 ? 'text-white' : 'text-white/40 hover:text-white/80'}`}
             >
               {brand}
             </button>

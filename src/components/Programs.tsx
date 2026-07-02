@@ -8,34 +8,34 @@ export function Programs() {
     <section id="how-it-works" className="bg-brand-green py-20 lg:py-[100px] relative z-10 -mt-1 pt-[80px]">
       <div className="max-w-[1440px] mx-auto px-6 lg:px-20 text-center flex flex-col items-center">
         
-        <h2 className="font-display font-black text-[40px] lg:text-[56px] text-white mb-2">
+        <h2 className="font-display font-black text-[28px] sm:text-[40px] lg:text-[56px] text-white mb-2">
           Less busywork. More growth.
         </h2>
-        <p className="font-body text-[18px] text-white/90 mb-12">
+        <p className="font-body text-[16px] sm:text-[18px] text-white/90 mb-8 sm:mb-12">
           Everything you need to show up consistently — without it taking over your life.
         </p>
 
         {/* Outer White Card Container */}
-        <div className="w-full bg-[#fcfcfc] rounded-[32px] p-8 lg:p-12 shadow-brutalist border border-black text-left flex flex-col">
+        <div className="w-full bg-[#fcfcfc] rounded-[20px] sm:rounded-[32px] p-5 sm:p-8 lg:p-12 shadow-brutalist border border-black text-left flex flex-col">
           
           {/* Top Tabs (Simulated) */}
-          <div className="flex flex-wrap gap-4 mb-10 pb-4 border-b border-black/10">
-            <span className="font-body font-bold text-brand-green border-b-2 border-brand-green pb-1 px-2 cursor-pointer">
+          <div className="flex flex-wrap gap-3 sm:gap-4 mb-6 sm:mb-10 pb-4 border-b border-black/10">
+            <span className="font-body font-bold text-brand-green border-b-2 border-brand-green pb-1 px-2 cursor-pointer text-[13px] sm:text-[15px]">
               Content Studio
             </span>
-            <span className="font-body font-medium text-brand-midgray hover:text-brand-black px-2 cursor-pointer transition-colors">
+            <span className="font-body font-medium text-brand-midgray hover:text-brand-black px-2 cursor-pointer transition-colors text-[13px] sm:text-[15px]">
               Visual Planner
             </span>
-            <span className="font-body font-medium text-brand-midgray hover:text-brand-black px-2 cursor-pointer transition-colors">
+            <span className="font-body font-medium text-brand-midgray hover:text-brand-black px-2 cursor-pointer transition-colors text-[13px] sm:text-[15px]">
               Insights
             </span>
           </div>
 
-          <div className="flex flex-col lg:flex-row gap-12">
+          <div className="flex flex-col lg:flex-row gap-8 sm:gap-12">
             
             {/* Left Copy Area */}
             <div className="flex-1 flex flex-col justify-center">
-              <h3 className="font-display font-black text-[32px] text-brand-black mb-4">
+              <h3 className="font-display font-black text-[24px] sm:text-[32px] text-brand-black mb-4">
                 How It Works
               </h3>
               <p className="font-body text-[16px] text-brand-black/70 mb-8 max-w-[400px]">

@@ -58,16 +58,16 @@ export function PlatformProof() {
   }, []);
 
   return (
-    <section id="brands" ref={sectionRef} className="bg-wavy-pattern flex flex-col lg:flex-row min-h-[600px] border-y-2 border-brand-black relative">
+    <section id="brands" ref={sectionRef} className="bg-wavy-pattern flex flex-col lg:flex-row min-h-[auto] lg:min-h-[600px] border-y-2 border-brand-black relative">
       
       {/* Left Side (White) */}
-      <div className="flex-1 px-6 py-20 lg:py-32 lg:px-20 flex flex-col justify-center items-start border-b-2 lg:border-b-0 lg:border-r-2 border-brand-black bg-[#fcfcfc]">
+      <div className="flex-1 px-5 sm:px-6 py-12 sm:py-20 lg:py-32 lg:px-20 flex flex-col justify-center items-start border-b-2 lg:border-b-0 lg:border-r-2 border-brand-black bg-[#fcfcfc]">
         <div className="platform-header max-w-[500px]">
-          <h2 className="font-display font-black text-[48px] leading-[1.05] tracking-tight text-brand-black mb-6">
+          <h2 className="font-display font-black text-[32px] sm:text-[48px] leading-[1.05] tracking-tight text-brand-black mb-4 sm:mb-6">
             Know exactly what's working. <br />
             And what isn't.
           </h2>
-          <p className="font-body text-[18px] text-brand-black/70 mb-8 leading-[1.6]">
+          <p className="font-body text-[16px] sm:text-[18px] text-brand-black/70 mb-6 sm:mb-8 leading-[1.6]">
             Stop posting into the void. See which content drives real engagement, learn when your audience is most active, and double down on what converts — all from one screen.
           </p>
           <a href="https://docs.google.com/forms/d/1rsoSzN4C5JzlHdBaZkEPtP_MAm2cshrcp5icvFeobbw/viewform" target="_blank" rel="noopener noreferrer" className="font-body font-bold text-brand-green underline underline-offset-4 decoration-2 hover:text-brand-green-hover text-[16px]">
@@ -77,8 +77,8 @@ export function PlatformProof() {
       </div>
 
       {/* Right Side (Green) */}
-      <div className="flex-1 bg-[#12582b] relative overflow-hidden flex items-center justify-center p-6 py-20 lg:py-0">
-        <div ref={cardsRef} className="relative w-full h-[500px] max-w-[600px]">
+      <div className="flex-1 bg-[#12582b] relative overflow-hidden flex items-center justify-center p-5 sm:p-6 py-16 sm:py-20 lg:py-0">
+        <div ref={cardsRef} className="relative w-full h-[350px] sm:h-[500px] max-w-[600px]">
           
           {/* Mockup Widget 1 */}
           <div className="absolute top-[5%] right-[5%] sm:top-[10%] sm:right-[10%] bg-white rounded-[16px] shadow-brutalist border-2 border-black p-3 px-5 sm:p-4 sm:px-6 flex flex-col items-center justify-center z-10 w-fit">

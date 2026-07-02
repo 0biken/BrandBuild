@@ -85,10 +85,10 @@ export function BlogBuzz() {
           {/* Main Large Blog Card */}
           <Link 
             href="#"
-            className="group relative w-full min-h-[400px] flex flex-col"
+            className="group relative w-full min-h-[300px] sm:min-h-[400px] flex flex-col"
           >
             <div className="absolute inset-0 bg-brand-black rounded-[24px] translate-x-[8px] translate-y-[8px]" />
-            <div className="relative bg-brand-green rounded-[24px] border-2 border-brand-black p-8 flex flex-col h-full transition-transform hover:-translate-y-1 hover:-translate-x-1 duration-200">
+            <div className="relative bg-brand-green rounded-[20px] sm:rounded-[24px] border-2 border-brand-black p-5 sm:p-8 flex flex-col h-full transition-transform hover:-translate-y-1 hover:-translate-x-1 duration-200">
               
               <div className="mb-6 flex gap-2">
                 <span className="font-body text-[12px] font-bold text-brand-green bg-white px-3 py-1 rounded-full border border-black uppercase tracking-wide">
@@ -100,7 +100,7 @@ export function BlogBuzz() {
                 <Image src={BLOGS[0].image} alt="" fill className="object-cover" />
               </div>
 
-              <h3 className="font-display font-bold text-[24px] text-white leading-tight mt-auto">
+              <h3 className="font-display font-bold text-[20px] sm:text-[24px] text-white leading-tight mt-auto">
                 {BLOGS[0].title}
               </h3>
             </div>

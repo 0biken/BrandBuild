@@ -73,10 +73,10 @@ export function Testimonial() {
   };
 
   return (
-    <section ref={sectionRef} className="bg-[#111111] py-20 lg:py-[80px]">
-      <div className="max-w-[1440px] mx-auto px-6 lg:px-20">
+    <section ref={sectionRef} className="bg-[#111111] py-12 sm:py-20 lg:py-[80px]">
+      <div className="max-w-[1440px] mx-auto px-5 sm:px-6 lg:px-20">
         
-        <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
+        <div className="flex flex-col lg:flex-row items-center gap-8 sm:gap-12 lg:gap-20">
           
           {/* Video Left */}
           <div className="testimonial-video w-full lg:w-[60%] relative group cursor-pointer" onClick={togglePlay}>
@@ -108,7 +108,7 @@ export function Testimonial() {
               "
             </span>
             
-            <p className="font-body font-light text-[18px] leading-[1.6] text-white/80 mb-8 relative z-10">
+            <p className="font-body font-light text-[16px] sm:text-[18px] leading-[1.6] text-white/80 mb-6 sm:mb-8 relative z-10">
               Brandbuild entirely changed how we approach creator partnerships. The revenue tracking showed us exactly what was working, allowing us to double down on top performers and scale our campaigns effortlessly.
             </p>
             
