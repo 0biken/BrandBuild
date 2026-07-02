@@ -64,11 +64,11 @@ export function PlatformProof() {
       <div className="flex-1 px-6 py-20 lg:py-32 lg:px-20 flex flex-col justify-center items-start border-b-2 lg:border-b-0 lg:border-r-2 border-brand-black bg-[#fcfcfc]">
         <div className="platform-header max-w-[500px]">
           <h2 className="font-display font-black text-[48px] leading-[1.05] tracking-tight text-brand-black mb-6">
-            Stop guessing what works. <br />
-            Let data drive your growth.
+            Know exactly what's working. <br />
+            And what isn't.
           </h2>
           <p className="font-body text-[18px] text-brand-black/70 mb-8 leading-[1.6]">
-            Stop posting into the void. Brandbuild's AI analyzes your audience's engagement to tell you exactly when to post and what content actually converts followers into customers.
+            Stop posting into the void. See which content drives real engagement, learn when your audience is most active, and double down on what converts — all from one screen.
           </p>
           <a href="https://docs.google.com/forms/d/1rsoSzN4C5JzlHdBaZkEPtP_MAm2cshrcp5icvFeobbw/viewform" target="_blank" rel="noopener noreferrer" className="font-body font-bold text-brand-green underline underline-offset-4 decoration-2 hover:text-brand-green-hover text-[16px]">
             Join the Waitlist →

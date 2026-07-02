@@ -75,7 +75,7 @@ export function CaseStudies() {
             "
           </span>
           <p className="font-body font-light text-[18px] leading-[1.6] text-white/80 mb-8 relative z-10">
-            Brandbuild literally gave me my weekends back. The AI drafts my posts for the whole week in 10 minutes, and the analytics finally make sense. Our engagement has never been higher.
+            Brandbuild literally gave me my weekends back. I plan my entire week of content in about 10 minutes, and the analytics finally make sense. Our engagement has never been higher.
           </p>
           
           <div className="grid grid-cols-2 gap-4">

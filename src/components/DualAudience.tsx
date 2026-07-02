@@ -46,17 +46,17 @@ export function DualAudience() {
             <div className="flex flex-col md:flex-row gap-8 items-center animate-in fade-in slide-in-from-bottom-4 duration-500">
               <div className="flex-1">
                 <h3 className="font-display font-bold text-[28px] mb-4">
-                  Time is your most valuable asset.
+                  Get your weekends back.
                 </h3>
                 <p className="font-body text-[16px] text-brand-black/70 mb-6">
-                  Let our AI do the heavy lifting. Generate posts, schedule weeks ahead, and manage every platform from a single dashboard — so you can focus on running your business.
+                  A week of content in 10 minutes. Schedule once, stay consistent everywhere, and finally stop scrambling for what to post next.
                 </p>
                 <div className="bg-[#FDE8D4] p-6 rounded-[20px] border-2 border-brand-black shadow-brutalist mb-6">
                   <h4 className="font-bold text-[14px] uppercase tracking-wider mb-2">What You Get</h4>
                   <ul className="flex flex-col gap-2 font-medium">
-                    <li className="flex items-center gap-2">✓ AI Content Generation</li>
-                    <li className="flex items-center gap-2">✓ Auto-Scheduling Calendar</li>
-                    <li className="flex items-center gap-2">✓ Unified Priority Inbox</li>
+                    <li className="flex items-center gap-2">✓ Posts that write themselves</li>
+                    <li className="flex items-center gap-2">✓ Set-and-forget scheduling</li>
+                    <li className="flex items-center gap-2">✓ One inbox for everything</li>
                   </ul>
                 </div>
                 <a href="https://docs.google.com/forms/d/1rsoSzN4C5JzlHdBaZkEPtP_MAm2cshrcp5icvFeobbw/viewform" target="_blank" rel="noopener noreferrer" className="btn-primary inline-flex">Join the Waitlist</a>
@@ -74,14 +74,14 @@ export function DualAudience() {
                   Scale without the chaos.
                 </h3>
                 <p className="font-body text-[16px] text-brand-black/70 mb-6">
-                  Collaborate, approve, and analyze performance seamlessly. Give your team the tools to manage multiple accounts without stepping on each other's toes.
+                  Multiple accounts, one team, zero confusion. Everyone knows what's going live, when, and where — before it happens.
                 </p>
                 <div className="bg-[#E3E6F3] p-6 rounded-[20px] border-2 border-brand-black shadow-brutalist mb-6">
                   <h4 className="font-bold text-[14px] uppercase tracking-wider mb-2">What You Get</h4>
                   <ul className="flex flex-col gap-2 font-medium">
-                    <li className="flex items-center gap-2">✓ Collaborative Workspaces</li>
-                    <li className="flex items-center gap-2">✓ Custom Approval Workflows</li>
-                    <li className="flex items-center gap-2">✓ Advanced Client Reporting</li>
+                    <li className="flex items-center gap-2">✓ Everyone on the same page</li>
+                    <li className="flex items-center gap-2">✓ Approve before it goes live</li>
+                    <li className="flex items-center gap-2">✓ Know what's working, instantly</li>
                   </ul>
                 </div>
                 <a href="https://docs.google.com/forms/d/1rsoSzN4C5JzlHdBaZkEPtP_MAm2cshrcp5icvFeobbw/viewform" target="_blank" rel="noopener noreferrer" className="btn-primary inline-flex">Join the Waitlist</a>

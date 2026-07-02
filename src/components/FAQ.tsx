@@ -5,15 +5,15 @@ import { useState } from "react";
 const FAQS = [
   {
     question: "What is Brandbuild?",
-    answer: "Brandbuild is an AI-powered social media management platform built specifically for small and medium businesses. It brings content creation, scheduling, analytics, and a unified inbox into one simple dashboard."
+    answer: "Brandbuild is a social media management platform built specifically for small and medium businesses. It brings content creation, scheduling, analytics, and a unified inbox into one simple dashboard — so you can stop juggling five different tools."
   },
   {
     question: "Which social platforms do you support?",
     answer: "We support Instagram, TikTok, Facebook, X (Twitter), LinkedIn, and Pinterest at launch. YouTube Shorts and Threads support will be added shortly after."
   },
   {
-    question: "How does the AI content generation work?",
-    answer: "Our AI learns your brand voice, audience, and past performance to generate captions, hashtags, and visual suggestions tailored to each platform. You review, tweak if needed, and publish — all in minutes."
+    question: "How does content creation work?",
+    answer: "Tell us about your brand and what you want to say. Brandbuild generates on-brand captions, hashtags, and visual suggestions tailored to each platform. You review, tweak if needed, and publish — all in minutes."
   },
   {
     question: "When do you launch?",

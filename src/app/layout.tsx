@@ -17,11 +17,11 @@ const dmSans = DM_Sans({
 import Script from "next/script";
 
 export const metadata: Metadata = {
-  title: "BrandBuild — AI-Powered Social Media Manager for Small Businesses",
-  description: "The all-in-one AI social media manager built for SMB owners. Create, schedule, and analyze content across every platform in minutes, not hours. Join the waitlist.",
+  title: "BrandBuild — Social Media Management for Small Businesses",
+  description: "One dashboard. Every platform. Create, schedule, and grow your social presence in minutes — not hours. Join the waitlist.",
   openGraph: {
-    title: "BrandBuild — AI-Powered Social Media Manager for Small Businesses",
-    description: "The all-in-one AI social media manager built for SMB owners. Create, schedule, and analyze content across every platform in minutes, not hours. Join the waitlist.",
+    title: "BrandBuild — Social Media Management for Small Businesses",
+    description: "One dashboard. Every platform. Create, schedule, and grow your social presence in minutes — not hours. Join the waitlist.",
     url: "https://brandbuild.co",
     siteName: "BrandBuild",
     images: [
