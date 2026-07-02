@@ -7,7 +7,7 @@ import { PlatformProof } from "@/components/PlatformProof";
 import { ExpertGallery } from "@/components/ExpertGallery";
 import { CaseStudies } from "@/components/CaseStudies";
 import { Testimonial } from "@/components/Testimonial";
-import { Team } from "@/components/Team";
+// import { Team } from "@/components/Team"; // Temporarily disabled
 import { BlogBuzz } from "@/components/BlogBuzz";
 import { FAQ } from "@/components/FAQ";
 import { Footer } from "@/components/Footer";
@@ -25,7 +25,7 @@ export default function Home() {
       <ExpertGallery />
       <CaseStudies />
       <Testimonial />
-      <Team />
+      {/* <Team /> */} {/* Temporarily disabled */}
       <BlogBuzz />
       <FAQ />
       
