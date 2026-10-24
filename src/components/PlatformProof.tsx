@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import Image from "next/image";
-import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -64,8 +62,8 @@ export function PlatformProof() {
       <div className="flex-1 px-5 sm:px-6 py-12 sm:py-20 lg:py-32 lg:px-20 flex flex-col justify-center items-start border-b-2 lg:border-b-0 lg:border-r-2 border-brand-black bg-[#fcfcfc]">
         <div className="platform-header max-w-[500px]">
           <h2 className="font-display font-black text-[32px] sm:text-[48px] leading-[1.05] tracking-tight text-brand-black mb-4 sm:mb-6">
-            Know exactly what's working. <br />
-            And what isn't.
+            Know exactly what’s working. <br />
+            And what isn’t.
           </h2>
           <p className="font-body text-[16px] sm:text-[18px] text-brand-black/70 mb-6 sm:mb-8 leading-[1.6]">
             Stop posting into the void. See which content drives real engagement, learn when your audience is most active, and double down on what converts — all from one screen.

@@ -7,7 +7,6 @@ import { Menu, X } from "lucide-react";
 import gsap from "gsap";
 
 export function Navbar() {
-  const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
   const navRef = useRef<HTMLElement>(null);
@@ -21,13 +20,6 @@ export function Navbar() {
         { y: 0, opacity: 1, duration: 0.9, delay: 0.3, ease: "power3.out" }
       );
     }
-
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const navLinks = [

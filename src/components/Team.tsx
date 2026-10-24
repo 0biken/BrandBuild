@@ -52,7 +52,7 @@ export function Team() {
           Meet the Team
         </h2>
         <p className="font-body text-[18px] text-brand-black/70 mb-16 max-w-[600px] mx-auto">
-          We're a team of creators, strategists, and technologists building the platform we always wished we had.
+          We’re a team of creators, strategists, and technologists building the platform we always wished we had.
         </p>
 
         <div ref={contentRef} className="flex flex-wrap justify-center gap-8">

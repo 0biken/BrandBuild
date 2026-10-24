@@ -72,7 +72,7 @@ export function CaseStudies() {
         {/* Column 3: Quote (Standardized to Testimonial style) */}
         <div className="case-col w-full flex flex-col relative">
           <span className="font-display font-black text-[60px] lg:text-[80px] leading-none text-[#2DBF6E] opacity-40 absolute -top-6 lg:-top-8 -left-4 pointer-events-none select-none">
-            "
+            “
           </span>
           <p className="font-body font-light text-[18px] leading-[1.6] text-white/80 mb-8 relative z-10">
             Brandbuild literally gave me my weekends back. I plan my entire week of content in about 10 minutes, and the analytics finally make sense. Our engagement has never been higher.

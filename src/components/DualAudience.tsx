@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
 
 export function DualAudience() {
   const [activeTab, setActiveTab] = useState<"solo" | "team">("solo");
@@ -74,14 +73,14 @@ export function DualAudience() {
                   Scale without the chaos.
                 </h3>
                 <p className="font-body text-[16px] text-brand-black/70 mb-6">
-                  Multiple accounts, one team, zero confusion. Everyone knows what's going live, when, and where — before it happens.
+                  Multiple accounts, one team, zero confusion. Everyone knows what’s going live, when, and where — before it happens.
                 </p>
                 <div className="bg-[#E3E6F3] p-4 sm:p-6 rounded-[20px] border-2 border-brand-black shadow-brutalist mb-6">
                   <h4 className="font-bold text-[14px] uppercase tracking-wider mb-2">What You Get</h4>
                   <ul className="flex flex-col gap-2 font-medium">
                     <li className="flex items-center gap-2">✓ Everyone on the same page</li>
                     <li className="flex items-center gap-2">✓ Approve before it goes live</li>
-                    <li className="flex items-center gap-2">✓ Know what's working, instantly</li>
+                    <li className="flex items-center gap-2">✓ Know what’s working, instantly</li>
                   </ul>
                 </div>
                 <a href="https://docs.google.com/forms/d/1rsoSzN4C5JzlHdBaZkEPtP_MAm2cshrcp5icvFeobbw/viewform" target="_blank" rel="noopener noreferrer" className="btn-primary inline-flex">Join the Waitlist</a>

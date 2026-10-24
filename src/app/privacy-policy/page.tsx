@@ -22,9 +22,9 @@ export default function PrivacyPolicy() {
               We only collect your email address when you join our waitlist. We use this strictly to send you updates about our launch, new features, and your position in line.
             </p>
 
-            <h2 className="font-display font-bold text-[24px] text-brand-black mt-8 mb-4">What we don't do</h2>
+            <h2 className="font-display font-bold text-[24px] text-brand-black mt-8 mb-4">What we don’t do</h2>
             <p>
-              We do not sell, rent, or share your data with any third parties. We don't sell your data to brands, and we don't sell it to creators. Your information stays with us.
+              We do not sell, rent, or share your data with any third parties. We don’t sell your data to brands, and we don’t sell it to creators. Your information stays with us.
             </p>
 
             <h2 className="font-display font-bold text-[24px] text-brand-black mt-8 mb-4">Contact Us</h2>

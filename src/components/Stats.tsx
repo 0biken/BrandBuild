@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import Image from "next/image";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -49,7 +49,7 @@ export function Stats() {
       <div className="max-w-[1440px] mx-auto px-6 lg:px-20 text-center">
         
         <h2 className="font-display font-black text-[32px] sm:text-[40px] text-brand-black mb-16">
-          Numbers don't lie!
+          Numbers don’t lie!
         </h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-12 place-items-center">

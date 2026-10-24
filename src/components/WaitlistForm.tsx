@@ -41,7 +41,7 @@ export function WaitlistForm({ isFooter = false }: { isFooter?: boolean }) {
       
       setWaitlistData({ position: data.position, referralId: data.referralId });
       setStatus("success");
-    } catch (err) {
+    } catch {
       setStatus("error");
       setErrorMessage("Network error. Please try again.");
     }
@@ -55,8 +55,8 @@ export function WaitlistForm({ isFooter = false }: { isFooter?: boolean }) {
           <div className="w-16 h-16 rounded-full bg-[#2DBF6E]/10 flex items-center justify-center mb-4">
             <Image src="/assets/checkmark.svg" alt="Success" width={32} height={32} />
           </div>
-          <h3 className="font-display font-bold text-2xl text-brand-black mb-2">You're on the list!</h3>
-          <p className="font-body text-[#555] mb-4">You're #{waitlistData.position} in line.</p>
+          <h3 className="font-display font-bold text-2xl text-brand-black mb-2">You’re on the list!</h3>
+          <p className="font-body text-[#555] mb-4">You’re #{waitlistData.position} in line.</p>
           
           <div className="bg-[#F5F5F5] border border-black/10 rounded-xl p-4 w-full flex flex-col gap-2">
             <span className="font-display font-bold text-[14px]">Skip 10 spots for every referral!</span>
