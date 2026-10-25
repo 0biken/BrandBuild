@@ -28,31 +28,33 @@ export function Testimonial() {
     const ctx = gsap.context(() => {
       gsap.fromTo(
         ".testimonial-content > *",
-        { opacity: 0, x: 30 },
+        { opacity: 0, x: 16 },
         {
           opacity: 1,
           x: 0,
-          duration: 0.8,
-          stagger: 0.15,
+          duration: 0.5,
+          stagger: 0.06,
           ease: "power3.out",
           scrollTrigger: {
             trigger: sectionRef.current,
             start: "top 70%",
+            once: true,
           }
         }
       );
       
       gsap.fromTo(
         ".testimonial-video",
-        { opacity: 0, scale: 0.95 },
+        { opacity: 0, scale: 0.97 },
         {
           opacity: 1,
           scale: 1,
-          duration: 1,
+          duration: 0.6,
           ease: "power3.out",
           scrollTrigger: {
             trigger: sectionRef.current,
             start: "top 70%",
+            once: true,
           }
         }
       );

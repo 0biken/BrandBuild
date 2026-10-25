@@ -15,6 +15,7 @@ const dmSans = DM_Sans({
 });
 
 import Script from "next/script";
+import { SmoothScroll } from "@/components/SmoothScroll";
 
 export const metadata: Metadata = {
   title: "BrandBuild — Social Media Management for Small Businesses",
@@ -68,7 +69,7 @@ export default function RootLayout({
         </Script>
       </head>
       <body className="min-h-full flex flex-col font-body bg-white text-brand-black">
-        <div className="grain-overlay" />
+        <SmoothScroll />
         <svg width="0" height="0" style={{ position: 'absolute', pointerEvents: 'none' }}>
           <defs>
             <clipPath id="cutout-clip" clipPathUnits="objectBoundingBox">

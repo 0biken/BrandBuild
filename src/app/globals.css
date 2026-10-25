@@ -17,6 +17,10 @@
 :root {
   --background: #fcfcfc;
   --foreground: #111111;
+
+  /* Motion tokens */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
 }
 
 body {
@@ -89,12 +93,22 @@ body {
   border-radius: 9999px;
   border: none;
   cursor: pointer;
-  transition: background 0.2s ease, transform 0.2s ease;
+  transition: background-color 160ms ease, transform 160ms var(--ease-out);
   text-decoration: none;
 }
-.btn-primary:hover { 
-  background: var(--color-brand-softblack); 
-  transform: translateY(-2px); 
+@media (hover: hover) and (pointer: fine) {
+  .btn-primary:hover {
+    background: var(--color-brand-softblack);
+    transform: translateY(-2px);
+  }
+}
+.btn-primary:active {
+  transform: scale(0.97);
+}
+.btn-primary:focus-visible,
+.btn-ghost-green:focus-visible {
+  outline: 2px solid var(--color-brand-green);
+  outline-offset: 3px;
 }
 
 /* Ensure accessible touch targets on mobile */
@@ -125,11 +139,16 @@ body {
   border-radius: 9999px;
   border: 1px solid var(--color-brand-green);
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition: background-color 160ms ease, transform 160ms var(--ease-out);
   text-decoration: none;
 }
-.btn-ghost-green:hover { 
-  background: rgba(17, 158, 72, 0.05); 
+@media (hover: hover) and (pointer: fine) {
+  .btn-ghost-green:hover {
+    background: rgba(17, 158, 72, 0.05);
+  }
+}
+.btn-ghost-green:active {
+  transform: scale(0.97);
 }
 
 /* Marquee animation for partner logos */
@@ -145,7 +164,21 @@ body {
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { 
-    animation-duration: 0.01ms !important; 
-    transition-duration: 0.01ms !important; 
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .animate-marquee {
+    animation: none;
+  }
+}
+
+/* Entrance on first paint, no JS (Hero copy) */
+.reveal {
+  transition: opacity 500ms var(--ease-out), transform 500ms var(--ease-out);
+  transition-delay: calc(var(--i, 0) * 60ms);
+  @starting-style {
+    opacity: 0;
+    transform: translateY(12px);
   }
 }

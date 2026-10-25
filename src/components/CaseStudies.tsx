@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import Image from "next/image";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useTilt } from "./useTilt";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -11,6 +12,9 @@ const BRANDS = ["Thriftifai", "Geeked", "Shokem", "SBJ foods", "Haity Gadgets"];
 
 export function CaseStudies() {
   const sectionRef = useRef<HTMLDivElement>(null);
+  const photoRef = useRef<HTMLDivElement>(null);
+
+  useTilt(photoRef, 6);
 
   useEffect(() => {
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -19,17 +23,39 @@ export function CaseStudies() {
     const ctx = gsap.context(() => {
       gsap.fromTo(
         ".case-col",
-        { opacity: 0, y: 40 },
+        { opacity: 0, y: 16 },
         {
           opacity: 1,
           y: 0,
-          duration: 0.8,
-          stagger: 0.2,
+          duration: 0.5,
+          stagger: 0.06,
           ease: "power3.out",
           scrollTrigger: {
             trigger: sectionRef.current,
             start: "top 75%",
+            once: true,
           }
+        }
+      );
+
+      // Photo wipes up from the bottom, then the image settles from a slight zoom while scrolling
+      gsap.fromTo(
+        ".case-photo",
+        { clipPath: "inset(100% 0% 0% 0%)" },
+        {
+          clipPath: "inset(0% 0% 0% 0%)",
+          duration: 1.1,
+          ease: "power4.inOut",
+          scrollTrigger: { trigger: photoRef.current, start: "top 80%", once: true },
+        }
+      );
+      gsap.fromTo(
+        ".case-img",
+        { scale: 1.25 },
+        {
+          scale: 1,
+          ease: "none",
+          scrollTrigger: { trigger: sectionRef.current, start: "top bottom", end: "bottom top", scrub: true },
         }
       );
     }, sectionRef);
@@ -60,13 +86,20 @@ export function CaseStudies() {
         </div>
 
         {/* Column 2: Image */}
-        <div className="case-col relative w-full aspect-[3/4] max-w-[400px] mx-auto rounded-[24px] overflow-hidden border-2 border-white/10">
-          <Image
-            src="/assets/blog_image_3.png" // Using blog image 3 as placeholder for the spooky mug
-            alt="Case Study"
-            fill
-            className="object-cover"
-          />
+        <div ref={photoRef} className="case-col relative w-full aspect-[3/4] max-w-[380px] mx-auto">
+          {/* Brand offset shadow in the same cutout shape */}
+          <div className="absolute inset-0 bg-brand-green cutout-tr translate-x-[10px] translate-y-[10px]" />
+          <div className="absolute inset-0 cutout-tr overflow-hidden bg-[#1c1c1c]">
+            <div className="case-photo absolute inset-0">
+              <Image
+                src="/assets/case_study.jpg"
+                alt="Halloween doormat and mug styled for a seasonal campaign"
+                fill
+                sizes="(min-width: 1024px) 380px, 90vw"
+                className="case-img object-cover"
+              />
+            </div>
+          </div>
         </div>
 
         {/* Column 3: Quote (Standardized to Testimonial style) */}

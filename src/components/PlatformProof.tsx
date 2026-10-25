@@ -18,16 +18,17 @@ export function PlatformProof() {
       // Fade up section text
       gsap.fromTo(
         ".platform-header > *",
-        { opacity: 0, x: -30 },
+        { opacity: 0, x: -16 },
         {
           opacity: 1,
           x: 0,
-          duration: 0.8,
-          stagger: 0.1,
+          duration: 0.5,
+          stagger: 0.06,
           ease: "power3.out",
           scrollTrigger: {
             trigger: sectionRef.current,
             start: "top 70%",
+            once: true,
           }
         }
       );
@@ -36,16 +37,17 @@ export function PlatformProof() {
       if (cardsRef.current) {
         gsap.fromTo(
           cardsRef.current.children,
-          { opacity: 0, y: 50 },
+          { opacity: 0, y: 16 },
           {
             opacity: 1,
             y: 0,
-            duration: 0.8,
-            stagger: 0.2,
+            duration: 0.5,
+            stagger: 0.06,
             ease: "power3.out",
             scrollTrigger: {
               trigger: cardsRef.current,
               start: "top 70%",
+              once: true,
             }
           }
         );

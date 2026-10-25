@@ -5,12 +5,14 @@ import Image from "next/image";
 import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useTilt } from "./useTilt";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const BLOGS = [
   {
-    image: "/assets/blog_image_1.png",
+    image: "/assets/blog_event.jpg",
+    alt: "Creator recording a video review at a desk with studio lights",
     label: "EVENT",
     title: "Strategic Turning point: 2026 State of Influencer Marketing",
   },
@@ -29,6 +31,9 @@ const BLOGS = [
 export function BlogBuzz() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
+  const cardRef = useRef<HTMLAnchorElement>(null);
+
+  useTilt(cardRef, 5);
 
   useEffect(() => {
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -37,15 +42,16 @@ export function BlogBuzz() {
     const ctx = gsap.context(() => {
       gsap.fromTo(
         ".blog-header",
-        { opacity: 0, y: 30 },
+        { opacity: 0, y: 16 },
         {
           opacity: 1,
           y: 0,
-          duration: 0.8,
+          duration: 0.5,
           ease: "power3.out",
           scrollTrigger: {
             trigger: sectionRef.current,
             start: "top 80%",
+            once: true,
           }
         }
       );
@@ -53,20 +59,33 @@ export function BlogBuzz() {
       if (gridRef.current) {
         gsap.fromTo(
           gridRef.current.children,
-          { opacity: 0, y: 40 },
+          { opacity: 0, y: 16 },
           {
             opacity: 1,
             y: 0,
-            duration: 0.8,
-            stagger: 0.15,
+            duration: 0.5,
+            stagger: 0.06,
             ease: "power3.out",
             scrollTrigger: {
               trigger: gridRef.current,
               start: "top 80%",
+              once: true,
             }
           }
         );
       }
+
+      // Image settles from a slight zoom as the card passes through the viewport
+      gsap.fromTo(
+        ".blog-img",
+        { yPercent: -6, scale: 1.15 },
+        {
+          yPercent: 6,
+          scale: 1.05,
+          ease: "none",
+          scrollTrigger: { trigger: gridRef.current, start: "top bottom", end: "bottom top", scrub: true },
+        }
+      );
     }, sectionRef);
 
     return () => ctx.revert();
@@ -84,6 +103,7 @@ export function BlogBuzz() {
           
           {/* Main Large Blog Card */}
           <Link 
+            ref={cardRef}
             href="#"
             className="group relative w-full min-h-[300px] sm:min-h-[400px] flex flex-col"
           >
@@ -97,7 +117,7 @@ export function BlogBuzz() {
               </div>
 
               <div className="relative w-full aspect-[16/9] mb-6 rounded-xl overflow-hidden border-2 border-black">
-                <Image src={BLOGS[0].image} alt="" fill className="object-cover" />
+                <Image src={BLOGS[0].image} alt={BLOGS[0].alt ?? ""} fill sizes="(min-width: 640px) 536px, 90vw" className="blog-img object-cover" />
               </div>
 
               <h3 className="font-display font-bold text-[20px] sm:text-[24px] text-white leading-tight mt-auto">

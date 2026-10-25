@@ -27,16 +27,17 @@ export function ExpertGallery() {
       if (carouselRef.current) {
         gsap.fromTo(
           carouselRef.current.children,
-          { opacity: 0, y: 50 },
+          { opacity: 0, y: 16 },
           {
             opacity: 1,
             y: 0,
-            duration: 0.8,
-            stagger: 0.1,
-            ease: "back.out(1.2)",
+            duration: 0.5,
+            stagger: 0.06,
+            ease: "power3.out",
             scrollTrigger: {
               trigger: sectionRef.current,
               start: "top 70%",
+              once: true,
             }
           }
         );

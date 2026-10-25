@@ -1,26 +1,26 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
-import gsap from "gsap";
 
 export function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  
-  const navRef = useRef<HTMLElement>(null);
-  
+
+  // Close on Escape and lock page scroll while the mobile menu is open
   useEffect(() => {
-    // Initial entry animation
-    if (navRef.current) {
-      gsap.fromTo(
-        navRef.current,
-        { y: -20, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.9, delay: 0.3, ease: "power3.out" }
-      );
-    }
-  }, []);
+    if (!isMobileMenuOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setIsMobileMenuOpen(false);
+    };
+    document.addEventListener("keydown", onKeyDown);
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      document.body.style.overflow = "";
+    };
+  }, [isMobileMenuOpen]);
 
   const navLinks = [
     { name: "How It Works", href: "#how-it-works" },
@@ -30,12 +30,9 @@ export function Navbar() {
 
   return (
     <>
-      <nav
-        ref={navRef}
-        className="fixed top-6 left-0 right-0 z-[100] flex justify-center px-4"
-      >
+      <nav className="fixed top-6 left-0 right-0 z-[100] flex justify-center px-4">
         {/* Pill shaped navbar container */}
-        <div className={`relative flex items-center justify-between px-6 py-2 rounded-full transition-all duration-300 shadow-[0_4px_24px_rgba(0,0,0,0.06)] border border-black/5 bg-white/95 backdrop-blur-md w-full max-w-[800px]`}>
+        <div className="relative flex items-center justify-between px-6 py-2 rounded-full shadow-[0_4px_24px_rgba(0,0,0,0.06)] border border-black/5 bg-white/95 backdrop-blur-md w-full max-w-[800px]">
           
           <Link href="/" className="flex items-center gap-3">
             <Image 
@@ -69,19 +66,29 @@ export function Navbar() {
             className="md:hidden p-2 text-brand-black"
             onClick={() => setIsMobileMenuOpen(true)}
             aria-label="Open menu"
+            aria-expanded={isMobileMenuOpen}
+            aria-controls="mobile-menu"
           >
             <Menu size={20} />
           </button>
         </div>
       </nav>
 
-      {/* Mobile Menu Drawer */}
-      {isMobileMenuOpen && (
-        <div className="fixed inset-0 z-[200] bg-white text-brand-black flex flex-col">
+      {/* Mobile Menu Drawer: stays mounted so it can animate out */}
+      <div
+        id="mobile-menu"
+        inert={!isMobileMenuOpen}
+        className={`fixed inset-0 z-[200] bg-white text-brand-black flex flex-col md:hidden transition-[opacity,transform,visibility] ease-[var(--ease-out)] ${
+          isMobileMenuOpen
+            ? "visible opacity-100 translate-y-0 duration-200"
+            : "invisible opacity-0 -translate-y-2 pointer-events-none duration-150"
+        }`}
+      >
           <div className="flex justify-end p-6">
-            <button 
+            <button
               onClick={() => setIsMobileMenuOpen(false)}
               className="p-2"
+              aria-label="Close menu"
             >
               <X size={32} />
             </button>
@@ -102,8 +109,7 @@ export function Navbar() {
               Join the Waitlist
             </a>
           </div>
-        </div>
-      )}
+      </div>
     </>
   );
 }

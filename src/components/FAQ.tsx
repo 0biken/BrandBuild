@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Plus } from "lucide-react";
 
 const FAQS = [
   {
@@ -41,28 +42,33 @@ export function FAQ() {
               key={i} 
               className="bg-white border-2 border-brand-black rounded-[16px] shadow-sm overflow-hidden"
             >
-              <button 
+              <button
                 onClick={() => toggle(i)}
-                className="w-full px-6 py-5 flex items-center justify-between text-left focus:outline-none hover:bg-gray-50 transition-colors"
+                aria-expanded={openIndex === i}
+                aria-controls={`faq-answer-${i}`}
+                className="w-full px-6 py-5 flex items-center justify-between text-left rounded-[14px] outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-green hover:bg-gray-50 transition-colors"
               >
                 <span className="font-display font-bold text-[18px] text-brand-black pr-4">
                   {faq.question}
                 </span>
-                <div className="flex-shrink-0 text-brand-green">
-                  {openIndex === i ? (
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                  ) : (
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                  )}
-                </div>
+                <Plus
+                  size={24}
+                  strokeWidth={3}
+                  aria-hidden="true"
+                  className={`flex-shrink-0 text-brand-green transition-transform duration-200 ease-[var(--ease-out)] ${openIndex === i ? "rotate-45" : ""}`}
+                />
               </button>
-              
-              <div 
-                className={`px-6 overflow-hidden transition-all duration-300 ease-in-out ${openIndex === i ? 'max-h-[200px] pb-5 opacity-100' : 'max-h-0 opacity-0'}`}
+
+              {/* grid-rows 0fr -> 1fr animates to the answer's real height */}
+              <div
+                id={`faq-answer-${i}`}
+                className={`grid transition-[grid-template-rows,opacity] duration-[250ms] ease-[var(--ease-out)] ${openIndex === i ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}
               >
-                <p className="font-body text-[16px] text-brand-black/70">
-                  {faq.answer}
-                </p>
+                <div className="min-h-0 overflow-hidden">
+                  <p className="px-6 pb-5 font-body text-[16px] text-brand-black/70">
+                    {faq.answer}
+                  </p>
+                </div>
               </div>
             </div>
           ))}
