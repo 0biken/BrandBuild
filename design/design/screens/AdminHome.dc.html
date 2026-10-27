@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Brandbuild Admin — Overview</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&amp;family=Geist:wght@400..700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#EEF0EA;color:#0F1A13;font-family:Geist,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:#0B7A3B}
+*{box-sizing:border-box}
+.btn{cursor:pointer;border:0;font:inherit;transition:transform 120ms cubic-bezier(.23,1,.32,1),background-color 150ms ease}
+.btn:active{transform:scale(.97)}
+:focus-visible{outline:2px solid #12A150;outline-offset:2px}
+.tab{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 12px;border-radius:8px;color:#B9C2BB;font-size:14px;text-decoration:none;transition:background-color 150ms ease}
+.tab.on{background:#26322A;color:#FFFFFF}
+.tb{min-width:20px;height:20px;padding:0 6px;border-radius:10px;font-size:11px;font-weight:700;line-height:20px;text-align:center}
+.card{display:flex;flex-direction:column;gap:12px;padding:20px;border-radius:18px;background:#FFFFFF}
+.h2{margin:0;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:20px;letter-spacing:-0.02em}
+.num{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;letter-spacing:-0.03em}
+td,th{padding:11px 10px;text-align:left;font-size:14px;border-top:1px solid #EEF0EA}
+th{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5B655D;border-top:0}
+td.n,th.n{text-align:right;font-family:'Geist Mono',monospace}
+.qc{transition:box-shadow 150ms ease,transform 150ms cubic-bezier(.23,1,.32,1)}
+@media (hover:hover) and (pointer:fine){.tab:not(.on):hover{background:#1C2620;color:#FFFFFF}.qc:hover{box-shadow:0 10px 24px -14px rgba(15,26,19,0.3);transform:translateY(-2px)}}
+@media (max-width:860px){.pad{padding:16px !important}.adnav{overflow-x:auto}}
+@media (prefers-reduced-motion:reduce){*{transition-duration:1ms !important}}
+</style>
+</helmet>
+<div style="min-height: 100vh; width: 100%; background: #EEF0EA">
+  <header style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap; padding: 12px 24px; background: #0F1A13; color: #FFFFFF">
+    <svg width="20" height="22" viewBox="0 0 59 66" role="img" aria-label="Brandbuild"><path d="M0 63.1688V26.0688C0 24.7053 1.1053 23.6 2.46875 23.6H17.5359C18.8994 23.6 20.0047 24.7053 20.0047 26.0688V40.6953C20.0047 43.4222 22.2153 45.6328 24.9422 45.6328H31.6406C33.0041 45.6328 34.1094 46.7381 34.1094 48.1016V63.1688C34.1094 64.5322 33.0041 65.6375 31.6406 65.6375H2.46875C1.1053 65.6375 0 64.5322 0 63.1688Z" fill="#FFFFFF"></path><path d="M24.8906 39.5688V2.46875C24.8906 1.1053 25.9959 0 27.3594 0H42.4266C43.79 0 44.8953 1.1053 44.8953 2.46875V17.0953C44.8953 19.8222 47.1059 22.0328 49.8328 22.0328H56.5313C57.8947 22.0328 59 23.1381 59 24.5016V39.5688C59 40.9322 57.8947 42.0375 56.5313 42.0375H27.3594C25.9959 42.0375 24.8906 40.9322 24.8906 39.5688Z" fill="#FFFFFF"></path></svg>
+    <span style="font-weight: 600; font-size: 15px">Admin</span>
+    <nav class="adnav" aria-label="Admin" style="display: flex; gap: 2px; margin-left: 8px">
+      <a class="tab on" href="AdminHome.dc.html" aria-current="page">Overview</a>
+      <a class="tab" href="AdminWorkspace.dc.html">Workspaces</a>
+      <a class="tab" href="AdminUnclear.dc.html">Outcome unclear<span class="tb" style="background: #D4F25C; color: #0F2A1B">4</span></a>
+      <a class="tab" href="ReviewQueue.dc.html">Student reviews<span class="tb" style="background: #3A4A3F; color: #FFFFFF">12</span></a>
+      <a class="tab" href="AdminSpend.dc.html">AI spend</a>
+      <a class="tab" href="AdminAudit.dc.html">Audit log</a>
+    </nav>
+    <label style="position: relative; margin-left: auto; display: flex; align-items: center">
+      <span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Find a workspace</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#B9C2BB" stroke-width="2" stroke-linecap="round" aria-hidden="true" style="position: absolute; left: 12px"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+      <input type="search" placeholder="Workspace, email or post ID" style="width: 280px; height: 36px; padding: 0 12px 0 36px; border-radius: 10px; border: 1px solid #3A4A3F; background: #1C2620; font: inherit; font-size: 14px; color: #FFFFFF">
+    </label>
+    <span style="font-size: 14px; color: #B9C2BB">[NAME] · Support</span>
+  </header>
+
+  <div class="pad" style="max-width: 1360px; margin: 0 auto; padding: 24px; display: flex; flex-direction: column; gap: 18px">
+    <section role="status" style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap; padding: 14px 18px; border-radius: 16px; background: #FDECEA; color: #5C130D">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"></path></svg>
+      <span style="flex: 1 1 420px; font-size: 15px"><strong>Meta reports degraded publishing since 22:40.</strong> Automatic retries are on. 23 Instagram and Facebook posts are waiting to retry.</span>
+      <span style="font-size: 14px">Customer banner: <strong>off</strong></span>
+      <button class="btn" style="height: 36px; padding: 0 14px; border-radius: 10px; background: #5C130D; color: #FFFFFF; font-size: 14px; font-weight: 600">Show banner to affected customers</button>
+    </section>
+
+    <div style="display: flex; align-items: baseline; gap: 12px">
+      <h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 30px; letter-spacing: -0.03em">Needs a person</h1>
+      <span style="font-size: 14px; color: #5B655D">Mon 26 Oct · 00:57 WAT</span>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px">
+      <a class="qc" href="AdminUnclear.dc.html" style="display: flex; flex-direction: column; gap: 6px; padding: 18px; border-radius: 18px; background: #0F2A1B; color: #E8F1EA; text-decoration: none">
+        <span style="font-size: 13px; font-weight: 600; color: #D4F25C">Outcome unclear</span>
+        <span class="num" style="font-size: 44px; line-height: 1; color: #FFFFFF">4</span>
+        <span style="font-size: 14px; color: #B9CBBE">Oldest 38 min · target [X MINUTES]</span>
+      </a>
+      <a class="qc" href="ReviewQueue.dc.html" style="display: flex; flex-direction: column; gap: 6px; padding: 18px; border-radius: 18px; background: #FFFFFF; color: #0F1A13; text-decoration: none">
+        <span style="font-size: 13px; font-weight: 600; color: #5B655D">Student reviews</span>
+        <span class="num" style="font-size: 44px; line-height: 1">12</span>
+        <span style="font-size: 14px; color: #8A5300">Oldest 3h 10m</span>
+      </a>
+      <a class="qc" href="AdminWorkspace.dc.html" style="display: flex; flex-direction: column; gap: 6px; padding: 18px; border-radius: 18px; background: #FFFFFF; color: #0F1A13; text-decoration: none">
+        <span style="font-size: 13px; font-weight: 600; color: #5B655D">Paused workspaces</span>
+        <span class="num" style="font-size: 44px; line-height: 1">2</span>
+        <span style="font-size: 14px; color: #5B655D">1 payment, 1 owner request</span>
+      </a>
+      <a class="qc" href="#" style="display: flex; flex-direction: column; gap: 6px; padding: 18px; border-radius: 18px; background: #FFFFFF; color: #0F1A13; text-decoration: none">
+        <span style="font-size: 13px; font-weight: 600; color: #5B655D">Failed publishes today</span>
+        <span class="num" style="font-size: 44px; line-height: 1">17</span>
+        <span style="font-size: 14px; color: #5B655D">3.0% of 562 · customers told</span>
+      </a>
+    </div>
+
+    <div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start">
+      <section class="card" style="flex: 2 1 640px; min-width: 0; overflow-x: auto">
+        <div style="display: flex; align-items: baseline; gap: 10px"><h2 class="h2">Publishing today</h2><span style="font-size: 14px; color: #5B655D">by platform</span></div>
+        <table style="width: 100%; min-width: 600px; border-collapse: collapse">
+          <thead><tr><th scope="col">Platform</th><th scope="col">Provider status</th><th scope="col" class="n">Posted</th><th scope="col" class="n">Failed</th><th scope="col" class="n">Unclear</th><th scope="col" class="n">Success</th></tr></thead>
+          <tbody>
+            <sc-for list="{{pf}}" as="p" hint-placeholder-count="5">
+              <tr><td><span style="display: inline-flex; align-items: center; gap: 8px"><span style="display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 6px; background: {{p.bg}}; color: #FFFFFF; font-size: 9px; font-weight: 700">{{p.k}}</span>{{p.name}}</span></td>
+                <td><span style="display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 8px; border-radius: 7px; font-size: 12px; font-weight: 600; background: {{p.sBg}}; color: {{p.sFg}}"><span style="width: 7px; height: 7px; border-radius: 4px; background: {{p.dot}}"></span>{{p.status}}</span></td>
+                <td class="n">{{p.posted}}</td><td class="n" style="color: {{p.failFg}}">{{p.failed}}</td><td class="n">{{p.unclear}}</td><td class="n" style="font-weight: 600">{{p.rate}}</td></tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </section>
+
+      <div style="flex: 1 1 340px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+        <a href="AdminSpend.dc.html" class="card qc" style="color: #0F1A13; text-decoration: none">
+          <div style="display: flex; align-items: baseline"><h2 class="h2">AI spend today</h2><span style="margin-left: auto; font-size: 14px; color: #0B7A3B; font-weight: 600">Details</span></div>
+          <div style="display: flex; align-items: baseline; gap: 8px"><span class="num" style="font-size: 36px">$41.20</span><span style="font-size: 14px; color: #5B655D">of $[DAILY BUDGET]</span></div>
+          <div style="height: 8px; border-radius: 4px; background: #F0F1EC; overflow: hidden"><div style="width: 58%; height: 100%; background: #12A150"></div></div>
+          <span style="font-size: 13px; color: #5B655D">1,284 captions · $0.032 each · top spender: Lagos Thrift Co.</span>
+        </a>
+        <section class="card">
+          <div style="display: flex; align-items: baseline"><h2 class="h2">Recent staff actions</h2><a href="AdminAudit.dc.html" style="margin-left: auto; font-size: 14px; font-weight: 600">Audit log</a></div>
+          <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; font-size: 14px">
+            <li style="display: flex; gap: 10px"><span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #5B655D; padding-top: 2px">00:41</span><span><strong>Femi</strong> marked a Nova Studio post as published</span></li>
+            <li style="display: flex; gap: 10px"><span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #5B655D; padding-top: 2px">00:12</span><span><strong>Ngozi</strong> opened read-only support access to Bloom Bakes · ticket #2213</span></li>
+            <li style="display: flex; gap: 10px"><span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #5B655D; padding-top: 2px">23:58</span><span><strong>Femi</strong> paused publishing for Kicks.ng · payment failed</span></li>
+          </ul>
+        </section>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1040}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var OK = { status: 'Operational', sBg: '#E6F5EC', sFg: '#0B5E2E', dot: '#12A150' };
+    var DG = { status: 'Degraded', sBg: '#FDECEA', sFg: '#8F1D14', dot: '#D92D20' };
+    function row(k, bg, name, st, posted, failed, unclear, rate) { return Object.assign({ k: k, bg: bg, name: name, posted: posted, failed: failed, unclear: unclear, rate: rate, failFg: failed > 5 ? '#B42318' : '#0F1A13' }, st); }
+    return { pf: [
+      row('IG', '#D62976', 'Instagram', DG, 214, 9, 3, '94.6%'),
+      row('f', '#1877F2', 'Facebook', DG, 61, 4, 1, '92.4%'),
+      row('in', '#0A66C2', 'LinkedIn', OK, 158, 2, 0, '98.7%'),
+      row('TT', '#111111', 'TikTok', OK, 97, 2, 0, '98.0%'),
+      row('YT', '#FF0033', 'YouTube', OK, 32, 0, 0, '100%')
+    ] };
+  }
+}
+</script>
+</body>
+</html>

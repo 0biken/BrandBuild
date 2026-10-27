@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Brandbuild Admin — Workspace</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&amp;family=Geist:wght@400..700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#EEF0EA;color:#0F1A13;font-family:Geist,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:#0B7A3B}
+*{box-sizing:border-box}
+.btn{cursor:pointer;border:0;font:inherit;transition:transform 120ms cubic-bezier(.23,1,.32,1),background-color 150ms ease,box-shadow 150ms ease}
+.btn:active{transform:scale(.97)}
+:focus-visible{outline:2px solid #12A150;outline-offset:2px}
+.tab{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 12px;border-radius:8px;color:#B9C2BB;font-size:14px;text-decoration:none;transition:background-color 150ms ease}
+.tab.on{background:#26322A;color:#FFFFFF}
+.tb{min-width:20px;height:20px;padding:0 6px;border-radius:10px;font-size:11px;font-weight:700;line-height:20px;text-align:center}
+.card{display:flex;flex-direction:column;gap:12px;padding:20px;border-radius:18px;background:#FFFFFF}
+.h2{margin:0;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:20px;letter-spacing:-0.02em}
+.lbl{display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:600}
+.in{height:42px;padding:0 12px;border-radius:10px;border:1px solid #D5D9CF;background:#FFFFFF;font:inherit;font-size:15px;font-weight:400;color:#0F1A13}
+.pf{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:7px;color:#FFFFFF;font-size:10px;font-weight:700;flex:none}
+.chip{display:inline-flex;align-items:center;height:24px;padding:0 8px;border-radius:7px;font-size:12px;font-weight:600}
+.r{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid #EEF0EA;font-size:14px}
+td,th{padding:10px 8px;text-align:left;font-size:14px;border-top:1px solid #EEF0EA}
+th{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5B655D;border-top:0}
+@keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.rise{animation:rise 240ms cubic-bezier(.23,1,.32,1) both}
+@keyframes pop{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:none}}
+.pop{animation:pop 220ms cubic-bezier(.23,1,.32,1) both}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.fade{animation:fade 180ms ease both}
+@media (hover:hover) and (pointer:fine){.tab:not(.on):hover{background:#1C2620;color:#FFFFFF}}
+@media (max-width:860px){.pad{padding:16px !important}.adnav{overflow-x:auto}}
+@media (prefers-reduced-motion:reduce){*{animation-duration:1ms !important;transition-duration:1ms !important}}
+</style>
+</helmet>
+<div style="position: relative; min-height: 100vh; width: 100%; background: #EEF0EA">
+  <header style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap; padding: 12px 24px; background: #0F1A13; color: #FFFFFF">
+    <svg width="20" height="22" viewBox="0 0 59 66" role="img" aria-label="Brandbuild"><path d="M0 63.1688V26.0688C0 24.7053 1.1053 23.6 2.46875 23.6H17.5359C18.8994 23.6 20.0047 24.7053 20.0047 26.0688V40.6953C20.0047 43.4222 22.2153 45.6328 24.9422 45.6328H31.6406C33.0041 45.6328 34.1094 46.7381 34.1094 48.1016V63.1688C34.1094 64.5322 33.0041 65.6375 31.6406 65.6375H2.46875C1.1053 65.6375 0 64.5322 0 63.1688Z" fill="#FFFFFF"></path><path d="M24.8906 39.5688V2.46875C24.8906 1.1053 25.9959 0 27.3594 0H42.4266C43.79 0 44.8953 1.1053 44.8953 2.46875V17.0953C44.8953 19.8222 47.1059 22.0328 49.8328 22.0328H56.5313C57.8947 22.0328 59 23.1381 59 24.5016V39.5688C59 40.9322 57.8947 42.0375 56.5313 42.0375H27.3594C25.9959 42.0375 24.8906 40.9322 24.8906 39.5688Z" fill="#FFFFFF"></path></svg>
+    <span style="font-weight: 600; font-size: 15px">Admin</span>
+    <nav class="adnav" aria-label="Admin" style="display: flex; gap: 2px; margin-left: 8px">
+      <a class="tab" href="AdminHome.dc.html">Overview</a>
+      <a class="tab on" href="AdminWorkspace.dc.html" aria-current="page">Workspaces</a>
+      <a class="tab" href="AdminUnclear.dc.html">Outcome unclear<span class="tb" style="background: #D4F25C; color: #0F2A1B">4</span></a>
+      <a class="tab" href="ReviewQueue.dc.html">Student reviews<span class="tb" style="background: #3A4A3F; color: #FFFFFF">12</span></a>
+      <a class="tab" href="AdminSpend.dc.html">AI spend</a>
+      <a class="tab" href="AdminAudit.dc.html">Audit log</a>
+    </nav>
+    <span style="margin-left: auto; font-size: 14px; color: #B9C2BB">[NAME] · Support</span>
+  </header>
+
+  <sc-if value="{{supportActive}}" hint-placeholder-val="{{false}}">
+    <div role="status" class="rise" style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 10px 24px; background: #D4F25C; color: #0F2A1B; font-size: 14px">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+      <strong>Support session open · read-only</strong>
+      <span>Ticket #2231 · <span style="font-family: 'Geist Mono', monospace">29:41</span> left · every page you view is logged · Mary was emailed</span>
+      <a href="Main.dc.html" style="color: #0F2A1B; font-weight: 600">View their app</a>
+      <button class="btn" onClick="{{endSupport}}" style="margin-left: auto; height: 32px; padding: 0 12px; border-radius: 9px; background: #0F2A1B; color: #FFFFFF; font-size: 13px; font-weight: 600">End session</button>
+    </div>
+  </sc-if>
+
+  <div class="pad" style="max-width: 1360px; margin: 0 auto; padding: 24px; display: flex; flex-direction: column; gap: 16px">
+    <nav aria-label="Breadcrumb" style="font-size: 14px; color: #5B655D"><a href="AdminHome.dc.html" style="color: #5B655D">Workspaces</a> / Nova Studio</nav>
+
+    <header style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap; padding: 20px; border-radius: 18px; background: #FFFFFF">
+      <span style="display: inline-flex; align-items: center; justify-content: center; width: 52px; height: 52px; border-radius: 16px; background: #0F2A1B; color: #D4F25C; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 22px">N</span>
+      <div style="flex: 1 1 320px; display: flex; flex-direction: column; gap: 4px">
+        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap">
+          <h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 28px; letter-spacing: -0.02em">Nova Studio</h1>
+          <span class="chip" style="background: #E6F5EC; color: #0B5E2E">Student Access</span>
+          <span class="chip" style="background: {{pubBg}}; color: {{pubFg}}">{{pubLabel}}</span>
+        </div>
+        <span style="font-size: 14px; color: #5B655D">Owner mary@novastudio.co · created 3 Sep 2026 · <span style="font-family: 'Geist Mono', monospace">ws_8f2k91</span></span>
+      </div>
+      <div style="display: flex; gap: 8px; flex-wrap: wrap">
+        <sc-if value="{{notSupport}}" hint-placeholder-val="{{true}}">
+          <button class="btn" onClick="{{openSupport}}" style="height: 42px; padding: 0 16px; border-radius: 11px; background: #FFFFFF; box-shadow: inset 0 0 0 1px #C7CCC1; color: #0F1A13; font-size: 14px; font-weight: 600">Open support access</button>
+        </sc-if>
+        <sc-if value="{{isActive}}" hint-placeholder-val="{{true}}">
+          <button class="btn" onClick="{{openPause}}" style="height: 42px; padding: 0 16px; border-radius: 11px; background: #0F1A13; color: #FFFFFF; font-size: 14px; font-weight: 600">Pause publishing</button>
+        </sc-if>
+        <sc-if value="{{paused}}" hint-placeholder-val="{{false}}">
+          <button class="btn" onClick="{{resume}}" style="height: 42px; padding: 0 16px; border-radius: 11px; background: #12A150; color: #FFFFFF; font-size: 14px; font-weight: 600">Resume publishing</button>
+        </sc-if>
+      </div>
+    </header>
+
+    <sc-if value="{{paused}}" hint-placeholder-val="{{false}}">
+      <section role="status" class="rise" style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 14px 18px; border-radius: 16px; background: #0F2A1B; color: #E8F1EA; font-size: 14px">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D4F25C" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M9 6v12M15 6v12"></path></svg>
+        <span style="flex: 1 1 400px"><strong style="color: #FFFFFF">Paused by you just now · Payment failed.</strong> 5 scheduled posts are held. The customer sees a banner and got an email.</span>
+      </section>
+    </sc-if>
+
+    <sc-if value="{{supportForm}}" hint-placeholder-val="{{false}}">
+      <section class="card rise" aria-label="Open support access" style="box-shadow: inset 0 0 0 2px #0F1A13">
+        <div style="display: flex; flex-direction: column; gap: 4px">
+          <h2 class="h2">Open support access</h2>
+          <span style="font-size: 14px; color: #3D4840">You'll see their app as they do. The owner is emailed when the session starts, and every page you open is written to the audit log.</span>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px">
+          <label class="lbl">Ticket number<input class="in" type="text" value="#2231"></label>
+          <label class="lbl">Access<select class="in"><option>Read-only</option><option>Read and act (needs a second approver)</option></select></label>
+          <label class="lbl">Ends after<select class="in"><option>30 minutes</option><option>1 hour</option></select></label>
+          <label class="lbl" style="grid-column: span 3">Reason, as the customer will read it<input class="in" type="text" value="Checking why Friday's Instagram post didn't go out, as you asked in ticket #2231."></label>
+        </div>
+        <div style="display: flex; gap: 10px">
+          <button class="btn" onClick="{{startSupport}}" style="height: 42px; padding: 0 16px; border-radius: 11px; background: #0F1A13; color: #FFFFFF; font-size: 14px; font-weight: 600">Start session</button>
+          <button class="btn" onClick="{{cancelSupport}}" style="height: 42px; padding: 0 14px; border-radius: 11px; background: transparent; color: #0F1A13; font-size: 14px; font-weight: 600">Cancel</button>
+        </div>
+      </section>
+    </sc-if>
+
+    <div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start">
+      <div style="flex: 2 1 600px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+        <section class="card" style="overflow-x: auto">
+          <div style="display: flex; align-items: baseline"><h2 class="h2">Recent posts</h2><span style="margin-left: auto; font-size: 14px; color: #5B655D">last 7 days · 11 posts</span></div>
+          <table style="width: 100%; min-width: 560px; border-collapse: collapse">
+            <thead><tr><th scope="col">Post</th><th scope="col">On</th><th scope="col">When</th><th scope="col">Status</th></tr></thead>
+            <tbody>
+              <tr><td><a href="AdminUnclear.dc.html" style="color: #0F1A13; font-weight: 600">Drop is live — link in bio</a></td><td>IG, in</td><td>Fri 7:00 PM</td><td><span class="chip" style="background: #FFF1D6; color: #6B4300">IG unclear</span></td></tr>
+              <tr><td style="font-weight: 600">Customer shout-out</td><td>IG</td><td>Thu 6:00 PM</td><td><span class="chip" style="background: #E7F1FB; color: #0A3D73">Awaiting approval</span></td></tr>
+              <tr><td style="font-weight: 600">Shade lineup</td><td>IG, in</td><td>Wed 12:30 PM</td><td><span class="chip" style="background: #E6F5EC; color: #0B5E2E">Scheduled</span></td></tr>
+              <tr><td style="font-weight: 600">Weekend drop prep</td><td>IG, TT</td><td>Mon 7:00 PM</td><td><span class="chip" style="background: #FFF1D6; color: #6B4300">TikTok expired</span></td></tr>
+              <tr><td style="font-weight: 600">Weekend teaser</td><td>IG</td><td>Fri 23 Oct</td><td><span class="chip" style="background: #F0F1EC; color: #3D4840">Published</span></td></tr>
+            </tbody>
+          </table>
+        </section>
+        <section class="card">
+          <h2 class="h2">Internal notes <span style="font-family: Geist, sans-serif; font-size: 13px; font-weight: 500; color: #5B655D">staff only</span></h2>
+          <div class="r" style="border-top: 0; align-items: flex-start"><span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #5B655D; padding-top: 2px">12 Oct</span><span><strong>Ngozi:</strong> Owner asked about agency features. Interested in Business plan once available.</span></div>
+          <div style="display: flex; gap: 8px"><input class="in" type="text" placeholder="Add a note for other staff" style="flex: 1"><button class="btn" style="height: 42px; padding: 0 14px; border-radius: 10px; background: #FFFFFF; box-shadow: inset 0 0 0 1px #C7CCC1; font-size: 14px; font-weight: 600">Add</button></div>
+        </section>
+      </div>
+
+      <div style="flex: 1 1 320px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+        <section class="card">
+          <h2 class="h2">Connected accounts</h2>
+          <div class="r" style="border-top: 0"><span class="pf" style="background: #D62976">IG</span><span style="flex: 1">@novastudio.co</span><span class="chip" style="background: #E6F5EC; color: #0B5E2E">Healthy</span></div>
+          <div class="r"><span class="pf" style="background: #0A66C2">in</span><span style="flex: 1">Nova Studio</span><span class="chip" style="background: #E6F5EC; color: #0B5E2E">Healthy</span></div>
+          <div class="r"><span class="pf" style="background: #111111">TT</span><span style="flex: 1">@novastudio</span><span class="chip" style="background: #FFF1D6; color: #6B4300">Token expired</span></div>
+        </section>
+        <section class="card">
+          <h2 class="h2">Team</h2>
+          <div class="r" style="border-top: 0"><span style="flex: 1">Mary Mariella</span><span style="color: #5B655D">Owner</span></div>
+          <div class="r"><span style="flex: 1">Tobi Ade</span><span style="color: #5B655D">Editor</span></div>
+          <div class="r"><span style="flex: 1">Ada Nwosu</span><span style="color: #5B655D">Reviewer</span></div>
+        </section>
+        <section class="card">
+          <h2 class="h2">Billing</h2>
+          <div class="r" style="border-top: 0"><span style="flex: 1">Plan</span><span>Student Access · until [END DATE]</span></div>
+          <div class="r"><span style="flex: 1">AI posts this month</span><span style="font-family: 'Geist Mono', monospace">18 / [N]</span></div>
+          <a href="#" style="font-size: 14px; font-weight: 600">Open in [PAYMENT PROVIDER] ↗</a>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <sc-if value="{{pauseOpen}}" hint-placeholder-val="{{false}}">
+    <div class="fade" style="position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; padding: 24px; background: rgba(15,26,19,0.55)">
+      <div class="pop" role="dialog" aria-modal="true" aria-labelledby="pz" style="width: 100%; max-width: 520px; display: flex; flex-direction: column; gap: 14px; padding: 24px; border-radius: 22px; background: #FFFFFF; box-shadow: 0 30px 60px -20px rgba(0,0,0,0.45)">
+        <h2 id="pz" style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 24px; letter-spacing: -0.02em">Pause publishing for Nova Studio?</h2>
+        <ul style="margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; font-size: 14px; line-height: 1.5; color: #2B352E">
+          <li>5 scheduled posts are held, not deleted.</li>
+          <li>The team can still write, edit and approve.</li>
+          <li>The owner gets an email and sees a banner with your reason.</li>
+        </ul>
+        <label class="lbl">Reason<select class="in"><option>Payment failed</option><option>Owner asked us to</option><option>Spam or abuse report</option><option>Platform policy problem</option><option>Other</option></select></label>
+        <label class="lbl">Message the owner sees<textarea rows="2" style="resize: vertical; padding: 10px 12px; border-radius: 10px; border: 1px solid #D5D9CF; font: inherit; font-size: 15px; font-weight: 400">Your last payment didn't go through. Update your card and publishing resumes straight away.</textarea></label>
+        <div style="display: flex; gap: 8px; justify-content: flex-end">
+          <button class="btn" onClick="{{closePause}}" style="height: 44px; padding: 0 16px; border-radius: 12px; background: transparent; color: #0F1A13; font-size: 15px; font-weight: 600">Cancel</button>
+          <button class="btn" onClick="{{confirmPause}}" style="height: 44px; padding: 0 16px; border-radius: 12px; background: #0F1A13; color: #FFFFFF; font-size: 15px; font-weight: 600">Pause publishing</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1200}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { paused: false, pauseOpen: false, support: 'none' }; }
+  renderVals() {
+    var s = this.state, self = this;
+    var set = function (o) { return function () { self.setState(o); }; };
+    return {
+      paused: s.paused, isActive: !s.paused, pauseOpen: s.pauseOpen,
+      pubLabel: s.paused ? 'Publishing paused' : 'Publishing active',
+      pubBg: s.paused ? '#0F2A1B' : '#F0F1EC', pubFg: s.paused ? '#D4F25C' : '#3D4840',
+      supportForm: s.support === 'form', supportActive: s.support === 'active', notSupport: s.support === 'none',
+      openPause: set({ pauseOpen: true }), closePause: set({ pauseOpen: false }), confirmPause: set({ pauseOpen: false, paused: true }), resume: set({ paused: false }),
+      openSupport: set({ support: 'form' }), cancelSupport: set({ support: 'none' }), startSupport: set({ support: 'active' }), endSupport: set({ support: 'none' })
+    };
+  }
+}
+</script>
+</body>
+</html>

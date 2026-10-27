@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Brandbuild — Drafts</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&amp;family=Geist:wght@400..700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#F3F4EF;color:#0F1A13;font-family:Geist,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:#0B7A3B}a:hover{color:#075A2B}
+*{box-sizing:border-box}
+.btn{cursor:pointer;border:0;font:inherit;transition:transform 120ms cubic-bezier(.23,1,.32,1),background-color 150ms ease,box-shadow 150ms ease}
+.btn:active{transform:scale(.97)}
+:focus-visible{outline:2px solid #12A150;outline-offset:2px}
+.nav{display:flex;align-items:center;gap:12px;height:44px;padding:0 12px;border-radius:10px;color:#3D4840;font-weight:500;font-size:15px;text-decoration:none;transition:background-color 150ms ease}
+.nav.on{background:#E6F5EC;color:#0B5E2E;font-weight:600}
+.pf{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:6px;color:#FFFFFF;font-size:9px;font-weight:700}
+.dcard{transition:box-shadow 200ms ease,transform 200ms cubic-bezier(.23,1,.32,1)}
+@media (hover:hover) and (pointer:fine){.btn-primary:hover{background:#0B7A3B}.btn-ghost:hover{background:#E9EBE4}.nav:not(.on):hover{background:#E9EBE4}.dcard:hover{box-shadow:0 12px 28px -16px rgba(15,26,19,0.25);transform:translateY(-2px)}}
+@media (max-width:860px){.rail{display:none !important}.pad{padding:20px 16px 48px !important}}
+@media (prefers-reduced-motion:reduce){*{transition-duration:1ms !important}}
+</style>
+</helmet>
+<div style="display: flex; flex-wrap: wrap; min-height: 100vh; width: 100%; background: #F3F4EF">
+<nav class="rail" aria-label="Main" style="flex: 0 0 240px; display: flex; flex-direction: column; gap: 28px; padding: 24px 16px; background: #FBFBF8; border-right: 1px solid #E3E5DD">
+  <a href="Main.dc.html" style="display: flex; align-items: center; gap: 10px; padding: 0 8px; color: #0F1A13; text-decoration: none">
+    <svg width="23" height="26" viewBox="0 0 59 66" role="img" aria-label="Brandbuild"><path d="M0 63.1688V26.0688C0 24.7053 1.1053 23.6 2.46875 23.6H17.5359C18.8994 23.6 20.0047 24.7053 20.0047 26.0688V40.6953C20.0047 43.4222 22.2153 45.6328 24.9422 45.6328H31.6406C33.0041 45.6328 34.1094 46.7381 34.1094 48.1016V63.1688C34.1094 64.5322 33.0041 65.6375 31.6406 65.6375H2.46875C1.1053 65.6375 0 64.5322 0 63.1688Z" fill="#0F1A13"></path><path d="M24.8906 39.5688V2.46875C24.8906 1.1053 25.9959 0 27.3594 0H42.4266C43.79 0 44.8953 1.1053 44.8953 2.46875V17.0953C44.8953 19.8222 47.1059 22.0328 49.8328 22.0328H56.5313C57.8947 22.0328 59 23.1381 59 24.5016V39.5688C59 40.9322 57.8947 42.0375 56.5313 42.0375H27.3594C25.9959 42.0375 24.8906 40.9322 24.8906 39.5688Z" fill="#0F1A13"></path></svg>
+    <span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 19px; letter-spacing: -0.02em">Brandbuild</span>
+  </a>
+  <a class="btn btn-primary" href="Composer.dc.html" style="display: flex; align-items: center; justify-content: center; gap: 8px; height: 44px; border-radius: 12px; background: #12A150; color: #FFFFFF; font-weight: 600; font-size: 15px; text-decoration: none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>New post</a>
+  <div style="display: flex; flex-direction: column; gap: 2px">
+    <a class="nav" href="Main.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"></path></svg>Home</a>
+    <a class="nav" href="Calendar.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16.5" rx="2.5"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg>Calendar</a>
+    <a class="nav on" href="Drafts.dc.html" aria-current="page"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><path d="M14 3v6h6M8 13h8M8 17h5"></path></svg>Drafts<span style="margin-left: auto; font-size: 13px; font-weight: 600">6</span></a>
+    <a class="nav" href="Approvals.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3.5h6v3H9z"></path><path d="M7 5H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1M9 14l2 2 4-4"></path></svg>Approvals<span style="margin-left: auto; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 11px; background: #12A150; color: #FFFFFF; font-size: 12px; font-weight: 700; line-height: 22px; text-align: center">3</span></a>
+    <a class="nav" href="Analytics.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 20h18M6 16v-5M11 16V7M16 16v-8M21 16V4"></path></svg>Analytics</a>
+    <a class="nav" href="BrandProfile.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.6-.8 1.6-1.6 0-.5-.2-.8-.4-1.1-.3-.4-.5-.7-.5-1.2 0-.9.7-1.6 1.6-1.6H16a5 5 0 0 0 5-5c0-4.1-4-7.5-9-7.5z"></path></svg>Brand profile</a>
+    <a class="nav" href="Settings.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><circle cx="12" cy="12" r="8.5"></circle></svg>Settings</a>
+  </div>
+</nav>
+
+<main class="pad" style="flex: 999 1 560px; min-width: 0; padding: 28px 40px 48px">
+  <div style="max-width: 1160px; margin: 0 auto; display: flex; flex-direction: column; gap: 22px">
+    <header style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap">
+      <h1 style="margin: 0 auto 0 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 34px; letter-spacing: -0.03em">Drafts <span style="color: #9AA39C">6</span></h1>
+      <label style="position: relative; display: flex; align-items: center">
+        <span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Search drafts</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5B655D" stroke-width="1.9" stroke-linecap="round" aria-hidden="true" style="position: absolute; left: 14px"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+        <input type="search" placeholder="Search drafts" style="width: 260px; height: 44px; padding: 0 14px 0 40px; border-radius: 12px; border: 1px solid #D5D9CF; background: #FFFFFF; font: inherit; font-size: 15px; color: #0F1A13">
+      </label>
+      <a class="btn btn-primary" href="Composer.dc.html" style="display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 16px; border-radius: 12px; background: #12A150; color: #FFFFFF; font-size: 15px; font-weight: 600; text-decoration: none">New draft</a>
+    </header>
+
+    <div role="tablist" aria-label="Filter drafts" style="display: flex; gap: 8px; flex-wrap: wrap">
+      <button class="btn" role="tab" aria-selected="true" style="height: 36px; padding: 0 14px; border-radius: 10px; background: #0F1A13; color: #FFFFFF; font-size: 14px; font-weight: 600">All 6</button>
+      <button class="btn btn-ghost" role="tab" aria-selected="false" style="height: 36px; padding: 0 14px; border-radius: 10px; background: #FFFFFF; box-shadow: inset 0 0 0 1px #D5D9CF; color: #2B352E; font-size: 14px; font-weight: 500">Ready to schedule 2</button>
+      <button class="btn btn-ghost" role="tab" aria-selected="false" style="height: 36px; padding: 0 14px; border-radius: 10px; background: #FFFFFF; box-shadow: inset 0 0 0 1px #D5D9CF; color: #2B352E; font-size: 14px; font-weight: 500">Needs a photo 2</button>
+      <button class="btn btn-ghost" role="tab" aria-selected="false" style="height: 36px; padding: 0 14px; border-radius: 10px; background: #FFFFFF; box-shadow: inset 0 0 0 1px #D5D9CF; color: #2B352E; font-size: 14px; font-weight: 500">Ideas only 2</button>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px">
+      <sc-for list="{{drafts}}" as="d" hint-placeholder-count="6">
+        <article class="dcard" style="display: flex; flex-direction: column; gap: 12px; padding: 18px; border-radius: 20px; background: #FFFFFF; border: 1px solid #E3E5DD">
+          <div style="display: flex; align-items: center; gap: 6px">
+            <sc-for list="{{d.pfs}}" as="p" hint-placeholder-count="2"><span class="pf" style="background: {{p.bg}}">{{p.k}}</span></sc-for>
+            <span style="margin-left: auto; display: inline-flex; align-items: center; height: 26px; padding: 0 9px; border-radius: 8px; font-size: 12px; font-weight: 600; background: {{d.chipBg}}; color: {{d.chipFg}}">{{d.state}}</span>
+          </div>
+          <h2 style="margin: 0; font-size: 17px; font-weight: 600; line-height: 1.3">{{d.title}}</h2>
+          <p style="margin: 0; font-size: 14px; line-height: 1.5; color: #3D4840; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; min-height: 63px">{{d.body}}</p>
+          <div style="display: flex; align-items: center; gap: 8px; padding-top: 10px; border-top: 1px solid #EEF0EA">
+            <span style="font-size: 13px; color: #5B655D; margin-right: auto">{{d.edited}}</span>
+            <a class="btn btn-ghost" href="Composer.dc.html" style="display: inline-flex; align-items: center; height: 36px; padding: 0 12px; border-radius: 10px; color: #0F1A13; font-size: 14px; font-weight: 600; text-decoration: none; background: #F3F4EF">{{d.action}}</a>
+            <button class="btn btn-ghost" aria-label="More actions for {{d.title}}" style="display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 10px; background: transparent; color: #3D4840">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.8"></circle><circle cx="12" cy="12" r="1.8"></circle><circle cx="19" cy="12" r="1.8"></circle></svg></button>
+          </div>
+        </article>
+      </sc-for>
+    </div>
+  </div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1040}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var IG = { k: 'IG', bg: '#D62976' }, LI = { k: 'in', bg: '#0A66C2' }, TT = { k: 'TT', bg: '#111111' };
+    var R = { state: 'Ready', chipBg: '#E6F5EC', chipFg: '#0B5E2E', action: 'Schedule' };
+    var P = { state: 'Needs a photo', chipBg: '#FFF1D6', chipFg: '#6B4300', action: 'Add photo' };
+    var I = { state: 'Idea', chipBg: '#F0F1EC', chipFg: '#3D4840', action: 'Write it' };
+    var drafts = [
+      Object.assign({ title: 'Halloween shade picks', body: 'Three shades, three moods. Which one are you wearing on the 31st? Tell us in the comments and we’ll pick a winner for a free gloss.', pfs: [IG, TT], edited: 'Edited 2 hours ago' }, R),
+      Object.assign({ title: 'Thank you, first 100 customers', body: 'A hundred orders ago this was a table in a hostel room. Every one of you made this real. Here’s what we’re doing to say thanks.', pfs: [IG, LI], edited: 'Edited yesterday' }, P),
+      Object.assign({ title: 'How we choose our packaging', body: 'Idea: walk through the three packaging suppliers we tried and why we picked the one we did.', pfs: [TT], edited: 'Saved 3 days ago' }, I),
+      Object.assign({ title: 'Lip care routine, 3 steps', body: 'Scrub, balm, gloss. Thirty seconds a night is all it takes. Save this for later.', pfs: [IG], edited: 'Edited 4 days ago' }, R),
+      Object.assign({ title: 'Meet the team: who packs your order', body: 'Short intro to the two people who wrap, seal and write the note on every box.', pfs: [IG, LI], edited: 'Edited last week' }, P),
+      Object.assign({ title: 'Customer question of the week', body: 'Idea: answer the most common DM each week as a post.', pfs: [IG, TT], edited: 'Saved last week' }, I)
+    ];
+    return { drafts: drafts };
+  }
+}
+</script>
+</body>
+</html>

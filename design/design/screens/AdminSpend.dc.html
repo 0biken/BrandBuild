@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Brandbuild Admin — AI spend</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&amp;family=Geist:wght@400..700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#EEF0EA;color:#0F1A13;font-family:Geist,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:#0B7A3B}
+*{box-sizing:border-box}
+.btn{cursor:pointer;border:0;font:inherit;transition:transform 120ms cubic-bezier(.23,1,.32,1),background-color 150ms ease,box-shadow 150ms ease}
+.btn:active{transform:scale(.97)}
+:focus-visible{outline:2px solid #12A150;outline-offset:2px}
+.tab{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 12px;border-radius:8px;color:#B9C2BB;font-size:14px;text-decoration:none;transition:background-color 150ms ease}
+.tab.on{background:#26322A;color:#FFFFFF}
+.tb{min-width:20px;height:20px;padding:0 6px;border-radius:10px;font-size:11px;font-weight:700;line-height:20px;text-align:center}
+.card{display:flex;flex-direction:column;gap:12px;padding:20px;border-radius:18px;background:#FFFFFF}
+.h2{margin:0;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:20px;letter-spacing:-0.02em}
+.num{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;letter-spacing:-0.03em}
+.cap{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5B655D}
+.bar{transition:height 420ms cubic-bezier(.23,1,.32,1)}
+td,th{padding:11px 10px;text-align:left;font-size:14px;border-top:1px solid #EEF0EA}
+th{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5B655D;border-top:0}
+td.n,th.n{text-align:right;font-family:'Geist Mono',monospace}
+@media (hover:hover) and (pointer:fine){.tab:not(.on):hover{background:#1C2620;color:#FFFFFF}}
+@media (max-width:860px){.pad{padding:16px !important}.adnav{overflow-x:auto}.kp{grid-template-columns:repeat(2,minmax(0,1fr)) !important}}
+@media (prefers-reduced-motion:reduce){*{transition-duration:1ms !important}}
+</style>
+</helmet>
+<div style="min-height: 100vh; width: 100%; background: #EEF0EA">
+  <header style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap; padding: 12px 24px; background: #0F1A13; color: #FFFFFF">
+    <svg width="20" height="22" viewBox="0 0 59 66" role="img" aria-label="Brandbuild"><path d="M0 63.1688V26.0688C0 24.7053 1.1053 23.6 2.46875 23.6H17.5359C18.8994 23.6 20.0047 24.7053 20.0047 26.0688V40.6953C20.0047 43.4222 22.2153 45.6328 24.9422 45.6328H31.6406C33.0041 45.6328 34.1094 46.7381 34.1094 48.1016V63.1688C34.1094 64.5322 33.0041 65.6375 31.6406 65.6375H2.46875C1.1053 65.6375 0 64.5322 0 63.1688Z" fill="#FFFFFF"></path><path d="M24.8906 39.5688V2.46875C24.8906 1.1053 25.9959 0 27.3594 0H42.4266C43.79 0 44.8953 1.1053 44.8953 2.46875V17.0953C44.8953 19.8222 47.1059 22.0328 49.8328 22.0328H56.5313C57.8947 22.0328 59 23.1381 59 24.5016V39.5688C59 40.9322 57.8947 42.0375 56.5313 42.0375H27.3594C25.9959 42.0375 24.8906 40.9322 24.8906 39.5688Z" fill="#FFFFFF"></path></svg>
+    <span style="font-weight: 600; font-size: 15px">Admin</span>
+    <nav class="adnav" aria-label="Admin" style="display: flex; gap: 2px; margin-left: 8px">
+      <a class="tab" href="AdminHome.dc.html">Overview</a>
+      <a class="tab" href="AdminWorkspace.dc.html">Workspaces</a>
+      <a class="tab" href="AdminUnclear.dc.html">Outcome unclear<span class="tb" style="background: #D4F25C; color: #0F2A1B">4</span></a>
+      <a class="tab" href="ReviewQueue.dc.html">Student reviews<span class="tb" style="background: #3A4A3F; color: #FFFFFF">12</span></a>
+      <a class="tab on" href="AdminSpend.dc.html" aria-current="page">AI spend</a>
+      <a class="tab" href="AdminAudit.dc.html">Audit log</a>
+    </nav>
+    <span style="margin-left: auto; font-size: 14px; color: #B9C2BB">[NAME] · Support</span>
+  </header>
+
+  <div class="pad" style="max-width: 1360px; margin: 0 auto; padding: 24px; display: flex; flex-direction: column; gap: 16px">
+    <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap">
+      <h1 style="margin: 0 auto 0 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 30px; letter-spacing: -0.03em">AI spend</h1>
+      <div role="radiogroup" aria-label="Period" style="display: inline-flex; padding: 4px; border-radius: 12px; background: #E3E5DD">
+        <sc-for list="{{periods}}" as="p" hint-placeholder-count="2">
+          <button class="btn" role="radio" aria-checked="{{p.on}}" onClick="{{p.pick}}" style="height: 34px; padding: 0 14px; border-radius: 9px; font-size: 14px; font-weight: 600; background: {{p.bg}}; color: #0F1A13; box-shadow: {{p.sh}}">{{p.label}}</button>
+        </sc-for>
+      </div>
+    </div>
+
+    <div class="kp" style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px">
+      <sc-for list="{{kpis}}" as="k" hint-placeholder-count="4">
+        <div class="card" style="gap: 6px; padding: 18px">
+          <span class="cap">{{k.label}}</span>
+          <span class="num" style="font-size: 34px; line-height: 1">{{k.value}}</span>
+          <span style="font-size: 13px; color: {{k.noteFg}}">{{k.note}}</span>
+        </div>
+      </sc-for>
+    </div>
+
+    <section class="card" aria-label="Daily spend">
+      <div style="display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap">
+        <h2 class="h2">Daily spend, October</h2>
+        <span style="margin-left: auto; display: inline-flex; gap: 14px; font-size: 13px; color: #3D4840">
+          <span style="display: inline-flex; align-items: center; gap: 6px"><span style="width: 10px; height: 10px; border-radius: 3px; background: #12A150"></span>Under budget</span>
+          <span style="display: inline-flex; align-items: center; gap: 6px"><span style="width: 10px; height: 10px; border-radius: 3px; background: #B26A00"></span>Over budget</span>
+          <span style="display: inline-flex; align-items: center; gap: 6px"><span style="width: 14px; border-top: 2px dashed #0F1A13"></span>Daily budget</span>
+        </span>
+      </div>
+      <div role="img" aria-label="{{chartAria}}" style="position: relative; height: 200px; display: flex; align-items: flex-end; gap: 6px; padding-top: 10px; border-bottom: 1px solid #D5D9CF">
+        <div aria-hidden="true" style="position: absolute; left: 0; right: 0; bottom: {{budgetPct}}; border-top: 2px dashed #0F1A13"></div>
+        <sc-for list="{{days}}" as="d" hint-placeholder-count="25">
+          <div style="flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; height: 100%">
+            <div class="bar" title="{{d.title}}" style="width: 100%; height: {{d.h}}; border-radius: 4px 4px 0 0; background: {{d.c}}"></div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display: flex; justify-content: space-between; font-family: 'Geist Mono', monospace; font-size: 11px; color: #5B655D"><span>1 Oct</span><span>8</span><span>15</span><span>22</span><span>25 Oct</span></div>
+    </section>
+
+    <div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start">
+      <section class="card" style="flex: 2 1 600px; min-width: 0; overflow-x: auto">
+        <div style="display: flex; align-items: baseline"><h2 class="h2">Top workspaces</h2><span style="margin-left: auto; font-size: 14px; color: #5B655D">{{periodLabel}}</span></div>
+        <table style="width: 100%; min-width: 600px; border-collapse: collapse">
+          <thead><tr><th scope="col">Workspace</th><th scope="col">Plan</th><th scope="col" class="n">Generations</th><th scope="col" class="n">Spend</th><th scope="col"><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Flag</span></th></tr></thead>
+          <tbody>
+            <tr style="background: #FFF9EC"><td><a href="AdminWorkspace.dc.html" style="color: #0F1A13; font-weight: 600">Kicks.ng</a></td><td>Creator</td><td class="n">{{k1}}</td><td class="n">{{s1}}</td><td style="text-align: right; white-space: nowrap"><span style="height: 24px; padding: 0 8px; border-radius: 7px; background: #FFF1D6; color: #6B4300; font-size: 12px; font-weight: 600; line-height: 24px; display: inline-block">8× its usual</span> <button class="btn" style="height: 32px; padding: 0 10px; border-radius: 8px; background: #0F1A13; color: #FFFFFF; font-size: 13px; font-weight: 600">Throttle</button></td></tr>
+            <tr><td><a href="AdminWorkspace.dc.html" style="color: #0F1A13; font-weight: 600">Lagos Thrift Co.</a></td><td>Business</td><td class="n">{{k2}}</td><td class="n">{{s2}}</td><td></td></tr>
+            <tr><td><a href="AdminWorkspace.dc.html" style="color: #0F1A13; font-weight: 600">Bloom Bakes</a></td><td>Creator</td><td class="n">{{k3}}</td><td class="n">{{s3}}</td><td></td></tr>
+            <tr><td><a href="AdminWorkspace.dc.html" style="color: #0F1A13; font-weight: 600">Nova Studio</a></td><td>Student</td><td class="n">{{k4}}</td><td class="n">{{s4}}</td><td></td></tr>
+          </tbody>
+        </table>
+      </section>
+      <div style="flex: 1 1 320px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+        <section class="card">
+          <h2 class="h2">By feature</h2>
+          <sc-for list="{{features}}" as="f" hint-placeholder-count="5">
+            <div style="display: flex; flex-direction: column; gap: 5px">
+              <div style="display: flex; font-size: 14px"><span>{{f.label}}</span><span style="margin-left: auto; font-family: 'Geist Mono', monospace; color: #3D4840">{{f.pct}}</span></div>
+              <div style="height: 8px; border-radius: 4px; background: #F0F1EC; overflow: hidden"><div class="bar" style="height: 100%; width: {{f.pct}}; background: #0F2A1B"></div></div>
+            </div>
+          </sc-for>
+        </section>
+        <section class="card">
+          <h2 class="h2">Guardrails</h2>
+          <div style="display: flex; justify-content: space-between; gap: 10px; padding: 8px 0; border-top: 1px solid #EEF0EA; font-size: 14px"><span>Daily budget</span><strong>$[DAILY BUDGET]</strong></div>
+          <div style="display: flex; justify-content: space-between; gap: 10px; padding: 8px 0; border-top: 1px solid #EEF0EA; font-size: 14px"><span>Alert the team at</span><strong>80% of budget</strong></div>
+          <div style="display: flex; justify-content: space-between; gap: 10px; padding: 8px 0; border-top: 1px solid #EEF0EA; font-size: 14px"><span>Per-workspace cap</span><strong>[N] generations a day</strong></div>
+          <button class="btn" style="align-self: flex-start; height: 36px; padding: 0 12px; border-radius: 10px; background: #FFFFFF; box-shadow: inset 0 0 0 1px #C7CCC1; font-size: 14px; font-weight: 600">Edit guardrails</button>
+        </section>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1100}}'>
+var DAILY = [28, 31, 26, 22, 34, 38, 41, 30, 29, 33, 36, 40, 44, 52, 39, 35, 37, 42, 48, 55, 61, 47, 43, 58, 41];
+var BUDGET = 50, MAX = 70;
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { per: 'month' }; }
+  renderVals() {
+    var m = this.state.per === 'month', self = this;
+    var total = DAILY.reduce(function (a, b) { return a + b; }, 0);
+    var periods = [['today', 'Today'], ['month', 'This month']].map(function (x) { var on = self.state.per === x[0]; return { label: x[1], on: on ? 'true' : 'false', bg: on ? '#FFFFFF' : 'transparent', sh: on ? '0 1px 2px rgba(15,26,19,0.12)' : 'none', pick: function () { self.setState({ per: x[0] }); } }; });
+    var over = DAILY.filter(function (v) { return v > BUDGET; }).length;
+    return {
+      periods: periods, periodLabel: m ? '1–25 Oct' : 'Today',
+      kpis: m ? [
+        { label: 'Spent', value: '$' + total.toLocaleString('en-US'), note: 'of $[MONTHLY BUDGET]', noteFg: '#5B655D' },
+        { label: 'Per caption', value: '$0.031', note: '↓ 6% vs September', noteFg: '#0B7A3B' },
+        { label: 'Generations', value: '31.4k', note: '24% are rewrites', noteFg: '#5B655D' },
+        { label: 'Days over budget', value: String(over), note: 'Kicks.ng drove most of them', noteFg: '#8A5300' }
+      ] : [
+        { label: 'Spent', value: '$41.20', note: 'of $[DAILY BUDGET]', noteFg: '#5B655D' },
+        { label: 'Per caption', value: '$0.032', note: 'flat vs yesterday', noteFg: '#5B655D' },
+        { label: 'Generations', value: '1,284', note: 'peak 7–9 PM', noteFg: '#5B655D' },
+        { label: 'Failed but billed', value: '$0.84', note: '27 timeouts during the Meta incident', noteFg: '#8A5300' }
+      ],
+      days: DAILY.map(function (v, i) { return { h: (v / MAX * 100).toFixed(1) + '%', c: v > BUDGET ? '#B26A00' : '#12A150', title: (i + 1) + ' Oct: $' + v }; }),
+      budgetPct: (BUDGET / MAX * 100).toFixed(1) + '%',
+      chartAria: 'Daily AI spend for 1 to 25 October. ' + over + ' days went over the $' + BUDGET + ' daily budget, mostly in the last week.',
+      k1: m ? '6,920' : '412', s1: m ? '$214' : '$13.10', k2: m ? '3,105' : '96', s2: m ? '$96' : '$3.00', k3: m ? '1,880' : '71', s3: m ? '$58' : '$2.20', k4: m ? '164' : '9', s4: m ? '$5' : '$0.29',
+      features: [{ label: 'Captions', pct: '52%' }, { label: 'Rewrites and tone changes', pct: '24%' }, { label: 'Hashtags and timing', pct: '11%' }, { label: 'Ideas and insights', pct: '9%' }, { label: 'Brand voice tests', pct: '4%' }]
+    };
+  }
+}
+</script>
+</body>
+</html>

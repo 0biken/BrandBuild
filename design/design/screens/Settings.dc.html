@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Brandbuild — Settings</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&amp;family=Geist:wght@400..700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#F3F4EF;color:#0F1A13;font-family:Geist,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:#0B7A3B}a:hover{color:#075A2B}
+*{box-sizing:border-box}
+.btn{cursor:pointer;border:0;font:inherit;transition:transform 120ms cubic-bezier(.23,1,.32,1),background-color 150ms ease,box-shadow 150ms ease}
+.btn:active{transform:scale(.97)}
+:focus-visible{outline:2px solid #12A150;outline-offset:2px}
+.nav{display:flex;align-items:center;gap:12px;height:44px;padding:0 12px;border-radius:10px;color:#3D4840;font-weight:500;font-size:15px;text-decoration:none;transition:background-color 150ms ease}
+.nav.on{background:#E6F5EC;color:#0B5E2E;font-weight:600}
+.sub{display:flex;align-items:center;height:40px;padding:0 12px;border-radius:10px;font-size:15px;text-align:left;width:100%}
+.card{display:flex;flex-direction:column;gap:14px;padding:22px;border-radius:20px;background:#FFFFFF;border:1px solid #E3E5DD}
+.h2{margin:0;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:22px;letter-spacing:-0.02em}
+.in{width:100%;height:48px;padding:0 14px;border-radius:12px;border:1px solid #D5D9CF;background:#FFFFFF;font:inherit;font-size:16px;color:#0F1A13}
+.lbl{display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:600}
+.bs{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:44px;padding:0 16px;border-radius:12px;background:#FFFFFF;box-shadow:inset 0 0 0 1px #C7CCC1;color:#0F1A13;font-size:14px;font-weight:600;text-decoration:none}
+.bp{display:inline-flex;align-items:center;justify-content:center;height:44px;padding:0 18px;border-radius:12px;background:#12A150;color:#FFFFFF;font-size:15px;font-weight:600}
+.pf{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:10px;color:#FFFFFF;font-size:12px;font-weight:700;flex:none}
+.sw{appearance:none;-webkit-appearance:none;position:relative;flex:none;width:44px;height:26px;margin:0;border-radius:13px;background:#C7CCC1;cursor:pointer;transition:background-color 180ms ease}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:10px;background:#FFFFFF;box-shadow:0 1px 2px rgba(0,0,0,0.2);transition:transform 200ms cubic-bezier(.23,1,.32,1)}
+.sw:checked{background:#12A150}
+.sw:checked::after{transform:translateX(18px)}
+.r{display:flex;align-items:center;gap:14px;padding:14px 0;border-top:1px solid #EEF0EA}
+@keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.rise{animation:rise 220ms cubic-bezier(.23,1,.32,1) both}
+@media (hover:hover) and (pointer:fine){.bp:hover{background:#0B7A3B}.bs:hover{background:#F3F4EF}.nav:not(.on):hover{background:#E9EBE4}.sub:hover{background:#E9EBE4}}
+@media (max-width:860px){.rail{display:none !important}.pad{padding:20px 16px 48px !important}.subnav{flex-basis:100% !important;flex-direction:row !important;overflow-x:auto}}
+@media (prefers-reduced-motion:reduce){*{animation-duration:1ms !important;transition-duration:1ms !important}}
+</style>
+</helmet>
+<div style="display: flex; flex-wrap: wrap; min-height: 100vh; width: 100%; background: #F3F4EF">
+<nav class="rail" aria-label="Main" style="flex: 0 0 240px; display: flex; flex-direction: column; gap: 28px; padding: 24px 16px; background: #FBFBF8; border-right: 1px solid #E3E5DD">
+  <a href="Main.dc.html" style="display: flex; align-items: center; gap: 10px; padding: 0 8px; color: #0F1A13; text-decoration: none">
+    <svg width="23" height="26" viewBox="0 0 59 66" role="img" aria-label="Brandbuild"><path d="M0 63.1688V26.0688C0 24.7053 1.1053 23.6 2.46875 23.6H17.5359C18.8994 23.6 20.0047 24.7053 20.0047 26.0688V40.6953C20.0047 43.4222 22.2153 45.6328 24.9422 45.6328H31.6406C33.0041 45.6328 34.1094 46.7381 34.1094 48.1016V63.1688C34.1094 64.5322 33.0041 65.6375 31.6406 65.6375H2.46875C1.1053 65.6375 0 64.5322 0 63.1688Z" fill="#0F1A13"></path><path d="M24.8906 39.5688V2.46875C24.8906 1.1053 25.9959 0 27.3594 0H42.4266C43.79 0 44.8953 1.1053 44.8953 2.46875V17.0953C44.8953 19.8222 47.1059 22.0328 49.8328 22.0328H56.5313C57.8947 22.0328 59 23.1381 59 24.5016V39.5688C59 40.9322 57.8947 42.0375 56.5313 42.0375H27.3594C25.9959 42.0375 24.8906 40.9322 24.8906 39.5688Z" fill="#0F1A13"></path></svg>
+    <span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 19px; letter-spacing: -0.02em">Brandbuild</span>
+  </a>
+  <a class="btn bp" href="Composer.dc.html" style="gap: 8px; text-decoration: none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>New post</a>
+  <div style="display: flex; flex-direction: column; gap: 2px">
+    <a class="nav" href="Main.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"></path></svg>Home</a>
+    <a class="nav" href="Calendar.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16.5" rx="2.5"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg>Calendar</a>
+    <a class="nav" href="Drafts.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><path d="M14 3v6h6M8 13h8M8 17h5"></path></svg>Drafts</a>
+    <a class="nav" href="Approvals.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3.5h6v3H9z"></path><path d="M7 5H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1M9 14l2 2 4-4"></path></svg>Approvals<span style="margin-left: auto; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 11px; background: #12A150; color: #FFFFFF; font-size: 12px; font-weight: 700; line-height: 22px; text-align: center">3</span></a>
+    <a class="nav" href="Analytics.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 20h18M6 16v-5M11 16V7M16 16v-8M21 16V4"></path></svg>Analytics</a>
+    <a class="nav" href="BrandProfile.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.6-.8 1.6-1.6 0-.5-.2-.8-.4-1.1-.3-.4-.5-.7-.5-1.2 0-.9.7-1.6 1.6-1.6H16a5 5 0 0 0 5-5c0-4.1-4-7.5-9-7.5z"></path></svg>Brand profile</a>
+    <a class="nav on" href="Settings.dc.html" aria-current="page"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><circle cx="12" cy="12" r="8.5"></circle></svg>Settings</a>
+  </div>
+</nav>
+
+<main class="pad" style="flex: 999 1 560px; min-width: 0; padding: 28px 40px 48px">
+  <div style="max-width: 1040px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px">
+    <h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 34px; letter-spacing: -0.03em">Settings</h1>
+    <div style="display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start">
+      <nav class="subnav" aria-label="Settings sections" style="flex: 0 0 220px; display: flex; flex-direction: column; gap: 2px">
+        <sc-for list="{{secs}}" as="s" hint-placeholder-count="5">
+          <button class="btn sub" aria-current="{{s.cur}}" onClick="{{s.pick}}" style="background: {{s.bg}}; color: {{s.fg}}; font-weight: {{s.fw}}">{{s.label}}</button>
+        </sc-for>
+        <a class="sub" href="Team.dc.html" style="color: #3D4840; text-decoration: none">Team and roles</a>
+        <a class="sub" href="Billing.dc.html" style="color: #3D4840; text-decoration: none">Plan and billing</a>
+        <span style="height: 1px; margin: 8px 12px; background: #E3E5DD"></span>
+        <a class="sub" href="#" style="color: #3D4840; text-decoration: none">Help centre ↗</a>
+        <a class="sub" href="#" style="color: #3D4840; text-decoration: none">System status ↗</a>
+      </nav>
+
+      <div style="flex: 999 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+
+        <sc-if value="{{isProfile}}" hint-placeholder-val="{{false}}">
+          <section class="card rise">
+            <h2 class="h2">Profile</h2>
+            <div style="display: flex; align-items: center; gap: 16px">
+              <span style="display: inline-flex; align-items: center; justify-content: center; width: 64px; height: 64px; border-radius: 32px; background: #0F2A1B; color: #D4F25C; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 26px">M</span>
+              <button class="btn bs">Change photo</button>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px">
+              <label class="lbl">Name<input class="in" type="text" value="Mary Mariella"></label>
+              <label class="lbl">Email<input class="in" type="email" value="mary@novastudio.co"></label>
+              <label class="lbl">Phone<input class="in" type="tel" value="+234 801 234 5678"></label>
+              <label class="lbl">Time zone<input class="in" type="text" value="West Africa Time (Lagos)"></label>
+            </div>
+            <button class="btn bp" style="align-self: flex-start">Save changes</button>
+          </section>
+        </sc-if>
+
+        <sc-if value="{{isSecurity}}" hint-placeholder-val="{{false}}">
+          <section class="card rise">
+            <h2 class="h2">Security</h2>
+            <div class="r"><span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><strong style="font-size: 15px">Password</strong><span style="font-size: 14px; color: #5B655D">Last changed 3 months ago</span></span><a class="btn bs" href="Reset.dc.html">Change</a></div>
+            <div class="r"><span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><strong style="font-size: 15px">Two-step sign-in</strong><span style="font-size: 14px; color: #5B655D">Ask for a code when you log in on a new device</span></span><input class="sw" type="checkbox" role="switch" aria-label="Two-step sign-in"></div>
+            <div style="display: flex; flex-direction: column; gap: 4px; padding-top: 14px; border-top: 1px solid #EEF0EA">
+              <strong style="font-size: 15px">Where you're logged in</strong>
+              <div class="r" style="border-top: 0"><span style="flex: 1; font-size: 14px">Chrome on Windows · Lagos <span style="margin-left: 6px; height: 22px; padding: 0 7px; border-radius: 6px; background: #E6F5EC; color: #0B5E2E; font-size: 12px; font-weight: 600">This device</span></span></div>
+              <div class="r"><span style="flex: 1; font-size: 14px">Safari on iPhone · Ibadan · 2 days ago</span><button class="btn bs" style="height: 36px">Log out</button></div>
+            </div>
+          </section>
+        </sc-if>
+
+        <sc-if value="{{isAccounts}}" hint-placeholder-val="{{true}}">
+          <section class="card rise">
+            <div style="display: flex; align-items: center; gap: 10px">
+              <h2 class="h2" style="margin-right: auto">Connected accounts</h2>
+              <a class="btn bs" href="Connect.dc.html">Add account</a>
+            </div>
+            <div class="r">
+              <span class="pf" style="background: #D62976">IG</span>
+              <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px"><strong style="font-size: 15px">@novastudio.co</strong><span style="font-size: 14px; color: #5B655D">Instagram · default for new posts</span></span>
+              <span style="height: 26px; padding: 0 9px; border-radius: 8px; background: #E6F5EC; color: #0B5E2E; font-size: 12px; font-weight: 600; line-height: 26px">Healthy</span>
+              <button class="btn bs" style="height: 36px">Manage</button>
+            </div>
+            <div class="r">
+              <span class="pf" style="background: #D62976">IG</span>
+              <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px"><strong style="font-size: 15px">@novastudio.studio</strong><span style="font-size: 14px; color: #5B655D">Instagram · second account</span></span>
+              <span style="height: 26px; padding: 0 9px; border-radius: 8px; background: #E6F5EC; color: #0B5E2E; font-size: 12px; font-weight: 600; line-height: 26px">Healthy</span>
+              <button class="btn bs" style="height: 36px">Make default</button>
+            </div>
+            <div class="r">
+              <span class="pf" style="background: #0A66C2">in</span>
+              <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px"><strong style="font-size: 15px">Nova Studio</strong><span style="font-size: 14px; color: #5B655D">LinkedIn company page</span></span>
+              <span style="height: 26px; padding: 0 9px; border-radius: 8px; background: #E6F5EC; color: #0B5E2E; font-size: 12px; font-weight: 600; line-height: 26px">Healthy</span>
+              <button class="btn bs" style="height: 36px">Manage</button>
+            </div>
+            <div class="r" style="margin: 0 -22px; padding: 14px 22px; background: #FFF9EC">
+              <span class="pf" style="background: #111111">TT</span>
+              <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px"><strong style="font-size: 15px">@novastudio</strong><span style="font-size: 14px; color: #6B4300">TikTok · access expires in 2 days</span></span>
+              <span style="height: 26px; padding: 0 9px; border-radius: 8px; background: #FFF1D6; color: #6B4300; font-size: 12px; font-weight: 600; line-height: 26px">Expiring</span>
+              <a class="btn bp" href="Connect.dc.html" style="height: 36px; padding: 0 14px; font-size: 14px; background: #0F1A13; text-decoration: none">Reconnect</a>
+            </div>
+            <p style="margin: 0; font-size: 14px; line-height: 1.5; color: #5B655D">When two accounts share a platform, new posts go to the default. You can pick another per post in the composer.</p>
+          </section>
+        </sc-if>
+
+        <sc-if value="{{isNotif}}" hint-placeholder-val="{{false}}">
+          <section class="card rise">
+            <h2 class="h2">Notifications</h2>
+            <div style="display: grid; grid-template-columns: 1fr 64px 64px; align-items: center; gap: 0; font-size: 15px">
+              <span></span><span style="font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: #5B655D; text-align: center">Email</span><span style="font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: #5B655D; text-align: center">Push</span>
+              <sc-for list="{{notifs}}" as="n" hint-placeholder-count="5">
+                <span style="padding: 14px 0; border-top: 1px solid #EEF0EA; display: flex; flex-direction: column; gap: 2px"><strong style="font-weight: 600">{{n.label}}</strong><span style="font-size: 13px; color: #5B655D">{{n.note}}</span></span>
+                <span style="padding: 14px 0; border-top: 1px solid #EEF0EA; display: flex; justify-content: center"><input class="sw" type="checkbox" role="switch" aria-label="{{n.label}} by email" checked="{{n.email}}" onChange="{{n.tEmail}}"></span>
+                <span style="padding: 14px 0; border-top: 1px solid #EEF0EA; display: flex; justify-content: center"><input class="sw" type="checkbox" role="switch" aria-label="{{n.label}} by push" checked="{{n.push}}" onChange="{{n.tPush}}"></span>
+              </sc-for>
+            </div>
+          </section>
+        </sc-if>
+
+        <sc-if value="{{isData}}" hint-placeholder-val="{{false}}">
+          <section class="card rise">
+            <h2 class="h2">Data and privacy</h2>
+            <div class="r"><span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><strong style="font-size: 15px">Download your data</strong><span style="font-size: 14px; color: #5B655D">Posts, drafts, brand voice and analytics as a .zip. We email you a link.</span></span><button class="btn bs">Request export</button></div>
+            <div class="r"><span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><strong style="font-size: 15px">Use my posts to improve suggestions</strong><span style="font-size: 14px; color: #5B655D">Only for your own account's recommendations</span></span><input class="sw" type="checkbox" role="switch" aria-label="Use my posts to improve suggestions" checked="{{true}}"></div>
+          </section>
+          <section class="card rise" style="border-color: #F3B8B1">
+            <h2 class="h2" style="color: #8F1D14">Delete account</h2>
+            <p style="margin: 0; font-size: 15px; line-height: 1.55; color: #2B352E">Deletes your posts, drafts, brand voice, media and connected-account access within [N] days. Scheduled posts are cancelled. This can't be undone.</p>
+            <a class="btn" href="Dialogs.dc.html" style="align-self: flex-start; display: inline-flex; align-items: center; height: 44px; padding: 0 16px; border-radius: 12px; background: #FFFFFF; box-shadow: inset 0 0 0 1.5px #D92D20; color: #B42318; font-size: 15px; font-weight: 600; text-decoration: none">Delete my account</a>
+          </section>
+        </sc-if>
+      </div>
+    </div>
+  </div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1200}}'>
+class Component extends DCLogic {
+  constructor(p) {
+    super(p);
+    this.state = { sec: 'accounts', n: { pub: [false, true], fail: [true, true], exp: [true, true], ins: [true, false], news: [false, false] } };
+  }
+  renderVals() {
+    var s = this.state, self = this;
+    var secs = [['profile', 'Profile'], ['security', 'Security'], ['accounts', 'Connected accounts'], ['notif', 'Notifications'], ['data', 'Data and privacy']].map(function (x) {
+      var on = s.sec === x[0];
+      return { label: x[1], cur: on ? 'page' : 'false', bg: on ? '#E6F5EC' : 'transparent', fg: on ? '#0B5E2E' : '#3D4840', fw: on ? '600' : '500', pick: function () { self.setState({ sec: x[0] }); } };
+    });
+    var defs = [['pub', 'Post published', 'When a scheduled post goes live'], ['fail', 'Post failed', 'Always on by default. We recommend keeping it'], ['exp', 'Account needs reconnecting', 'Before access expires'], ['ins', 'Weekly insights', 'Monday mornings'], ['news', 'Product news', 'New features, occasionally']];
+    var notifs = defs.map(function (d) {
+      var v = s.n[d[0]];
+      function t(i) { return function () { var nn = Object.assign({}, s.n); var a = nn[d[0]].slice(); a[i] = !a[i]; nn[d[0]] = a; self.setState({ n: nn }); }; }
+      return { label: d[1], note: d[2], email: v[0], push: v[1], tEmail: t(0), tPush: t(1) };
+    });
+    return {
+      secs: secs, notifs: notifs,
+      isProfile: s.sec === 'profile', isSecurity: s.sec === 'security', isAccounts: s.sec === 'accounts', isNotif: s.sec === 'notif', isData: s.sec === 'data'
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Brandbuild — Student check</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&amp;family=Geist:wght@400..700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#F3F4EF;color:#0F1A13;font-family:Geist,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:#0B7A3B}a:hover{color:#075A2B}
+*{box-sizing:border-box}
+.btn{cursor:pointer;border:0;font:inherit;transition:transform 120ms cubic-bezier(.23,1,.32,1),background-color 150ms ease,box-shadow 150ms ease}
+.btn:active{transform:scale(.97)}
+:focus-visible{outline:2px solid #12A150;outline-offset:2px}
+@media (hover:hover) and (pointer:fine){
+.btn-primary:hover{background:#0B7A3B}
+.btn-ghost:hover{background:#E9EBE4}
+.opt:hover{box-shadow:inset 0 0 0 1.5px #9AA39C}
+}
+@keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.rise{animation:rise 240ms cubic-bezier(.23,1,.32,1) both}
+@media (max-width:860px){.panel{flex-basis:100% !important;padding:20px !important}.panel-extra{display:none !important}.content{padding:24px 16px 40px !important}}
+@media (prefers-reduced-motion:reduce){*{animation-duration:1ms !important;transition-duration:1ms !important}}
+</style>
+</helmet>
+<div style="display: flex; flex-wrap: wrap; min-height: 100vh; width: 100%; background: #F3F4EF">
+
+<aside class="panel" style="flex: 0 1 420px; display: flex; flex-direction: column; gap: 40px; padding: 36px 40px; background: #0F2A1B; color: #E8F1EA">
+  <div style="display: flex; align-items: center; gap: 10px">
+    <svg width="23" height="26" viewBox="0 0 59 66" role="img" aria-label="Brandbuild"><path d="M0 63.1688V26.0688C0 24.7053 1.1053 23.6 2.46875 23.6H17.5359C18.8994 23.6 20.0047 24.7053 20.0047 26.0688V40.6953C20.0047 43.4222 22.2153 45.6328 24.9422 45.6328H31.6406C33.0041 45.6328 34.1094 46.7381 34.1094 48.1016V63.1688C34.1094 64.5322 33.0041 65.6375 31.6406 65.6375H2.46875C1.1053 65.6375 0 64.5322 0 63.1688Z" fill="#FFFFFF"></path><path d="M24.8906 39.5688V2.46875C24.8906 1.1053 25.9959 0 27.3594 0H42.4266C43.79 0 44.8953 1.1053 44.8953 2.46875V17.0953C44.8953 19.8222 47.1059 22.0328 49.8328 22.0328H56.5313C57.8947 22.0328 59 23.1381 59 24.5016V39.5688C59 40.9322 57.8947 42.0375 56.5313 42.0375H27.3594C25.9959 42.0375 24.8906 40.9322 24.8906 39.5688Z" fill="#FFFFFF"></path></svg>
+    <span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 19px; letter-spacing: -0.02em; color: #FFFFFF">Brandbuild</span>
+  </div>
+  <ol aria-label="Setup steps" style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px">
+    <li style="display: flex; align-items: center; gap: 12px; height: 44px; color: #8FAA98; font-size: 15px">
+      <span style="display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 13px; background: #D4F25C"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#0F2A1B" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"></path></svg></span>Your account</li>
+    <li aria-current="step" style="display: flex; align-items: center; gap: 12px; height: 44px; color: #FFFFFF; font-size: 15px; font-weight: 600">
+      <span style="display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 13px; box-shadow: inset 0 0 0 2px #D4F25C; color: #D4F25C; font-size: 13px; font-weight: 700">2</span>Student check</li>
+    <li style="display: flex; align-items: center; gap: 12px; height: 44px; color: #8FAA98; font-size: 15px">
+      <span style="display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 13px; box-shadow: inset 0 0 0 1.5px #335A43; font-size: 13px; font-weight: 600">3</span>Connect accounts</li>
+    <li style="display: flex; align-items: center; gap: 12px; height: 44px; color: #8FAA98; font-size: 15px">
+      <span style="display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 13px; box-shadow: inset 0 0 0 1.5px #335A43; font-size: 13px; font-weight: 600">4</span>Brand voice</li>
+  </ol>
+  <div class="panel-extra" style="margin-top: auto; display: flex; flex-direction: column; gap: 14px; padding: 20px; border-radius: 18px; background: #16371F">
+    <span style="font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #D4F25C">Student Access</span>
+    <p style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 24px; line-height: 1.15; letter-spacing: -0.02em; color: #FFFFFF">Free until [END DATE]</p>
+    <ul style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; font-size: 15px; color: #DCE8DF">
+      <li style="display: flex; gap: 10px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D4F25C" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none; margin-top: 1px"><path d="m5 12.5 4.5 4.5L19 7.5"></path></svg>AI captions in your brand voice</li>
+      <li style="display: flex; gap: 10px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D4F25C" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none; margin-top: 1px"><path d="m5 12.5 4.5 4.5L19 7.5"></path></svg>Scheduling to [N] connected accounts</li>
+      <li style="display: flex; gap: 10px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D4F25C" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none; margin-top: 1px"><path d="m5 12.5 4.5 4.5L19 7.5"></path></svg>Weekly performance insights</li>
+    </ul>
+  </div>
+</aside>
+
+<main class="content" style="flex: 999 1 560px; min-width: 0; padding: 56px 48px; display: flex; justify-content: center">
+  <div style="width: 100%; max-width: 580px; display: flex; flex-direction: column; gap: 24px">
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <span style="font-size: 14px; font-weight: 600; color: #0B7A3B">Step 2 of 4</span>
+      <h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 38px; line-height: 1.05; letter-spacing: -0.03em">Confirm you're a student</h1>
+      <p style="margin: 0; font-size: 16px; line-height: 1.5; color: #3D4840">This unlocks Student Access. It takes about a minute with a school email.</p>
+    </div>
+
+    <div role="radiogroup" aria-label="Verification method" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+      <button class="btn opt" role="radio" aria-checked="{{emailOn}}" onClick="{{pickEmail}}" style="display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding: 16px; border-radius: 16px; text-align: left; background: {{emailBg}}; box-shadow: {{emailRing}}">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0F1A13" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2.5"></rect><path d="m4 7 8 6 8-6"></path></svg>
+        <span style="font-size: 16px; font-weight: 600; color: #0F1A13">School email</span>
+        <span style="font-size: 14px; color: #5B655D">Instant · we send a 6-digit code</span>
+      </button>
+      <button class="btn opt" role="radio" aria-checked="{{idOn}}" onClick="{{pickId}}" style="display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding: 16px; border-radius: 16px; text-align: left; background: {{idBg}}; box-shadow: {{idRing}}">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0F1A13" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2.5"></rect><circle cx="9" cy="11" r="2.2"></circle><path d="M5.8 16c.6-1.6 1.8-2.4 3.2-2.4s2.6.8 3.2 2.4M14.5 10h4M14.5 13.5h3"></path></svg>
+        <span style="font-size: 16px; font-weight: 600; color: #0F1A13">Student ID</span>
+        <span style="font-size: 14px; color: #5B655D">Reviewed within [X HOURS]</span>
+      </button>
+    </div>
+
+    <sc-if value="{{showEmail}}" hint-placeholder-val="{{true}}">
+      <section class="rise" style="display: flex; flex-direction: column; gap: 14px; padding: 22px; border-radius: 20px; background: #FFFFFF; box-shadow: inset 0 0 0 1px #E3E5DD">
+        <label for="sch" style="font-size: 14px; font-weight: 600">School email address</label>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap">
+          <input id="sch" type="email" value="ada@stu.ui.edu.ng" style="flex: 1 1 240px; min-width: 0; height: 48px; padding: 0 14px; border-radius: 12px; border: 1px solid #D5D9CF; background: #FBFBF8; font: inherit; font-size: 16px; color: #0F1A13">
+          <sc-if value="{{notSent}}" hint-placeholder-val="{{true}}">
+            <button class="btn btn-primary" onClick="{{send}}" style="height: 48px; padding: 0 18px; border-radius: 12px; background: #12A150; color: #FFFFFF; font-size: 15px; font-weight: 600">Send code</button>
+          </sc-if>
+        </div>
+        <sc-if value="{{sent}}" hint-placeholder-val="{{false}}">
+          <div class="rise" style="display: flex; flex-direction: column; gap: 12px; padding-top: 4px">
+            <span id="code-label" style="font-size: 14px; color: #3D4840">Enter the code we sent to <strong>ada@stu.ui.edu.ng</strong></span>
+            <div role="group" aria-labelledby="code-label" style="display: flex; gap: 8px">
+              <sc-for list="{{boxes}}" as="b" hint-placeholder-count="6">
+                <input aria-label="Digit {{b.n}}" inputmode="numeric" maxlength="1" value="{{b.v}}" style="width: 48px; height: 56px; text-align: center; border-radius: 12px; font-family: 'Bricolage Grotesque', sans-serif; font-size: 24px; font-weight: 600; color: #0F1A13; background: {{b.bg}}; border: {{b.border}}">
+              </sc-for>
+            </div>
+            <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap; font-size: 14px">
+              <span style="color: #5B655D">Paste the whole code into any box.</span>
+              <button class="btn" disabled="{{true}}" style="height: 36px; padding: 0; background: transparent; color: #5B655D; font-size: 14px">Resend in <span style="font-family: 'Geist Mono', monospace">0:23</span></button>
+              <button class="btn" onClick="{{reset}}" style="height: 36px; padding: 0; background: transparent; color: #0B7A3B; font-size: 14px; font-weight: 600">Use a different email</button>
+            </div>
+          </div>
+        </sc-if>
+        <span style="font-size: 13px; color: #5B655D">Most Nigerian university addresses end in .edu.ng. Others work too.</span>
+      </section>
+    </sc-if>
+
+    <sc-if value="{{showId}}" hint-placeholder-val="{{false}}">
+      <section class="rise" style="display: flex; flex-direction: column; gap: 14px; padding: 22px; border-radius: 20px; background: #FFFFFF; box-shadow: inset 0 0 0 1px #E3E5DD">
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 28px 16px; border-radius: 16px; border: 1.5px dashed #C7CCC1; background: #FBFBF8; text-align: center">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3D4840" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V4M7.5 8.5 12 4l4.5 4.5"></path><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"></path></svg>
+          <span style="font-size: 15px; font-weight: 600">Drop a photo of your student ID</span>
+          <span style="font-size: 14px; color: #5B655D">Front side, name and expiry visible · JPG, PNG or PDF</span>
+          <button class="btn btn-ghost" style="margin-top: 4px; height: 44px; padding: 0 16px; border-radius: 12px; background: #FFFFFF; box-shadow: inset 0 0 0 1px #C7CCC1; color: #0F1A13; font-size: 14px; font-weight: 600">Choose file</button>
+        </div>
+        <span style="font-size: 13px; color: #5B655D">A person reviews it within [X HOURS]. You can keep setting up while you wait.</span>
+      </section>
+    </sc-if>
+
+    <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding-top: 4px">
+      <a class="btn btn-primary" href="Connect.dc.html" style="display: inline-flex; align-items: center; justify-content: center; height: 52px; padding: 0 24px; border-radius: 14px; background: {{ctaBg}}; color: #FFFFFF; font-size: 16px; font-weight: 600; text-decoration: none">{{ctaLabel}}</a>
+      <a class="btn btn-ghost" href="Connect.dc.html" style="display: inline-flex; align-items: center; height: 52px; padding: 0 16px; border-radius: 14px; color: #3D4840; font-size: 15px; font-weight: 600; text-decoration: none">I'm not a student</a>
+    </div>
+  </div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":980}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { method: 'email', sent: true }; }
+  renderVals() {
+    var s = this.state, self = this;
+    var email = s.method === 'email';
+    var on = { bg: '#F2FAF5', ring: 'inset 0 0 0 2px #12A150' }, off = { bg: '#FFFFFF', ring: 'inset 0 0 0 1px #D5D9CF' };
+    var digits = ['4', '8', '2', '', '', ''];
+    var boxes = digits.map(function (v, i) {
+      var active = i === 3;
+      return { n: i + 1, v: v, bg: v ? '#FFFFFF' : '#FBFBF8', border: active ? '2px solid #12A150' : (v ? '1.5px solid #0F1A13' : '1px solid #C7CCC1') };
+    });
+    return {
+      emailOn: email ? 'true' : 'false', idOn: email ? 'false' : 'true',
+      emailBg: email ? on.bg : off.bg, emailRing: email ? on.ring : off.ring,
+      idBg: email ? off.bg : on.bg, idRing: email ? off.ring : on.ring,
+      pickEmail: function () { self.setState({ method: 'email' }); },
+      pickId: function () { self.setState({ method: 'id' }); },
+      showEmail: email, showId: !email,
+      sent: s.sent, notSent: !s.sent,
+      send: function () { self.setState({ sent: true }); },
+      reset: function () { self.setState({ sent: false }); },
+      boxes: boxes,
+      ctaLabel: email ? (s.sent ? 'Verify and continue' : 'Continue') : 'Submit for review',
+      ctaBg: email && !s.sent ? '#7FC29B' : '#12A150'
+    };
+  }
+}
+</script>
+</body>
+</html>

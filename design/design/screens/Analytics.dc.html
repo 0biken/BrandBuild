@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Brandbuild — Analytics</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&amp;family=Geist:wght@400..700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#F3F4EF;color:#0F1A13;font-family:Geist,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:#0B7A3B}a:hover{color:#075A2B}
+*{box-sizing:border-box}
+.btn{cursor:pointer;border:0;font:inherit;transition:transform 120ms cubic-bezier(.23,1,.32,1),background-color 150ms ease,box-shadow 150ms ease}
+.btn:active{transform:scale(.97)}
+:focus-visible{outline:2px solid #12A150;outline-offset:2px}
+.nav{display:flex;align-items:center;gap:12px;height:44px;padding:0 12px;border-radius:10px;color:#3D4840;font-weight:500;font-size:15px;text-decoration:none;transition:background-color 150ms ease}
+.nav.on{background:#E6F5EC;color:#0B5E2E;font-weight:600}
+.card{display:flex;flex-direction:column;gap:14px;padding:20px;border-radius:20px;background:#FFFFFF;border:1px solid #E3E5DD}
+.h2{margin:0;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:20px;letter-spacing:-0.02em}
+.cap{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5B655D}
+.bar{transition:width 420ms cubic-bezier(.23,1,.32,1)}
+.line{transition:opacity 200ms ease}
+td,th{padding:12px 10px;text-align:left;font-size:14px;border-top:1px solid #EEF0EA}
+th{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5B655D;border-top:0}
+td.n,th.n{text-align:right;font-family:'Geist Mono',monospace}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.fade{animation:fade 260ms ease both}
+@media (hover:hover) and (pointer:fine){.btn-ghost:hover{background:#E9EBE4}.nav:not(.on):hover{background:#E9EBE4}}
+@media (max-width:860px){.rail{display:none !important}.pad{padding:20px 16px 48px !important}.kpis{grid-template-columns:repeat(2,minmax(0,1fr)) !important}}
+@media (prefers-reduced-motion:reduce){*{animation-duration:1ms !important;transition-duration:1ms !important}}
+</style>
+</helmet>
+<div style="display: flex; flex-wrap: wrap; min-height: 100vh; width: 100%; background: #F3F4EF">
+<nav class="rail" aria-label="Main" style="flex: 0 0 240px; display: flex; flex-direction: column; gap: 28px; padding: 24px 16px; background: #FBFBF8; border-right: 1px solid #E3E5DD">
+  <a href="Main.dc.html" style="display: flex; align-items: center; gap: 10px; padding: 0 8px; color: #0F1A13; text-decoration: none">
+    <svg width="23" height="26" viewBox="0 0 59 66" role="img" aria-label="Brandbuild"><path d="M0 63.1688V26.0688C0 24.7053 1.1053 23.6 2.46875 23.6H17.5359C18.8994 23.6 20.0047 24.7053 20.0047 26.0688V40.6953C20.0047 43.4222 22.2153 45.6328 24.9422 45.6328H31.6406C33.0041 45.6328 34.1094 46.7381 34.1094 48.1016V63.1688C34.1094 64.5322 33.0041 65.6375 31.6406 65.6375H2.46875C1.1053 65.6375 0 64.5322 0 63.1688Z" fill="#0F1A13"></path><path d="M24.8906 39.5688V2.46875C24.8906 1.1053 25.9959 0 27.3594 0H42.4266C43.79 0 44.8953 1.1053 44.8953 2.46875V17.0953C44.8953 19.8222 47.1059 22.0328 49.8328 22.0328H56.5313C57.8947 22.0328 59 23.1381 59 24.5016V39.5688C59 40.9322 57.8947 42.0375 56.5313 42.0375H27.3594C25.9959 42.0375 24.8906 40.9322 24.8906 39.5688Z" fill="#0F1A13"></path></svg>
+    <span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 19px; letter-spacing: -0.02em">Brandbuild</span>
+  </a>
+  <a class="btn" href="Composer.dc.html" style="display: flex; align-items: center; justify-content: center; gap: 8px; height: 44px; border-radius: 12px; background: #12A150; color: #FFFFFF; font-weight: 600; font-size: 15px; text-decoration: none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>New post</a>
+  <div style="display: flex; flex-direction: column; gap: 2px">
+    <a class="nav" href="Main.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"></path></svg>Home</a>
+    <a class="nav" href="Calendar.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16.5" rx="2.5"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg>Calendar</a>
+    <a class="nav" href="Drafts.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><path d="M14 3v6h6M8 13h8M8 17h5"></path></svg>Drafts</a>
+    <a class="nav" href="Approvals.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3.5h6v3H9z"></path><path d="M7 5H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1M9 14l2 2 4-4"></path></svg>Approvals<span style="margin-left: auto; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 11px; background: #12A150; color: #FFFFFF; font-size: 12px; font-weight: 700; line-height: 22px; text-align: center">3</span></a>
+    <a class="nav on" href="Analytics.dc.html" aria-current="page"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 20h18M6 16v-5M11 16V7M16 16v-8M21 16V4"></path></svg>Analytics</a>
+    <a class="nav" href="BrandProfile.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.6-.8 1.6-1.6 0-.5-.2-.8-.4-1.1-.3-.4-.5-.7-.5-1.2 0-.9.7-1.6 1.6-1.6H16a5 5 0 0 0 5-5c0-4.1-4-7.5-9-7.5z"></path></svg>Brand profile</a>
+    <a class="nav" href="Settings.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><circle cx="12" cy="12" r="8.5"></circle></svg>Settings</a>
+  </div>
+</nav>
+
+<main class="pad" style="flex: 999 1 560px; min-width: 0; padding: 28px 40px 48px">
+  <div style="max-width: 1160px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px">
+    <header style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap">
+      <h1 style="margin: 0 auto 0 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 34px; letter-spacing: -0.03em">Analytics</h1>
+      <div role="radiogroup" aria-label="Date range" style="display: inline-flex; padding: 4px; border-radius: 12px; background: #E9EBE4">
+        <sc-for list="{{ranges}}" as="r" hint-placeholder-count="3">
+          <button class="btn" role="radio" aria-checked="{{r.on}}" onClick="{{r.pick}}" style="height: 36px; padding: 0 14px; border-radius: 9px; font-size: 14px; font-weight: 600; background: {{r.bg}}; color: {{r.fg}}; box-shadow: {{r.sh}}">{{r.label}}</button>
+        </sc-for>
+      </div>
+      <button class="btn btn-ghost" style="display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 14px; border-radius: 12px; background: #FFFFFF; box-shadow: inset 0 0 0 1px #C7CCC1; color: #0F1A13; font-size: 14px; font-weight: 600">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 20h14"></path></svg>Export CSV</button>
+    </header>
+
+    <div class="kpis" style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px">
+      <sc-for list="{{kpis}}" as="k" hint-placeholder-count="4">
+        <div class="card fade" style="gap: 6px; padding: 18px">
+          <span class="cap">{{k.label}}</span>
+          <span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 36px; line-height: 1; letter-spacing: -0.035em">{{k.value}}</span>
+          <span style="font-size: 14px; font-weight: 600; color: {{k.fg}}">{{k.delta}} <span style="font-weight: 400; color: #5B655D">vs previous</span></span>
+        </div>
+      </sc-for>
+    </div>
+
+    <section class="card" aria-label="Engagement over time">
+      <div style="display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap">
+        <h2 class="h2">Engagement</h2>
+        <span style="font-size: 14px; color: #5B655D">likes, comments, shares and saves per day</span>
+        <span style="margin-left: auto; display: inline-flex; gap: 14px; font-size: 13px; color: #3D4840">
+          <span style="display: inline-flex; align-items: center; gap: 6px"><span style="width: 14px; height: 3px; border-radius: 2px; background: #12A150"></span>This period</span>
+          <span style="display: inline-flex; align-items: center; gap: 6px"><span style="width: 14px; height: 0; border-top: 2px dashed #9AA39C"></span>Previous</span>
+        </span>
+      </div>
+      <svg viewBox="0 0 640 220" role="img" aria-label="{{chartAria}}" style="width: 100%; height: auto; display: block">
+        <g stroke="#EEF0EA" stroke-width="1">
+          <line x1="40" y1="20" x2="630" y2="20"></line><line x1="40" y1="70" x2="630" y2="70"></line><line x1="40" y1="120" x2="630" y2="120"></line><line x1="40" y1="170" x2="630" y2="170"></line>
+        </g>
+        <g fill="#5B655D" font-size="11" font-family="Geist Mono, monospace">
+          <text x="0" y="24">{{y3}}</text><text x="0" y="74">{{y2}}</text><text x="0" y="124">{{y1}}</text><text x="0" y="174">0</text>
+          <text x="40" y="200">{{xStart}}</text><text x="598" y="200">{{xEnd}}</text>
+        </g>
+        <polygon class="line" points="{{area}}" fill="#E6F5EC"></polygon>
+        <polyline class="line" points="{{prev}}" fill="none" stroke="#9AA39C" stroke-width="2" stroke-dasharray="5 5"></polyline>
+        <polyline class="line" points="{{curr}}" fill="none" stroke="#12A150" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"></polyline>
+        <circle cx="{{lastX}}" cy="{{lastY}}" r="5" fill="#FFFFFF" stroke="#12A150" stroke-width="2.5"></circle>
+      </svg>
+    </section>
+
+    <div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: stretch">
+      <section class="card" aria-label="By platform" style="flex: 1 1 320px; min-width: 0">
+        <h2 class="h2">By platform</h2>
+        <sc-for list="{{byPf}}" as="p" hint-placeholder-count="3">
+          <div style="display: flex; flex-direction: column; gap: 6px">
+            <div style="display: flex; align-items: center; gap: 8px; font-size: 14px">
+              <span style="display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 6px; background: {{p.bg}}; color: #FFFFFF; font-size: 9px; font-weight: 700">{{p.k}}</span>
+              <span style="font-weight: 600">{{p.name}}</span>
+              <span style="margin-left: auto; font-family: 'Geist Mono', monospace; color: #3D4840">{{p.value}} · {{p.pct}}</span>
+            </div>
+            <div style="height: 10px; border-radius: 5px; background: #F0F1EC; overflow: hidden"><div class="bar" style="height: 100%; border-radius: 5px; background: #12A150; width: {{p.pct}}"></div></div>
+          </div>
+        </sc-for>
+      </section>
+
+      <section class="card" aria-label="Best time to post" style="flex: 1.3 1 420px; min-width: 0">
+        <div style="display: flex; align-items: baseline; gap: 10px">
+          <h2 class="h2">Best time to post</h2>
+          <span style="font-size: 14px; color: #5B655D">when your followers engage most</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 44px repeat(6, minmax(0, 1fr)); gap: 4px; font-size: 12px">
+          <span></span>
+          <sc-for list="{{slots}}" as="sl" hint-placeholder-count="6"><span style="text-align: center; color: #5B655D; font-family: 'Geist Mono', monospace">{{sl}}</span></sc-for>
+          <sc-for list="{{heat}}" as="h" hint-placeholder-count="49">
+            <span title="{{h.title}}" aria-label="{{h.title}}" style="display: flex; align-items: center; justify-content: {{h.justify}}; height: 30px; border-radius: 6px; background: {{h.bg}}; color: {{h.fg}}; font-weight: {{h.fw}}; box-shadow: {{h.ring}}">{{h.text}}</span>
+          </sc-for>
+        </div>
+        <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: #5B655D">Less<span style="width: 18px; height: 10px; border-radius: 3px; background: #F0F1EC"></span><span style="width: 18px; height: 10px; border-radius: 3px; background: #C9E7D5"></span><span style="width: 18px; height: 10px; border-radius: 3px; background: #7FC29B"></span><span style="width: 18px; height: 10px; border-radius: 3px; background: #12A150"></span><span style="width: 18px; height: 10px; border-radius: 3px; background: #0B5E2E"></span>More</div>
+      </section>
+    </div>
+
+    <div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start">
+      <section class="card" aria-label="Top posts" style="flex: 2 1 520px; min-width: 0; overflow-x: auto">
+        <h2 class="h2">Top posts</h2>
+        <table style="width: 100%; min-width: 520px; border-collapse: collapse">
+          <thead><tr><th scope="col">Post</th><th scope="col">On</th><th scope="col" class="n">Reach</th><th scope="col" class="n">Engagement</th><th scope="col" class="n">Saves</th></tr></thead>
+          <tbody>
+            <tr><td><a href="PostDetail.dc.html" style="color: #0F1A13; font-weight: 600; text-decoration: none">Packing, start to finish</a></td><td>IG, TT</td><td class="n">8.4k</td><td class="n">11.2%</td><td class="n">310</td></tr>
+            <tr><td><a href="PostDetail.dc.html" style="color: #0F1A13; font-weight: 600; text-decoration: none">Your reviews, read aloud</a></td><td>IG, TT</td><td class="n">6.9k</td><td class="n">9.8%</td><td class="n">204</td></tr>
+            <tr><td><a href="PostDetail.dc.html" style="color: #0F1A13; font-weight: 600; text-decoration: none">Shade swatches</a></td><td>IG</td><td class="n">4.1k</td><td class="n">7.5%</td><td class="n">188</td></tr>
+            <tr><td><a href="PostDetail.dc.html" style="color: #0F1A13; font-weight: 600; text-decoration: none">Founder note: year one</a></td><td>in</td><td class="n">2.2k</td><td class="n">6.1%</td><td class="n">12</td></tr>
+          </tbody>
+        </table>
+      </section>
+      <section aria-label="Insight" style="flex: 1 1 280px; min-width: 0; display: flex; flex-direction: column; gap: 12px; padding: 22px; border-radius: 20px; background: #0F2A1B; color: #E8F1EA">
+        <span style="display: inline-flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #D4F25C">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"></path></svg>What's working</span>
+        <p style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 21px; line-height: 1.2; letter-spacing: -0.02em; color: #FFFFFF">Behind-the-scenes posts get about 3× the saves of product shots.</p>
+        <p style="margin: 0; font-size: 14px; line-height: 1.5; color: #B9CBBE">Your two best posts this period both show packing. Thursday and Friday evenings perform best.</p>
+        <a class="btn" href="Composer.dc.html" style="align-self: flex-start; display: inline-flex; align-items: center; height: 42px; padding: 0 16px; border-radius: 12px; background: #D4F25C; color: #0F2A1B; font-size: 14px; font-weight: 600; text-decoration: none">Write a post like this</a>
+      </section>
+    </div>
+  </div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1400}}'>
+var DATA = {
+  7: { kpis: [['Reach', '21.4k', '+14%', 1], ['Engagements', '1,860', '+8.2%', 1], ['New followers', '+134', '+2.1%', 1], ['Link clicks', '312', '-3.4%', 0]], curr: [180, 210, 160, 240, 300, 420, 350], prev: [150, 170, 190, 160, 220, 260, 240], max: 450, xs: 'Mon 19', xe: 'Sun 25', pf: [['IG', '#D62976', 'Instagram', '1,150', 62], ['in', '#0A66C2', 'LinkedIn', '446', 24], ['TT', '#111111', 'TikTok', '264', 14]] },
+  30: { kpis: [['Reach', '84.0k', '+22%', 1], ['Engagements', '7,420', '+11%', 1], ['New followers', '+512', '+6.4%', 1], ['Link clicks', '1.3k', '+1.8%', 1]], curr: [140, 160, 120, 200, 260, 310, 280, 190, 230, 250, 330, 380, 300, 420], prev: [120, 150, 140, 160, 180, 200, 210, 170, 190, 200, 230, 260, 240, 270], max: 450, xs: '26 Sep', xe: '25 Oct', pf: [['IG', '#D62976', 'Instagram', '4,380', 59], ['in', '#0A66C2', 'LinkedIn', '1,930', 26], ['TT', '#111111', 'TikTok', '1,110', 15]] },
+  90: { kpis: [['Reach', '231k', '+48%', 1], ['Engagements', '19.8k', '+35%', 1], ['New followers', '+1,406', '+19%', 1], ['Link clicks', '3.9k', '+9%', 1]], curr: [90, 110, 130, 120, 160, 180, 170, 210, 240, 220, 280, 310, 330, 400], prev: [80, 90, 100, 95, 110, 120, 130, 140, 150, 145, 170, 180, 190, 200], max: 450, xs: 'Jul', xe: 'Oct', pf: [['IG', '#D62976', 'Instagram', '11.9k', 60], ['in', '#0A66C2', 'LinkedIn', '4,950', 25], ['TT', '#111111', 'TikTok', '2,970', 15]] }
+};
+var DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+var SLOTS = ['8am', '11am', '2pm', '5pm', '7pm', '9pm'];
+var HEAT = [[1, 1, 2, 2, 3, 2], [1, 2, 2, 2, 3, 2], [1, 2, 1, 2, 3, 2], [1, 2, 2, 3, 4, 3], [1, 1, 2, 3, 5, 4], [0, 1, 2, 2, 3, 3], [0, 1, 1, 2, 3, 2]];
+var SHADES = ['#F0F1EC', '#E1F1E7', '#C9E7D5', '#7FC29B', '#12A150', '#0B5E2E'];
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { r: 7 }; }
+  renderVals() {
+    var r = this.state.r, d = DATA[r], self = this;
+    function pts(arr) { var n = arr.length; return arr.map(function (v, i) { var x = 40 + (590 * i / (n - 1)); var y = 170 - (150 * v / d.max); return x.toFixed(1) + ',' + y.toFixed(1); }); }
+    var c = pts(d.curr), p = pts(d.prev);
+    var last = c[c.length - 1].split(',');
+    var heat = [];
+    HEAT.forEach(function (row, di) {
+      heat.push({ text: DAYS[di], title: DAYS[di], bg: 'transparent', fg: '#5B655D', fw: '500', ring: 'none', justify: 'flex-start' });
+      row.forEach(function (v, si) {
+        var best = v === 5;
+        heat.push({ text: best ? 'Best' : '', title: DAYS[di] + ' ' + SLOTS[si] + ': level ' + v + ' of 5', bg: SHADES[v], fg: '#FFFFFF', fw: '700', ring: best ? '0 0 0 2px #0F1A13' : 'none', justify: 'center' });
+      });
+    });
+    var ranges = [[7, '7 days'], [30, '30 days'], [90, '90 days']].map(function (x) { var on = r === x[0]; return { label: x[1], on: on ? 'true' : 'false', bg: on ? '#FFFFFF' : 'transparent', fg: on ? '#0F1A13' : '#3D4840', sh: on ? '0 1px 2px rgba(15,26,19,0.12)' : 'none', pick: function () { self.setState({ r: x[0] }); } }; });
+    return {
+      ranges: ranges,
+      kpis: d.kpis.map(function (k) { return { label: k[0], value: k[1], delta: k[2], fg: k[3] ? '#0B7A3B' : '#B42318' }; }),
+      curr: c.join(' '), prev: p.join(' '), area: '40,170 ' + c.join(' ') + ' 630,170',
+      lastX: last[0], lastY: last[1],
+      y3: Math.round(d.max), y2: Math.round(d.max * 2 / 3), y1: Math.round(d.max / 3),
+      xStart: d.xs, xEnd: d.xe,
+      chartAria: 'Engagement per day from ' + d.xs + ' to ' + d.xe + ', trending up compared with the previous period',
+      byPf: d.pf.map(function (x) { return { k: x[0], bg: x[1], name: x[2], value: x[3], pct: x[4] + '%' }; }),
+      slots: SLOTS, heat: heat
+    };
+  }
+}
+</script>
+</body>
+</html>

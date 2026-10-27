@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Brandbuild Admin — Audit log</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&amp;family=Geist:wght@400..700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#EEF0EA;color:#0F1A13;font-family:Geist,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:#0B7A3B}
+*{box-sizing:border-box}
+.btn{cursor:pointer;border:0;font:inherit;transition:transform 120ms cubic-bezier(.23,1,.32,1),background-color 150ms ease}
+.btn:active{transform:scale(.97)}
+:focus-visible{outline:2px solid #12A150;outline-offset:2px}
+.tab{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 12px;border-radius:8px;color:#B9C2BB;font-size:14px;text-decoration:none;transition:background-color 150ms ease}
+.tab.on{background:#26322A;color:#FFFFFF}
+.tb{min-width:20px;height:20px;padding:0 6px;border-radius:10px;font-size:11px;font-weight:700;line-height:20px;text-align:center}
+.sel{height:38px;padding:0 30px 0 12px;border-radius:10px;border:1px solid #D5D9CF;background:#FFFFFF;font:inherit;font-size:14px;color:#0F1A13}
+td,th{padding:12px 10px;text-align:left;font-size:14px;border-top:1px solid #EEF0EA;vertical-align:top}
+th{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5B655D;border-top:0}
+.mono{font-family:'Geist Mono',monospace;font-size:13px}
+.chip{display:inline-flex;align-items:center;height:24px;padding:0 8px;border-radius:7px;font-size:12px;font-weight:600;white-space:nowrap}
+@media (hover:hover) and (pointer:fine){.tab:not(.on):hover{background:#1C2620;color:#FFFFFF}}
+@media (max-width:860px){.pad{padding:16px !important}.adnav{overflow-x:auto}}
+</style>
+</helmet>
+<div style="min-height: 100vh; width: 100%; background: #EEF0EA">
+  <header style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap; padding: 12px 24px; background: #0F1A13; color: #FFFFFF">
+    <svg width="20" height="22" viewBox="0 0 59 66" role="img" aria-label="Brandbuild"><path d="M0 63.1688V26.0688C0 24.7053 1.1053 23.6 2.46875 23.6H17.5359C18.8994 23.6 20.0047 24.7053 20.0047 26.0688V40.6953C20.0047 43.4222 22.2153 45.6328 24.9422 45.6328H31.6406C33.0041 45.6328 34.1094 46.7381 34.1094 48.1016V63.1688C34.1094 64.5322 33.0041 65.6375 31.6406 65.6375H2.46875C1.1053 65.6375 0 64.5322 0 63.1688Z" fill="#FFFFFF"></path><path d="M24.8906 39.5688V2.46875C24.8906 1.1053 25.9959 0 27.3594 0H42.4266C43.79 0 44.8953 1.1053 44.8953 2.46875V17.0953C44.8953 19.8222 47.1059 22.0328 49.8328 22.0328H56.5313C57.8947 22.0328 59 23.1381 59 24.5016V39.5688C59 40.9322 57.8947 42.0375 56.5313 42.0375H27.3594C25.9959 42.0375 24.8906 40.9322 24.8906 39.5688Z" fill="#FFFFFF"></path></svg>
+    <span style="font-weight: 600; font-size: 15px">Admin</span>
+    <nav class="adnav" aria-label="Admin" style="display: flex; gap: 2px; margin-left: 8px">
+      <a class="tab" href="AdminHome.dc.html">Overview</a>
+      <a class="tab" href="AdminWorkspace.dc.html">Workspaces</a>
+      <a class="tab" href="AdminUnclear.dc.html">Outcome unclear<span class="tb" style="background: #D4F25C; color: #0F2A1B">4</span></a>
+      <a class="tab" href="ReviewQueue.dc.html">Student reviews<span class="tb" style="background: #3A4A3F; color: #FFFFFF">12</span></a>
+      <a class="tab" href="AdminSpend.dc.html">AI spend</a>
+      <a class="tab on" href="AdminAudit.dc.html" aria-current="page">Audit log</a>
+    </nav>
+    <span style="margin-left: auto; font-size: 14px; color: #B9C2BB">[NAME] · Support</span>
+  </header>
+
+  <div class="pad" style="max-width: 1360px; margin: 0 auto; padding: 24px; display: flex; flex-direction: column; gap: 16px">
+    <div style="display: flex; align-items: flex-end; gap: 12px; flex-wrap: wrap">
+      <div style="display: flex; flex-direction: column; gap: 4px; margin-right: auto">
+        <h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 30px; letter-spacing: -0.03em">Audit log</h1>
+        <span style="font-size: 14px; color: #5B655D">Every staff action and every support session. Entries can't be edited or deleted. Kept for [N] months.</span>
+      </div>
+      <button class="btn" style="height: 40px; padding: 0 14px; border-radius: 11px; background: #FFFFFF; box-shadow: inset 0 0 0 1px #C7CCC1; font-size: 14px; font-weight: 600">Export CSV</button>
+    </div>
+
+    <div style="display: flex; gap: 8px; flex-wrap: wrap">
+      <label><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Staff member</span><select class="sel"><option>All staff</option><option>Femi</option><option>Ngozi</option></select></label>
+      <label><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Action</span><select class="sel"><option>All actions</option><option>Support access</option><option>Pause or resume</option><option>Post resolved</option><option>Student review</option><option>Throttle</option></select></label>
+      <label><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Workspace</span><input type="search" class="sel" placeholder="Any workspace" style="padding-right: 12px; width: 200px"></label>
+      <label><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Date range</span><select class="sel"><option>Last 7 days</option><option>Last 30 days</option></select></label>
+    </div>
+
+    <section style="padding: 8px 12px; border-radius: 18px; background: #FFFFFF; overflow-x: auto">
+      <table style="width: 100%; min-width: 900px; border-collapse: collapse">
+        <thead><tr><th scope="col">When</th><th scope="col">Who</th><th scope="col">Action</th><th scope="col">Workspace</th><th scope="col">Reason</th></tr></thead>
+        <tbody>
+          <sc-for list="{{rows}}" as="r" hint-placeholder-count="9">
+            <tr style="background: {{r.bg}}">
+              <td class="mono" style="white-space: nowrap; color: #3D4840">{{r.when}}</td>
+              <td style="font-weight: 600; white-space: nowrap">{{r.who}}</td>
+              <td><span class="chip" style="background: {{r.cBg}}; color: {{r.cFg}}">{{r.kind}}</span><div style="margin-top: 4px">{{r.what}}</div>
+                <sc-if value="{{r.hasPages}}" hint-placeholder-val="{{false}}">
+                  <div style="margin-top: 6px; display: flex; flex-direction: column; gap: 2px; padding-left: 10px; border-left: 2px solid #D4F25C">
+                    <sc-for list="{{r.pages}}" as="pg" hint-placeholder-count="3"><span class="mono" style="color: #3D4840">{{pg}}</span></sc-for>
+                  </div>
+                </sc-if>
+              </td>
+              <td><a href="AdminWorkspace.dc.html" style="color: #0F1A13">{{r.ws}}</a></td>
+              <td style="color: #3D4840">{{r.why}}</td>
+            </tr>
+          </sc-for>
+        </tbody>
+      </table>
+    </section>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var K = {
+      support: ['Support access', '#0F2A1B', '#D4F25C'], pause: ['Pause', '#F0F1EC', '#0F1A13'], resume: ['Resume', '#E6F5EC', '#0B5E2E'],
+      post: ['Post resolved', '#E7F1FB', '#0A3D73'], student: ['Student review', '#F0F1EC', '#3D4840'], throttle: ['Throttle', '#FFF1D6', '#6B4300'], banner: ['Customer banner', '#FDECEA', '#8F1D14']
+    };
+    function r(when, who, kind, what, ws, why, pages) { var k = K[kind]; return { when: when, who: who, kind: k[0], cBg: k[1], cFg: k[2], what: what, ws: ws, why: why, pages: pages || [], hasPages: !!pages, bg: kind === 'support' ? '#FBFDF5' : '#FFFFFF' }; }
+    return { rows: [
+      r('26 Oct 00:41', 'Femi', 'post', 'Marked “Drop is live” as published on Instagram', 'Nova Studio', 'Matching post found 39 s after send'),
+      r('26 Oct 00:38', 'Femi', 'banner', 'Showed the Meta outage banner to 214 workspaces', 'All on Meta', 'Meta status page: degraded publishing'),
+      r('26 Oct 00:12', 'Ngozi', 'support', 'Read-only session, 18 min, ended by Ngozi', 'Bloom Bakes', 'Ticket #2213 · Owner can’t see Facebook insights', ['00:12 Home', '00:13 Settings → Connected accounts', '00:16 Analytics', '00:29 Session ended']),
+      r('25 Oct 23:58', 'Femi', 'pause', 'Paused publishing · 7 posts held', 'Kicks.ng', 'Payment failed twice'),
+      r('25 Oct 23:40', 'Ngozi', 'throttle', 'Capped AI to [N] generations a day', 'Kicks.ng', '8× usual spend, looks like a script'),
+      r('25 Oct 21:15', 'Femi', 'student', 'Rejected student ID · expiry not readable', 'Chiamaka Obi', 'Asked to retake photo'),
+      r('25 Oct 18:02', 'Ngozi', 'resume', 'Resumed publishing', 'Lagos Thrift Co.', 'Owner asked to resume after holiday'),
+      r('25 Oct 16:30', 'Femi', 'post', 'Marked a Facebook post as failed and told the customer', 'Bloom Bakes', 'No matching post after 3 checks'),
+      r('25 Oct 11:04', 'Ngozi', 'student', 'Approved student ID', 'Tunde Bakare', '—')
+    ] };
+  }
+}
+</script>
+</body>
+</html>
