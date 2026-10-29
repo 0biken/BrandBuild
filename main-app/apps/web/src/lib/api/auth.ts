@@ -1,3 +1,4 @@
+import { read } from "@/lib/mock/store";
 import { API_MODE, API_URL } from "./config";
 import { apiFetch } from "./http";
 import {
@@ -25,13 +26,6 @@ export const MOCK_ACCOUNT = {
 } as const;
 export const MOCK_CODE = "123456";
 export const MOCK_EXPIRED_CODE = "000000";
-
-const MOCK_SESSION: Session = {
-  userId: "user-mary",
-  name: "Mary",
-  identifier: MOCK_ACCOUNT.identifier,
-  role: "owner",
-};
 
 /** Where a signed-in user lands. */
 export const HOME_HREF = APP_HOME;
@@ -71,8 +65,7 @@ export async function logOut(): Promise<ApiResult> {
 
 export async function getSession(): Promise<ApiResult<Session>> {
   if (API_MODE === "http") return apiFetch<Session>("/v1/auth/session");
-  await wait(150);
-  return { ok: true, data: MOCK_SESSION };
+  return read((d) => d.session);
 }
 
 export async function signInWithProvider(provider: Provider): Promise<ApiResult> {

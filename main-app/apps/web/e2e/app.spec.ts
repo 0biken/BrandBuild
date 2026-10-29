@@ -47,7 +47,7 @@ test("search with no match offers a way back", async ({ page }) => {
 });
 
 test("planned screens say they're coming, unknown ones 404", async ({ page }) => {
-  await page.goto("/app/calendar");
+  await page.goto("/app/settings");
   await expect(page.getByText("This screen is on its way")).toBeVisible();
   const res = await page.goto("/app/not-a-screen");
   expect(res?.status()).toBe(404);

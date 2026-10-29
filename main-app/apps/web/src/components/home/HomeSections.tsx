@@ -40,7 +40,8 @@ export function StartPost({ brand }: { brand?: Brand }) {
 
   return (
     <section aria-label="Start a post" className={`${card} flex flex-col gap-3.5 p-[22px] max-md:p-4`}>
-      <form onSubmit={submit} className="flex flex-col gap-3.5">
+      {/* action + name: submits to the composer even before hydration. */}
+      <form action={ROUTES.compose} onSubmit={submit} className="flex flex-col gap-3.5">
         <label htmlFor="prompt" className="flex items-center gap-2 text-[15px] font-semibold">
           <SparkIcon size={18} className="text-primary" />
           What do you want to post about?
@@ -48,6 +49,7 @@ export function StartPost({ brand }: { brand?: Brand }) {
         <div className="flex flex-wrap gap-3">
           <input
             id="prompt"
+            name="idea"
             type="text"
             value={idea}
             onChange={(e) => setIdea(e.target.value)}
@@ -143,7 +145,7 @@ export function Stats({ stats, accountCount }: { stats?: StatItem[]; accountCoun
 
 export function UpNext({ posts, platforms }: { posts?: PostItem[]; platforms?: PlatformConfig[] }) {
   const upcoming = posts
-    ?.filter((p) => p.state !== "published")
+    ?.filter((p) => p.state === "scheduled" || p.state === "approval" || p.state === "paused")
     .sort((a, b) => postTimestamp(a) - postTimestamp(b))
     .slice(0, 5);
   const byId = new Map(platforms?.map((p) => [p.id, p]));

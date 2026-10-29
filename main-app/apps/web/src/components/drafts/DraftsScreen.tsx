@@ -79,7 +79,7 @@ export function DraftsScreen() {
     <div className="mx-auto flex max-w-[1200px] flex-col gap-[22px]">
       <header className="flex flex-wrap items-center gap-3">
         <h1 className="m-0 mr-auto font-display text-[34px] font-bold tracking-[-0.03em] max-md:text-[28px]">
-          Drafts {drafts.data && <span className="text-[#9AA39C]">{all.length}</span>}
+          Drafts {drafts.data && <span className="text-[#7D877F]">{all.length}</span>}
         </h1>
         <label className="relative max-md:order-last max-md:w-full">
           <span className="sr-only">Search drafts</span>

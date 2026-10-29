@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { ComponentProps } from "react";
 
-export type ButtonVariant = "primary" | "outline" | "ghost" | "soft" | "ghostOnDark" | "lime" | "dark";
+export type ButtonVariant = "primary" | "outline" | "ghost" | "soft" | "ghostOnDark" | "danger" | "dangerOutline" | "lime" | "dark";
 export type ButtonSize = "md" | "lg";
 
 const base =
@@ -20,6 +20,10 @@ const variants: Record<ButtonVariant, string> = {
   /** Ghost button on forest/dark surfaces. */
   ghostOnDark: "bg-transparent text-forest-text fine:bg-forest-2",
   lime: "bg-lime text-forest fine:bg-lime-hover",
+  /** Destructive confirm (white on #D92D20 is 4.8:1). */
+  danger: "bg-danger text-white fine:bg-danger-ink",
+  /** Destructive action that opens a confirmation. */
+  dangerOutline: "border border-[#F4C7C3] bg-surface text-danger-ink fine:bg-danger-soft",
   dark: "bg-ink text-white fine:bg-forest",
 };
 

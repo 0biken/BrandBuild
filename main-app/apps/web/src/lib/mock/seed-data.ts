@@ -5,6 +5,7 @@ import type {
   PostItem,
   ConnectedAccount,
   Brand,
+  Session,
 } from "@/lib/api/types";
 
 export const SEED_PLATFORMS: PlatformConfig[] = [
@@ -338,6 +339,90 @@ export const SEED_POSTS: PostItem[] = [
       saves: "78",
     },
   },
+  // One post in each remaining state, so every PostDetail state is reachable.
+  {
+    id: "post-6",
+    title: "Gloss close-ups",
+    caption: "Up close, every shade has a little shimmer. Which one is yours?",
+    hashtags: ["#lipgloss", "#swatches"],
+    aspectRatio: "2.4 / 1",
+    time: "7:00 PM",
+    dateStr: "Tue, 27 Oct 2026",
+    scheduledFor: "Tue 27 Oct at 7:00 PM · 1 of 2 platforms posted",
+    state: "failed",
+    platforms: ["ig", "li"],
+    activityLog: [
+      { text: "Instagram rejected the image", time: "Tue 7:00 PM", dot: "#D92D20" },
+      { text: "Published to LinkedIn", time: "Tue 7:00 PM", dot: "#12A150" },
+    ],
+    failureInfo: {
+      title: "Didn't post to Instagram",
+      message: "Instagram doesn't accept images wider than 1.91:1. This one is 2.4:1. LinkedIn posted fine.",
+    },
+  },
+  {
+    id: "post-7",
+    title: "Restock alert",
+    caption: "Our best-seller is back in stock. Thank you for waiting.",
+    hashtags: ["#restock"],
+    aspectRatio: "1 / 1",
+    time: "12:00 PM",
+    dateStr: "Mon, 26 Oct 2026",
+    scheduledFor: "Mon 26 Oct at 12:00 PM · confirming with Instagram",
+    state: "checking",
+    platforms: ["ig", "li"],
+    activityLog: [
+      { text: "Instagram didn’t confirm. We’re checking", time: "Mon 12:02 PM", dot: "#B26A00" },
+      { text: "Published to LinkedIn", time: "Mon 12:00 PM", dot: "#12A150" },
+    ],
+    checkingInfo: {
+      title: "Checking whether Instagram posted this",
+      message:
+        "Instagram didn't confirm in time. Please don't post it again yourself, or it may appear twice. We'll confirm within [X MINUTES] and tell you either way.",
+    },
+  },
+  {
+    id: "post-8",
+    title: "Weekend opening hours",
+    caption: "We're open Saturday 10 AM to 4 PM for pickups.",
+    hashtags: ["#shoplocal"],
+    aspectRatio: "1 / 1",
+    time: "9:00 AM",
+    dateStr: "Sat, 31 Oct 2026",
+    scheduledFor: "Was due Sat 31 Oct at 9:00 AM",
+    state: "paused",
+    platforms: ["ig"],
+    activityLog: [{ text: "Held: publishing paused for this workspace", time: "Fri 6:00 PM", dot: "#0F2A1B" }],
+    pausedInfo: {
+      title: "Publishing is paused for this workspace",
+      message:
+        "[REASON, e.g. a payment problem or a request from the account owner]. This post is held and will go out when publishing resumes, unless its time has passed.",
+    },
+  },
+  // Published history for the calendar (titles from the Calendar design).
+  ...([
+    ["post-h1", "Founder note: year one", "Tue, 6 Oct 2026", "9:00 AM", ["li"]],
+    ["post-h2", "Shade swatches", "Fri, 9 Oct 2026", "7:00 PM", ["ig"]],
+    ["post-h3", "Packing, start to finish", "Tue, 13 Oct 2026", "6:00 PM", ["ig", "tt"]],
+    ["post-h4", "We’re hiring a packer", "Fri, 16 Oct 2026", "12:30 PM", ["li"]],
+    ["post-h5", "Your reviews, read aloud", "Tue, 20 Oct 2026", "7:00 PM", ["ig", "tt"]],
+    ["post-h6", "Weekend teaser", "Fri, 23 Oct 2026", "7:00 PM", ["ig"]],
+  ] as const).map(
+    ([id, title, dateStr, time, platforms]): PostItem => ({
+      id,
+      title,
+      caption: `${title}. Sample caption from the design's calendar.`,
+      hashtags: ["#smallbusiness"],
+      aspectRatio: "1 / 1",
+      time,
+      dateStr,
+      scheduledFor: `Posted ${dateStr.replace(",", "").replace(/ \d{4}$/, "")} at ${time}`,
+      state: "published",
+      platforms: [...platforms],
+      activityLog: [{ text: "Published", time: `${dateStr.slice(0, 3)} ${time}`, dot: "#12A150" }],
+      metrics: { reach: "1.2k", likes: "150", comments: "12", saves: "30" },
+    }),
+  ),
 ];
 
 export const SEED_BRAND: Brand = {
@@ -346,4 +431,11 @@ export const SEED_BRAND: Brand = {
   voice: "warm, confident",
   plan: "student",
   planEndsLabel: "[END DATE]",
+};
+
+export const SEED_SESSION: Session = {
+  userId: "user-mary",
+  name: "Mary",
+  identifier: "mary@novastudio.co",
+  role: "owner",
 };
