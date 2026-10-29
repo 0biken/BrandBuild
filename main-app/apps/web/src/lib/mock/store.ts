@@ -6,6 +6,7 @@ import type {
   DraftItem,
   PlatformConfig,
   PostItem,
+  Session,
   StatItem,
 } from "@/lib/api/types";
 import {
@@ -14,6 +15,7 @@ import {
   SEED_DRAFTS,
   SEED_PLATFORMS,
   SEED_POSTS,
+  SEED_SESSION,
   SEED_STATS,
 } from "./seed-data";
 
@@ -30,6 +32,7 @@ export interface MockDb {
   platforms: PlatformConfig[];
   stats: StatItem[];
   brand: Brand;
+  session: Session;
 }
 
 const STORAGE_KEY = "bb:mock-db:v1";
@@ -42,6 +45,7 @@ const seed = (): MockDb =>
     platforms: SEED_PLATFORMS,
     stats: SEED_STATS,
     brand: SEED_BRAND,
+    session: SEED_SESSION,
   });
 
 let db: MockDb | null = null;
@@ -80,6 +84,11 @@ if (typeof window !== "undefined") {
   (window as unknown as { __bbMock: unknown }).__bbMock = {
     config: mockConfig,
     reset: resetMockDb,
+    /** Switch the signed-in role, e.g. __bbMock.setRole("editor"). */
+    setRole(role: Session["role"]) {
+      load().session.role = role;
+      save();
+    },
   };
 }
 

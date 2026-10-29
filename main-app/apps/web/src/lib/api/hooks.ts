@@ -10,10 +10,12 @@ import type { ApiError, ApiResult } from "./types";
  */
 
 const versions = new Map<string, number>();
+/** Keys of mounted queries, so invalidate("posts") also reaches "posts:abc". */
+const live = new Map<string, number>();
 const listeners = new Set<() => void>();
 
 export function invalidate(prefix: string) {
-  for (const key of new Set([...versions.keys(), prefix])) {
+  for (const key of new Set([...versions.keys(), ...live.keys(), prefix])) {
     if (key.startsWith(prefix)) versions.set(key, (versions.get(key) ?? 0) + 1);
   }
   listeners.forEach((l) => l());
@@ -45,13 +47,22 @@ export function useQuery<T>(key: string, fetcher: () => Promise<ApiResult<T>>): 
   const [settled, setSettled] = useState<Settled<T> | null>(null);
 
   useEffect(() => {
-    let live = true;
+    live.set(key, (live.get(key) ?? 0) + 1);
+    return () => {
+      const n = (live.get(key) ?? 1) - 1;
+      if (n > 0) live.set(key, n);
+      else live.delete(key);
+    };
+  }, [key]);
+
+  useEffect(() => {
+    let active = true;
     fetcher().then((res) => {
-      if (!live) return;
+      if (!active) return;
       setSettled(res.ok ? { tag, data: res.data } : { tag, error: res.error });
     });
     return () => {
-      live = false;
+      active = false;
     };
     // The fetcher is keyed by `key`; a new closure each render must not refetch.
     // eslint-disable-next-line react-hooks/exhaustive-deps
