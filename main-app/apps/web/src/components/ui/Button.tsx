@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { ComponentProps } from "react";
 
-export type ButtonVariant = "primary" | "outline" | "ghost" | "lime" | "dark";
+export type ButtonVariant = "primary" | "outline" | "ghost" | "soft" | "ghostOnDark" | "lime" | "dark";
 export type ButtonSize = "md" | "lg";
 
 const base =
@@ -15,6 +15,10 @@ const variants: Record<ButtonVariant, string> = {
   outline:
     "border border-line-strong bg-surface text-ink fine:bg-page-hover disabled:text-muted",
   ghost: "bg-transparent text-ink fine:bg-page-hover",
+  /** Tinted secondary action inside cards. */
+  soft: "bg-page text-ink fine:bg-page-hover",
+  /** Ghost button on forest/dark surfaces. */
+  ghostOnDark: "bg-transparent text-forest-text fine:bg-forest-2",
   lime: "bg-lime text-forest fine:bg-lime-hover",
   dark: "bg-ink text-white fine:bg-forest",
 };
