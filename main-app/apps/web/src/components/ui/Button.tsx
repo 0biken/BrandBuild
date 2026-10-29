@@ -11,7 +11,7 @@ const base =
 // "fine:" is the hover variant gated to fine pointers (see globals.css).
 const variants: Record<ButtonVariant, string> = {
   primary:
-    "bg-primary text-white fine:bg-primary-hover disabled:bg-primary-off disabled:text-primary-off-ink aria-disabled:bg-primary-off aria-disabled:text-primary-off-ink",
+    "bg-primary-strong text-white fine:bg-primary-hover disabled:bg-primary-off disabled:text-primary-off-ink aria-disabled:bg-primary-off aria-disabled:text-primary-off-ink",
   outline:
     "border border-line-strong bg-surface text-ink fine:bg-page-hover disabled:text-muted",
   ghost: "bg-transparent text-ink fine:bg-page-hover",

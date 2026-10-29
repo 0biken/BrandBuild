@@ -42,7 +42,12 @@ export default function PricingPage() {
           >
             Compare plans
           </h2>
-          <div className="overflow-x-auto rounded-[28px] border border-line bg-surface">
+          <div
+            role="region"
+            aria-labelledby="compare"
+            tabIndex={0}
+            className="overflow-x-auto rounded-[28px] border border-line bg-surface"
+          >
             <table className="w-full min-w-[640px] border-collapse text-left text-[15px]">
               <thead>
                 <tr className="border-b border-line">
