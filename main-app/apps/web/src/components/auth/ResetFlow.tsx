@@ -9,7 +9,7 @@ import { Field } from "@/components/ui/Field";
 import { CheckIcon } from "@/components/ui/icons";
 import { PasswordChecklist } from "@/components/ui/PasswordChecklist";
 import { PasswordField } from "@/components/ui/PasswordField";
-import { HOME_HREF, requestCode, resetPassword, verifyCode } from "@/lib/auth";
+import { HOME_HREF, requestCode, resetPassword, verifyCode } from "@/lib/api/auth";
 import { passwordValid } from "@/lib/password";
 
 const STEPS = ["Request a code", "Enter the code", "New password"] as const;

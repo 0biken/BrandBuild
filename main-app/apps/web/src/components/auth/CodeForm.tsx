@@ -7,7 +7,7 @@ import { Alert } from "@/components/ui/Alert";
 import { Button } from "@/components/ui/Button";
 import { CodeInput } from "@/components/ui/CodeInput";
 import { MailIcon } from "@/components/ui/icons";
-import { HOME_HREF, requestCode, verifyCode } from "@/lib/auth";
+import { HOME_HREF, requestCode, verifyCode } from "@/lib/api/auth";
 import { usePendingIdentifier } from "@/lib/pending";
 
 const RESEND_SECONDS = 30;

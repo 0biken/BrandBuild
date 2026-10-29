@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { Field } from "@/components/ui/Field";
 import { PasswordChecklist } from "@/components/ui/PasswordChecklist";
 import { PasswordField } from "@/components/ui/PasswordField";
-import { signUp } from "@/lib/auth";
+import { signUp } from "@/lib/api/auth";
 import { setPendingIdentifier } from "@/lib/pending";
 import { passwordValid } from "@/lib/password";
 import { Divider } from "./AuthShell";
