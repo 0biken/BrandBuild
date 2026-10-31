@@ -1,6 +1,10 @@
 //! Authentication boundary. Tenant identity is derived from validated server-side
 //! session claims and membership, never accepted from request JSON.
-use axum::{extract::FromRequestParts, http::{request::Parts, StatusCode}, response::{IntoResponse, Response}};
+use axum::{
+    extract::FromRequestParts,
+    http::{request::Parts, StatusCode},
+    response::{IntoResponse, Response},
+};
 use uuid::Uuid;
 
 #[derive(Clone, Debug)]
@@ -19,11 +23,16 @@ impl IntoResponse for AuthError {
     }
 }
 
+#[axum::async_trait]
 impl<S: Send + Sync> FromRequestParts<S> for TenantContext {
     type Rejection = AuthError;
 
     async fn from_request_parts(parts: &mut Parts, _state: &S) -> Result<Self, Self::Rejection> {
-        parts.extensions.get::<TenantContext>().cloned().ok_or(AuthError)
+        parts
+            .extensions
+            .get::<TenantContext>()
+            .cloned()
+            .ok_or(AuthError)
     }
 }
 
