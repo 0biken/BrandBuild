@@ -150,10 +150,12 @@ pub fn router(state:AppState)->Router{
  .route("/posts/:id/approve",post(approve)).route("/posts/:id/publish",post(publish)).route("/analytics",get(analytics)).route("/audit",get(audit))
  .layer(middleware::from_fn_with_state(state.clone(),auth_middleware)).with_state(state.clone());
  Router::new().route("/health",get(health))
- .route("/v1/tenant/config",get(placeholder).put(placeholder)).route("/v1/brand",get(placeholder).post(placeholder).put(placeholder)).route("/v1/brand/pillars",get(placeholder).post(placeholder))
- .route("/v1/channels",get(placeholder).post(placeholder)).route("/v1/channels/:channel_id",get(placeholder).put(placeholder).delete(placeholder)).route("/v1/channels/oauth/:provider/start",post(placeholder)).route("/v1/channels/oauth/:provider/callback",get(placeholder).post(placeholder))
- .route("/v1/calendar-plans",get(placeholder).post(placeholder)).route("/v1/calendar-plans/:plan_id",get(placeholder).put(placeholder).delete(placeholder)).route("/v1/calendar-plans/:plan_id/slots",get(placeholder).post(placeholder)).route("/v1/calendar-slots/:slot_id",get(placeholder).put(placeholder).delete(placeholder))
- .route("/v1/posts",get(placeholder).post(placeholder)).route("/v1/posts/:post_id",get(placeholder).put(placeholder).delete(placeholder)).route("/v1/posts/:post_id/approve",post(placeholder)).route("/v1/posts/:post_id/request-changes",post(placeholder)).route("/v1/posts/:post_id/schedule",post(placeholder)).route("/v1/posts/:post_id/cancel",post(placeholder)).route("/v1/analytics",get(placeholder)).route("/v1/audit",get(placeholder))
+ .route("/v1/brand",get(list_brand).post(create_brand))
+ .route("/v1/channels",get(list_channel).post(create_channel)).route("/v1/channels/:channel_id",get(get_channel).put(update_channel).delete(delete_channel))
+ .route("/v1/calendar-plans",get(list_calendar).post(create_calendar)).route("/v1/calendar-plans/:plan_id",get(get_calendar).put(update_calendar).delete(delete_calendar))
+ .route("/v1/posts",get(list_post).post(create_post)).route("/v1/posts/:post_id",get(get_post).put(update_post).delete(delete_post))
+ .route("/v1/posts/:post_id/approve",post(approve)).route("/v1/posts/:post_id/publish",post(publish))
+ .route("/v1/analytics",get(analytics)).route("/v1/audit",get(audit))
  .nest("/v2",v2).with_state(state)
 }
 
