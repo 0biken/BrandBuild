@@ -4,7 +4,7 @@ Rust / Axum / Tokio API scaffold for BrandBuild. The project uses one binary cra
 
 ## Layout
 
-- `src/api.rs`: `/health` and `/v1` route placeholders.
+- `src/api.rs`: `/health`, `/v1` compatibility placeholders, and typed `/v2` resource handlers for brands, channels, calendars, posts, analytics, and audit. V2 currently uses a process-local in-memory store and returns structured JSON errors; data resets on restart and tenant authentication/authorization must be applied before production use.
 - `src/auth.rs`: tenant context extraction and a deliberately unimplemented session/JWT resolver. Tenant identity must be resolved from validated server-side auth and membership, never request input.
 - `src/domain.rs`: post state machine and deterministic publish idempotency key helper.
 - `src/db.rs`: Postgres pool and sqlx migration runner.
@@ -26,7 +26,7 @@ The API listens on `http://localhost:3000`; `GET /health` returns a basic health
 
 ## Route scaffold
 
-`/v1/tenant/config`, `/v1/brand`, `/v1/brand/pillars`, `/v1/channels` and channel OAuth start/callback placeholders, `/v1/calendar-plans` and slots, `/v1/posts` plus approve/request-changes/schedule/cancel actions, `/v1/analytics`, and `/v1/audit`. Except health, routes are placeholders and do not persist data yet. They must be protected by the auth middleware before exposing tenant data.
+`/v1/tenant/config`, `/v1/brand`, `/v1/brand/pillars`, `/v1/channels` and channel OAuth start/callback placeholders, `/v1/calendar-plans` and slots, `/v1/posts` plus approve/request-changes/schedule/cancel actions, `/v1/analytics`, and `/v1/audit` remain compatibility placeholders. V2 exposes `GET/POST /v2/brands`, `GET/PUT/DELETE /v2/brands/:id`, the same CRUD shape for `/v2/channels`, `/v2/calendars`, and `/v2/posts`, plus `GET /v2/analytics` and `GET /v2/audit`. V2 writes and audit entries are held in process memory, so they reset on restart and are not shared across instances. Authentication/authorization middleware is not wired yet; protect the routes before exposing tenant data.
 
 ## Decisions and next steps
 

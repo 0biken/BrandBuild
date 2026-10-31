@@ -10,7 +10,7 @@ async fn main() -> anyhow::Result<()> {
         .init();
     let database_url = std::env::var("DATABASE_URL").context("DATABASE_URL must be set")?;
     let pool = db::connect(&database_url).await?;
-    let state = AppState { pool };
+    let state = AppState { pool, v2: api::V2Store::default() };
     tokio::spawn(workers::run(state.clone()));
     let app = api::router(state);
     let addr: SocketAddr = "0.0.0.0:3000".parse()?;
