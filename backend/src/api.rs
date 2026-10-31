@@ -67,7 +67,7 @@ fn from_row(row:&sqlx::postgres::PgRow, kind:ResourceKind)->Result<Resource,ApiE
     Ok(Resource{id,kind,data,created_at,updated_at})
 }
 fn select_sql(kind:ResourceKind, by_id:bool)->String {
-    let filter=if by_id{" AND r.id=$2"}else{""};
+    let filter=if by_id{if matches!(kind,ResourceKind::Post){" AND p.id=$2"}else{" AND r.id=$2"}}else{""};
     match kind {
       ResourceKind::Brand=>format!("SELECT r.id,r.created_at,r.updated_at,r.name,r.website_url,r.voice,r.audience,r.guidelines FROM brand_profiles r WHERE r.tenant_id=$1{filter}"),
       ResourceKind::Channel=>format!("SELECT r.id,r.created_at,r.updated_at,r.provider,r.display_name,r.external_account_id,r.metadata FROM channels r WHERE r.tenant_id=$1{filter}"),
