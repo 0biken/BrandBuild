@@ -40,7 +40,8 @@ export function StartPost({ brand }: { brand?: Brand }) {
 
   return (
     <section aria-label="Start a post" className={`${card} flex flex-col gap-3.5 p-[22px] max-md:p-4`}>
-      <form onSubmit={submit} className="flex flex-col gap-3.5">
+      {/* action + name: submits to the composer even before hydration. */}
+      <form action={ROUTES.compose} onSubmit={submit} className="flex flex-col gap-3.5">
         <label htmlFor="prompt" className="flex items-center gap-2 text-[15px] font-semibold">
           <SparkIcon size={18} className="text-primary" />
           What do you want to post about?
@@ -48,6 +49,7 @@ export function StartPost({ brand }: { brand?: Brand }) {
         <div className="flex flex-wrap gap-3">
           <input
             id="prompt"
+            name="idea"
             type="text"
             value={idea}
             onChange={(e) => setIdea(e.target.value)}
@@ -143,7 +145,7 @@ export function Stats({ stats, accountCount }: { stats?: StatItem[]; accountCoun
 
 export function UpNext({ posts, platforms }: { posts?: PostItem[]; platforms?: PlatformConfig[] }) {
   const upcoming = posts
-    ?.filter((p) => p.state !== "published")
+    ?.filter((p) => p.state === "scheduled" || p.state === "approval" || p.state === "paused")
     .sort((a, b) => postTimestamp(a) - postTimestamp(b))
     .slice(0, 5);
   const byId = new Map(platforms?.map((p) => [p.id, p]));
@@ -266,14 +268,14 @@ export function NeedsAttention({
   posts?: PostItem[];
   platforms?: PlatformConfig[];
 }) {
-  const broken = accounts?.filter((a) => a.status !== "connected") ?? [];
+  const broken = accounts?.filter((a) => a.status === "needs_attention") ?? [];
   if (broken.length === 0) return null;
   return (
     <>
       {broken.map((a) => {
         const name = platforms?.find((p) => p.id === a.platform)?.name ?? a.handle;
         const held =
-          posts?.filter((p) => p.state !== "published" && p.platforms.includes(a.platform)).length ?? 0;
+          posts?.filter((p) => p.state !== "published" && (p.platforms as string[]).includes(a.platform)).length ?? 0;
         return (
           <section
             key={a.id}
@@ -308,5 +310,27 @@ export function LoadError({ onRetry }: { onRetry: () => void }) {
       body="Check your connection and try again."
       action={<Button variant="outline" onClick={onRetry}>Try again</Button>}
     />
+  );
+}
+
+// ---------- Finish setting up ----------
+
+export function FinishSetup({ remaining, href }: { remaining: number; href: string }) {
+  return (
+    <section
+      aria-labelledby="setup-h"
+      className="flex flex-wrap items-center gap-4 rounded-[20px] border border-[#BFE3CC] bg-primary-soft p-[18px]"
+    >
+      <div className="flex min-w-0 flex-[1_1_280px] flex-col gap-1">
+        <h2 id="setup-h" className="m-0 text-[15px] font-semibold text-primary-ink">
+          Finish setting up
+        </h2>
+        <p className="m-0 text-sm text-primary-ink">
+          {remaining} step{remaining === 1 ? "" : "s"} left. Connected accounts and your brand voice make every caption
+          better.
+        </p>
+      </div>
+      <ButtonLink href={href}>Continue setup</ButtonLink>
+    </section>
   );
 }

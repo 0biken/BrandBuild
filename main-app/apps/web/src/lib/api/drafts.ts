@@ -8,6 +8,28 @@ export async function listDrafts(): Promise<ApiResult<DraftItem[]>> {
   return read((d) => d.drafts);
 }
 
+export async function getDraft(id: string): Promise<ApiResult<DraftItem>> {
+  if (API_MODE === "http") return apiFetch<DraftItem>(`/v1/drafts/${encodeURIComponent(id)}`);
+  const res = await read((d) => d.drafts.find((x) => x.id === id) ?? null);
+  if (!res.ok) return res;
+  return res.data ? { ok: true, data: res.data } : { ok: false, error: "not_found" };
+}
+
+export async function updateDraft(
+  id: string,
+  patch: Partial<Omit<DraftItem, "id">>,
+): Promise<ApiResult<DraftItem>> {
+  if (API_MODE === "http") {
+    return apiFetch<DraftItem>(`/v1/drafts/${encodeURIComponent(id)}`, { method: "PATCH", body: patch });
+  }
+  return write((d) => {
+    const draft = d.drafts.find((x) => x.id === id);
+    if (!draft) return "not_found";
+    Object.assign(draft, patch, { edited: "Just now" });
+    return draft;
+  });
+}
+
 export async function createDraft(input: Omit<DraftItem, "id">): Promise<ApiResult<DraftItem>> {
   if (API_MODE === "http") return apiFetch<DraftItem>("/v1/drafts", { method: "POST", body: input });
   return write((d) => {
