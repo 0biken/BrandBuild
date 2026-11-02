@@ -174,7 +174,7 @@ pub fn router(state:AppState)->Router{
  .route("/posts",get(list_post).post(create_post)).route("/posts/:id",get(get_post).put(update_post).delete(delete_post))
   .route("/posts/:id/approve",post(approve)).route("/posts/:id/publish",post(publish))
  .layer(middleware::from_fn_with_state(state.clone(),auth_middleware)).with_state(state.clone());
- Router::new().route("/health",get(health)).nest("/v1",v1).nest("/v2",v2).with_state(state)
+ Router::new().route("/health",get(health)).nest("/auth",crate::auth_api::router()).nest("/v1",v1).nest("/v2",v2).with_state(state)
 }
 
 macro_rules! resource_handlers { ($list:ident,$create:ident,$get:ident,$update:ident,$delete:ident,$kind:ident,$input:ty)=>{
