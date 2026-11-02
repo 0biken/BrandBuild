@@ -9,7 +9,11 @@ interface NavItemProps {
   href: string;
   label: string;
   icon: ComponentType<IconProps>;
+  /** Match the path exactly (for the app root, which prefixes every route). */
+  exact?: boolean;
   badge?: number | string;
+  /** Screen-reader text for the badge, e.g. "3 awaiting approval". */
+  badgeLabel?: string;
   badgeVariant?: "primary" | "neutral";
 }
 
@@ -17,11 +21,15 @@ export function NavItem({
   href,
   label,
   icon: Icon,
+  exact = false,
   badge,
+  badgeLabel,
   badgeVariant = "primary",
 }: NavItemProps) {
   const pathname = usePathname();
-  const isActive = pathname === href || pathname.startsWith(`${href}/`);
+  const isActive = exact
+    ? pathname === href
+    : pathname === href || pathname.startsWith(`${href}/`);
 
   return (
     <Link
@@ -47,7 +55,8 @@ export function NavItem({
               : "bg-line-strong text-ink-2"
           }`}
         >
-          {badge}
+          <span aria-hidden={badgeLabel ? true : undefined}>{badge}</span>
+          {badgeLabel && <span className="sr-only">, {badgeLabel}</span>}
         </span>
       )}
     </Link>

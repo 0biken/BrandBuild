@@ -141,6 +141,18 @@ export interface StatItem {
   sparkColor: string;
 }
 
+// ---------- Brand ----------
+
+export interface Brand {
+  id: string;
+  name: string;
+  /** Short description of the voice, e.g. "warm, confident". */
+  voice: string;
+  plan: "student" | "creator" | "business";
+  /** When the current plan or Student Access ends (open decision). */
+  planEndsLabel: string;
+}
+
 // ---------- Accounts ----------
 
 export interface ConnectedAccount {

@@ -1,6 +1,7 @@
 import type {
   ApiError,
   ApiResult,
+  Brand,
   ConnectedAccount,
   DraftItem,
   PlatformConfig,
@@ -9,6 +10,7 @@ import type {
 } from "@/lib/api/types";
 import {
   SEED_ACCOUNTS,
+  SEED_BRAND,
   SEED_DRAFTS,
   SEED_PLATFORMS,
   SEED_POSTS,
@@ -27,6 +29,7 @@ export interface MockDb {
   accounts: ConnectedAccount[];
   platforms: PlatformConfig[];
   stats: StatItem[];
+  brand: Brand;
 }
 
 const STORAGE_KEY = "bb:mock-db:v1";
@@ -38,6 +41,7 @@ const seed = (): MockDb =>
     accounts: SEED_ACCOUNTS,
     platforms: SEED_PLATFORMS,
     stats: SEED_STATS,
+    brand: SEED_BRAND,
   });
 
 let db: MockDb | null = null;

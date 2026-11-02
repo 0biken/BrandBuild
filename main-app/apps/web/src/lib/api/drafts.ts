@@ -17,12 +17,27 @@ export async function createDraft(input: Omit<DraftItem, "id">): Promise<ApiResu
   });
 }
 
-export async function deleteDraft(id: string): Promise<ApiResult> {
-  if (API_MODE === "http") return apiFetch(`/v1/drafts/${encodeURIComponent(id)}`, { method: "DELETE" });
+/** Deletes a draft. Returns its old position so Undo can restore it in place. */
+export async function deleteDraft(id: string): Promise<ApiResult<{ index: number }>> {
+  if (API_MODE === "http") {
+    return apiFetch<{ index: number }>(`/v1/drafts/${encodeURIComponent(id)}`, { method: "DELETE" });
+  }
   return write((d) => {
-    const i = d.drafts.findIndex((x) => x.id === id);
-    if (i < 0) return "not_found";
-    d.drafts.splice(i, 1);
-    return undefined;
+    const index = d.drafts.findIndex((x) => x.id === id);
+    if (index < 0) return "not_found";
+    d.drafts.splice(index, 1);
+    return { index };
+  });
+}
+
+/** Undo a delete: the same draft, same id, back where it was. */
+export async function restoreDraft(draft: DraftItem, index: number): Promise<ApiResult<DraftItem>> {
+  if (API_MODE === "http") {
+    return apiFetch<DraftItem>(`/v1/drafts/${encodeURIComponent(draft.id)}/restore`, { method: "POST" });
+  }
+  return write((d) => {
+    if (d.drafts.some((x) => x.id === draft.id)) return "conflict";
+    d.drafts.splice(Math.min(index, d.drafts.length), 0, draft);
+    return draft;
   });
 }

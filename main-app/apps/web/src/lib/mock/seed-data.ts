@@ -4,6 +4,7 @@ import type {
   StatItem,
   PostItem,
   ConnectedAccount,
+  Brand,
 } from "@/lib/api/types";
 
 export const SEED_PLATFORMS: PlatformConfig[] = [
@@ -338,3 +339,11 @@ export const SEED_POSTS: PostItem[] = [
     },
   },
 ];
+
+export const SEED_BRAND: Brand = {
+  id: "brand-nova",
+  name: "Nova Studio",
+  voice: "warm, confident",
+  plan: "student",
+  planEndsLabel: "[END DATE]",
+};
