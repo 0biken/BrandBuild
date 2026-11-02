@@ -16,7 +16,7 @@ const CARDS = [
     title: "Disconnect any time.",
     body: "Remove an account in Settings and we stop using its access immediately.",
     tone: "bg-primary-hover text-white",
-    sub: "text-white/85",
+    sub: "text-white",
     seed: "unplugged-cable",
   },
   {

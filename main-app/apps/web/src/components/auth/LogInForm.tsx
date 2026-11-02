@@ -7,9 +7,16 @@ import { Alert } from "@/components/ui/Alert";
 import { Button } from "@/components/ui/Button";
 import { Field } from "@/components/ui/Field";
 import { PasswordField } from "@/components/ui/PasswordField";
-import { HOME_HREF, logIn } from "@/lib/auth";
+import { HOME_HREF, logIn } from "@/lib/api/auth";
 import { Divider } from "./AuthShell";
 import { SocialButtons } from "./SocialButtons";
+
+/** Only same-site paths, so ?next= can't send users to another origin. */
+function safeNext(next: string | null): string {
+  return next && next.startsWith("/") && !next.startsWith("//") && !next.startsWith("/\\")
+    ? next
+    : HOME_HREF;
+}
 
 export function LogInForm() {
   const router = useRouter();
@@ -29,7 +36,7 @@ export function LogInForm() {
       setFailed(true);
       return;
     }
-    router.push(HOME_HREF);
+    router.push(safeNext(new URLSearchParams(window.location.search).get("next")));
   }
 
   return (

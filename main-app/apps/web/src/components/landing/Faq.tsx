@@ -1,4 +1,4 @@
-import { PlusMinusIcon } from "@/components/ui/icons";
+import { PlusIcon } from "@/components/ui/icons";
 
 const QUESTIONS = [
   {
@@ -32,7 +32,7 @@ export function Faq() {
               <summary className="flex min-h-16 cursor-pointer list-none items-center justify-between gap-6 py-5 text-xl font-semibold tracking-[-0.02em] marker:hidden [&::-webkit-details-marker]:hidden">
                 {item.q}
                 <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-page-hover transition-transform duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] group-open:rotate-45">
-                  <PlusMinusIcon size={18} />
+                  <PlusIcon size={18} />
                 </span>
               </summary>
               <p className="m-0 max-w-xl pb-6 text-[17px] leading-relaxed text-ink-2">{item.a}</p>

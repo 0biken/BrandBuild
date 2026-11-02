@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Alert } from "@/components/ui/Alert";
 import { Button } from "@/components/ui/Button";
 import { AppleIcon, GoogleIcon } from "@/components/ui/icons";
-import { signInWithProvider, type Provider } from "@/lib/auth";
+import { signInWithProvider, type Provider } from "@/lib/api/auth";
 
 export function SocialButtons() {
   const [pending, setPending] = useState<Provider | null>(null);

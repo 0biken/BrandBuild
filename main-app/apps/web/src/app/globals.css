@@ -11,6 +11,9 @@
 
 @theme inline {
   --color-primary: #12a150;
+  /* Fill for green surfaces that carry white text. #12A150 + white is only
+     3.4:1; this is the closest shade that meets WCAG AA (4.6:1). */
+  --color-primary-strong: #0e8743;
   --color-primary-hover: #0b7a3b;
   --color-primary-soft: #e6f5ec;
   --color-primary-ink: #0b5e2e;
@@ -135,6 +138,25 @@ body {
 }
 .shake {
   animation: shake 360ms cubic-bezier(0.36, 0.07, 0.19, 1) both;
+}
+
+/* Dialogs: enter from scale(.95); sheets slide up on the sheet curve. */
+@keyframes dialog-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+@keyframes sheet-in {
+  from {
+    transform: translateY(100%);
+  }
+}
+.bb-dialog[open] {
+  animation: dialog-in 220ms var(--ease-press) both;
+}
+.bb-sheet[open] {
+  animation: sheet-in 320ms var(--ease-sheet) both;
 }
 
 @keyframes marquee {
