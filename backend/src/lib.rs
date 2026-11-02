@@ -1,5 +1,6 @@
 pub mod api;
 pub mod auth;
+pub mod auth_api;
 pub mod db;
 pub mod domain;
 pub mod outbox;
