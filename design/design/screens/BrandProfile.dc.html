@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Brandbuild — Brand profile</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&amp;family=Geist:wght@400..700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#F3F4EF;color:#0F1A13;font-family:Geist,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:#0B7A3B}a:hover{color:#075A2B}
+*{box-sizing:border-box}
+.btn{cursor:pointer;border:0;font:inherit;transition:transform 120ms cubic-bezier(.23,1,.32,1),background-color 150ms ease,box-shadow 150ms ease}
+.btn:active{transform:scale(.97)}
+:focus-visible{outline:2px solid #12A150;outline-offset:2px}
+.nav{display:flex;align-items:center;gap:12px;height:44px;padding:0 12px;border-radius:10px;color:#3D4840;font-weight:500;font-size:15px;text-decoration:none;transition:background-color 150ms ease}
+.nav.on{background:#E6F5EC;color:#0B5E2E;font-weight:600}
+.cnt{margin-left:auto;min-width:22px;height:22px;padding:0 6px;border-radius:11px;background:#12A150;color:#FFFFFF;font-size:12px;font-weight:700;line-height:22px;text-align:center}
+.card{display:flex;flex-direction:column;gap:14px;padding:22px;border-radius:20px;background:#FFFFFF;border:1px solid #E3E5DD}
+.h2{margin:0;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:22px;letter-spacing:-0.02em}
+.lbl{display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:600}
+.in{height:46px;padding:0 14px;border-radius:12px;border:1px solid #D5D9CF;background:#FFFFFF;font:inherit;font-size:15px;font-weight:400;color:#0F1A13}
+.tag{display:inline-flex;align-items:center;gap:4px;height:30px;padding:0 4px 0 10px;border-radius:8px;font-size:14px}
+.x{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:6px;background:transparent;color:inherit}
+@keyframes swap{from{opacity:0;transform:translateY(4px);filter:blur(2px)}to{opacity:1;transform:none;filter:none}}
+.swap{animation:swap 260ms cubic-bezier(.23,1,.32,1) both}
+@media (hover:hover) and (pointer:fine){.nav:not(.on):hover{background:#E9EBE4}.opt:hover{box-shadow:inset 0 0 0 1.5px #9AA39C}.lime:hover{background:#E2F87F}}
+@media (max-width:860px){.rail{display:none !important}.pad{padding:20px 16px 120px !important}}
+@media (prefers-reduced-motion:reduce){*{animation-duration:1ms !important;transition-duration:1ms !important}}
+</style>
+</helmet>
+<div style="display: flex; flex-wrap: wrap; min-height: 100vh; width: 100%; background: #F3F4EF">
+<nav class="rail" aria-label="Main" style="flex: 0 0 240px; display: flex; flex-direction: column; gap: 28px; padding: 24px 16px; background: #FBFBF8; border-right: 1px solid #E3E5DD">
+  <a href="Main.dc.html" style="display: flex; align-items: center; gap: 10px; padding: 0 8px; color: #0F1A13; text-decoration: none">
+    <svg width="23" height="26" viewBox="0 0 59 66" role="img" aria-label="Brandbuild"><path d="M0 63.1688V26.0688C0 24.7053 1.1053 23.6 2.46875 23.6H17.5359C18.8994 23.6 20.0047 24.7053 20.0047 26.0688V40.6953C20.0047 43.4222 22.2153 45.6328 24.9422 45.6328H31.6406C33.0041 45.6328 34.1094 46.7381 34.1094 48.1016V63.1688C34.1094 64.5322 33.0041 65.6375 31.6406 65.6375H2.46875C1.1053 65.6375 0 64.5322 0 63.1688Z" fill="#0F1A13"></path><path d="M24.8906 39.5688V2.46875C24.8906 1.1053 25.9959 0 27.3594 0H42.4266C43.79 0 44.8953 1.1053 44.8953 2.46875V17.0953C44.8953 19.8222 47.1059 22.0328 49.8328 22.0328H56.5313C57.8947 22.0328 59 23.1381 59 24.5016V39.5688C59 40.9322 57.8947 42.0375 56.5313 42.0375H27.3594C25.9959 42.0375 24.8906 40.9322 24.8906 39.5688Z" fill="#0F1A13"></path></svg>
+    <span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 19px; letter-spacing: -0.02em">Brandbuild</span>
+  </a>
+  <a class="btn" href="Composer.dc.html" style="display: flex; align-items: center; justify-content: center; gap: 8px; height: 44px; border-radius: 12px; background: #12A150; color: #FFFFFF; font-weight: 600; font-size: 15px; text-decoration: none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>New post</a>
+  <div style="display: flex; flex-direction: column; gap: 2px">
+    <a class="nav" href="Main.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"></path></svg>Home</a>
+    <a class="nav" href="Calendar.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16.5" rx="2.5"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg>Calendar</a>
+    <a class="nav" href="Drafts.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><path d="M14 3v6h6M8 13h8M8 17h5"></path></svg>Drafts</a>
+    <a class="nav" href="Approvals.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3.5h6v3H9z"></path><path d="M7 5H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1M9 14l2 2 4-4"></path></svg>Approvals<span class="cnt">3</span></a>
+    <a class="nav" href="Analytics.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 20h18M6 16v-5M11 16V7M16 16v-8M21 16V4"></path></svg>Analytics</a>
+    <a class="nav on" href="BrandProfile.dc.html" aria-current="page"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.6-.8 1.6-1.6 0-.5-.2-.8-.4-1.1-.3-.4-.5-.7-.5-1.2 0-.9.7-1.6 1.6-1.6H16a5 5 0 0 0 5-5c0-4.1-4-7.5-9-7.5z"></path></svg>Brand profile</a>
+    <a class="nav" href="Settings.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><circle cx="12" cy="12" r="8.5"></circle></svg>Settings</a>
+  </div>
+</nav>
+
+<main class="pad" style="position: relative; flex: 999 1 560px; min-width: 0; padding: 28px 40px 120px">
+  <div style="max-width: 1180px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px">
+    <header style="display: flex; align-items: flex-end; gap: 12px; flex-wrap: wrap">
+      <div style="display: flex; flex-direction: column; gap: 4px; margin-right: auto">
+        <h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 34px; letter-spacing: -0.03em">Brand profile</h1>
+        <span style="font-size: 14px; color: #5B655D">Every caption Brandbuild writes follows this. Only owners can change it.</span>
+      </div>
+      <span style="font-size: 14px; color: #5B655D">Last changed by Mary · 2 days ago · <a href="#" style="font-weight: 600">History</a></span>
+    </header>
+
+    <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start">
+      <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+        <section class="card" aria-label="Basics">
+          <h2 class="h2">Basics</h2>
+          <div style="display: flex; gap: 16px; align-items: center">
+            <span style="flex: none; display: inline-flex; align-items: center; justify-content: center; width: 64px; height: 64px; border-radius: 18px; background: #0F2A1B; color: #D4F25C; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 28px">N</span>
+            <div style="display: flex; flex-direction: column; gap: 4px"><strong style="font-size: 15px">Logo</strong><span style="font-size: 13px; color: #5B655D">Used on graphics Brandbuild makes. PNG or SVG.</span></div>
+            <button class="btn" style="margin-left: auto; height: 40px; padding: 0 14px; border-radius: 11px; background: #FFFFFF; box-shadow: inset 0 0 0 1px #C7CCC1; color: #0F1A13; font-size: 14px; font-weight: 600">Replace</button>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px">
+            <label class="lbl">Brand name<input class="in" type="text" value="Nova Studio"></label>
+            <label class="lbl">Website or shop link<input class="in" type="url" value="novastudio.co"></label>
+            <label class="lbl" style="grid-column: span 2">What you sell<input class="in" type="text" value="Handmade lip gloss and lip care, shipped across Nigeria"></label>
+          </div>
+        </section>
+
+        <section class="card" aria-label="Voice">
+          <h2 class="h2">Voice</h2>
+          <fieldset style="margin: 0; padding: 0; border: 0; display: flex; flex-direction: column; gap: 10px">
+            <legend style="padding: 0; margin-bottom: 10px; font-size: 14px; font-weight: 600">Tone <span style="font-weight: 400; color: #5B655D">· up to 2</span></legend>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap">
+              <sc-for list="{{tones}}" as="t" hint-placeholder-count="4">
+                <button class="btn opt" aria-pressed="{{t.on}}" onClick="{{t.toggle}}" style="height: 40px; padding: 0 16px; border-radius: 11px; font-size: 15px; font-weight: 500; background: {{t.bg}}; color: {{t.fg}}; box-shadow: {{t.ring}}">{{t.label}}</button>
+              </sc-for>
+            </div>
+          </fieldset>
+          <div style="display: flex; flex-direction: column; gap: 8px">
+            <span style="font-size: 14px; font-weight: 600">Who it's for</span>
+            <div style="display: flex; gap: 6px; flex-wrap: wrap">
+              <span class="tag" style="background: #0F1A13; color: #FFFFFF">Students<button class="btn x" aria-label="Remove Students"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg></button></span>
+              <span class="tag" style="background: #0F1A13; color: #FFFFFF">Young professionals<button class="btn x" aria-label="Remove Young professionals"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg></button></span>
+              <span class="tag" style="background: #0F1A13; color: #FFFFFF">Gen Z<button class="btn x" aria-label="Remove Gen Z"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg></button></span>
+              <button class="btn" style="height: 30px; padding: 0 10px; border-radius: 8px; background: transparent; box-shadow: inset 0 0 0 1px #D5D9CF; color: #3D4840; font-size: 14px">+ Add</button>
+            </div>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px">
+            <div style="display: flex; flex-direction: column; gap: 8px">
+              <span style="font-size: 14px; font-weight: 600">Words you use</span>
+              <div style="display: flex; gap: 6px; flex-wrap: wrap; padding: 8px; border-radius: 12px; border: 1px solid #D5D9CF">
+                <span class="tag" style="background: #E6F5EC; color: #0B5E2E">shade<button class="btn x" aria-label="Remove shade"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg></button></span>
+                <span class="tag" style="background: #E6F5EC; color: #0B5E2E">glow<button class="btn x" aria-label="Remove glow"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg></button></span>
+                <span class="tag" style="background: #E6F5EC; color: #0B5E2E">the drop<button class="btn x" aria-label="Remove the drop"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg></button></span>
+                <input aria-label="Add a word you use" placeholder="Add…" style="flex: 1 1 60px; min-width: 60px; height: 30px; border: 0; background: transparent; font: inherit; font-size: 14px">
+              </div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 8px">
+              <span style="font-size: 14px; font-weight: 600">Words you avoid</span>
+              <div style="display: flex; gap: 6px; flex-wrap: wrap; padding: 8px; border-radius: 12px; border: 1px solid #D5D9CF">
+                <span class="tag" style="background: #F3F4EF; color: #3D4840; text-decoration: line-through">cheap<button class="btn x" aria-label="Remove cheap"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg></button></span>
+                <span class="tag" style="background: #F3F4EF; color: #3D4840; text-decoration: line-through">flawless<button class="btn x" aria-label="Remove flawless"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg></button></span>
+                <input aria-label="Add a word you avoid" placeholder="Add…" style="flex: 1 1 60px; min-width: 60px; height: 30px; border: 0; background: transparent; font: inherit; font-size: 14px">
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card" aria-label="Platform habits">
+          <h2 class="h2">Habits per platform</h2>
+          <div style="display: flex; flex-direction: column">
+            <div style="display: flex; align-items: center; gap: 12px; padding: 12px 0; border-top: 1px solid #EEF0EA; font-size: 14px"><span style="display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 8px; background: #D62976; color: #FFFFFF; font-size: 11px; font-weight: 700">IG</span><span style="flex: 1">3–5 hashtags, end with “Link in bio”</span><button class="btn" style="height: 34px; padding: 0 10px; border-radius: 9px; background: transparent; color: #0B7A3B; font-size: 14px; font-weight: 600">Edit</button></div>
+            <div style="display: flex; align-items: center; gap: 12px; padding: 12px 0; border-top: 1px solid #EEF0EA; font-size: 14px"><span style="display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 8px; background: #0A66C2; color: #FFFFFF; font-size: 12px; font-weight: 700">in</span><span style="flex: 1">No hashtags, more detail, first person plural</span><button class="btn" style="height: 34px; padding: 0 10px; border-radius: 9px; background: transparent; color: #0B7A3B; font-size: 14px; font-weight: 600">Edit</button></div>
+            <div style="display: flex; align-items: center; gap: 12px; padding: 12px 0; border-top: 1px solid #EEF0EA; font-size: 14px"><span style="display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 8px; background: #111111; color: #FFFFFF; font-size: 11px; font-weight: 700">TT</span><span style="flex: 1">Short, playful, one hook line first</span><button class="btn" style="height: 34px; padding: 0 10px; border-radius: 9px; background: transparent; color: #0B7A3B; font-size: 14px; font-weight: 600">Edit</button></div>
+          </div>
+        </section>
+
+        <section class="card" aria-label="Examples">
+          <div style="display: flex; align-items: baseline; gap: 10px">
+            <h2 class="h2" style="margin-right: auto">Posts that sound like you</h2>
+            <span style="font-size: 14px; color: #5B655D">3 saved</span>
+          </div>
+          <p style="margin: 0; padding: 14px 16px; border-radius: 14px; background: #FBFBF8; border: 1px solid #EEF0EA; font-size: 15px; line-height: 1.5">“A hundred orders ago this was a table in a hostel room. Every one of you made this real.”</p>
+          <p style="margin: 0; padding: 14px 16px; border-radius: 14px; background: #FBFBF8; border: 1px solid #EEF0EA; font-size: 15px; line-height: 1.5">“Scrub, balm, gloss. Thirty seconds a night is all it takes. Save this for later.”</p>
+          <button class="btn" style="align-self: flex-start; height: 40px; padding: 0 14px; border-radius: 11px; background: transparent; box-shadow: inset 0 0 0 1px #C7CCC1; color: #0F1A13; font-size: 14px; font-weight: 600">Add an example</button>
+        </section>
+      </div>
+
+      <aside aria-label="Test your voice" style="flex: 1 1 340px; min-width: 0; position: sticky; top: 24px; display: flex; flex-direction: column; gap: 14px; padding: 22px; border-radius: 22px; background: #0F2A1B; color: #E8F1EA">
+        <span style="display: inline-flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: #D4F25C">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"></path></svg>Test your voice</span>
+        <label for="tv" style="font-size: 14px; color: #B9CBBE">Try an idea and see how Brandbuild would write it with these settings.</label>
+        <input id="tv" type="text" value="Restock of our best-selling shade" style="height: 46px; padding: 0 14px; border-radius: 12px; border: 1px solid #335A43; background: #16371F; font: inherit; font-size: 15px; color: #FFFFFF">
+        <button class="btn lime" onClick="{{test}}" style="height: 44px; border-radius: 12px; background: #D4F25C; color: #0F2A1B; font-size: 15px; font-weight: 600">Write a sample</button>
+        <div aria-live="polite" style="border-radius: 16px; background: #FFFFFF; color: #0F1A13; padding: 14px 16px; min-height: 120px">
+          <span style="display: block; margin-bottom: 6px; font-size: 12px; color: #5B655D">Instagram · {{toneLine}}</span>
+          <sc-for list="{{samples}}" as="sm" hint-placeholder-count="1">
+            <sc-if value="{{sm.show}}" hint-placeholder-val="{{true}}"><p class="swap" style="margin: 0; font-size: 15px; line-height: 1.5">{{sm.text}}</p></sc-if>
+          </sc-for>
+        </div>
+        <span style="font-size: 13px; color: #8FAA98">Samples don't count toward your monthly AI posts.</span>
+      </aside>
+    </div>
+  </div>
+
+  <div role="region" aria-label="Unsaved changes" style="position: sticky; bottom: 16px; max-width: 1180px; margin: 20px auto 0; display: flex; align-items: center; gap: 12px; padding: 12px 12px 12px 20px; border-radius: 16px; background: #0F1A13; color: #FFFFFF; box-shadow: 0 16px 32px -16px rgba(0,0,0,0.5)">
+    <span style="font-size: 15px; margin-right: auto">You changed the tone.</span>
+    <button class="btn" style="height: 40px; padding: 0 14px; border-radius: 11px; background: transparent; color: #FFFFFF; font-size: 14px; font-weight: 600">Discard</button>
+    <button class="btn" style="height: 40px; padding: 0 16px; border-radius: 11px; background: #12A150; color: #FFFFFF; font-size: 14px; font-weight: 600">Save changes</button>
+  </div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1240}}'>
+var SAMPLES = {
+  Warm: ['Your favourite shade is back, packed by hand like always. Thank you for waiting for it. Link in bio.', 'It sold out in four days, so we made more. Your favourite shade is back in stock. Link in bio.'],
+  Playful: ['She’s back and she brought friends. Your favourite shade just restocked. Run, don’t walk. Link in bio.', 'Plot twist: the shade you missed is back. Your cart is calling. Link in bio.'],
+  Professional: ['Our best-selling shade is back in stock, made in the same small batches. Order through the link in bio.', 'Restock: our most popular shade is available again. Limited quantities. Link in bio.'],
+  Bold: ['Back in stock. Same shade. Same small batch. Don’t miss it twice. Link in bio.', 'It’s back. Go. Link in bio.']
+};
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { tones: ['Warm', 'Playful'], n: 0 }; }
+  renderVals() {
+    var s = this.state, self = this;
+    var tones = ['Warm', 'Playful', 'Professional', 'Bold'].map(function (t) {
+      var on = s.tones.indexOf(t) >= 0;
+      return { label: t, on: on ? 'true' : 'false', bg: on ? '#0F1A13' : '#FFFFFF', fg: on ? '#FFFFFF' : '#2B352E', ring: on ? 'none' : 'inset 0 0 0 1px #D5D9CF',
+        toggle: function () { var n = s.tones.slice(), i = n.indexOf(t); if (i >= 0) { if (n.length > 1) n.splice(i, 1); } else { if (n.length >= 2) n.shift(); n.push(t); } self.setState({ tones: n, n: 0 }); } };
+    });
+    var lead = s.tones[s.tones.length - 1];
+    var list = SAMPLES[lead];
+    var samples = [];
+    Object.keys(SAMPLES).forEach(function (k) { SAMPLES[k].forEach(function (txt, i) { samples.push({ text: txt, show: k === lead && i === (s.n % list.length) }); }); });
+    return {
+      tones: tones, samples: samples, toneLine: s.tones.join(' + ').toLowerCase(),
+      test: function () { self.setState({ n: s.n + 1 }); }
+    };
+  }
+}
+</script>
+</body>
+</html>

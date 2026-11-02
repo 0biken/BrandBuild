@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Brandbuild — Transactional emails</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&amp;family=Geist:wght@400..700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;font-family:Geist,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+.inbox{display:flex;flex-direction:column;gap:2px;padding:12px 16px;border-radius:14px;background:#FFFFFF;border:1px solid #E3E5DD}
+.mail{display:flex;flex-direction:column;border-radius:20px;background:#FFFFFF;border:1px solid #E3E5DD;overflow:hidden}
+.mh{display:flex;align-items:center;gap:8px;padding:20px 28px;border-bottom:1px solid #EEF0EA}
+.mb{display:flex;flex-direction:column;gap:16px;padding:28px}
+.mt{margin:0;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:26px;line-height:1.1;letter-spacing:-0.025em;color:#0F1A13}
+.mp{margin:0;font-size:15px;line-height:1.6;color:#2B352E}
+.cta{align-self:flex-start;display:inline-block;height:46px;padding:0 20px;border-radius:12px;background:#12A150;color:#FFFFFF;font-size:15px;font-weight:600;line-height:46px;text-decoration:none}
+.mf{padding:18px 28px;background:#FBFBF8;border-top:1px solid #EEF0EA;font-size:12px;line-height:1.6;color:#5B655D}
+</style>
+</helmet>
+<div style="width: 1440px; height: 1300px; padding: 56px; background: #F3F4EF; color: #0F1A13; display: flex; flex-direction: column; gap: 28px">
+  <div style="display: flex; flex-direction: column; gap: 8px">
+    <h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 40px; letter-spacing: -0.035em">Transactional emails</h1>
+    <p style="margin: 0; max-width: 820px; font-size: 16px; line-height: 1.5; color: #3D4840">Subject says what happened. One message, one button. Plain enough to read in a notification preview. Also needed: welcome, student status, account expiring, password changed.</p>
+  </div>
+  <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; align-items: start">
+
+    <div style="display: flex; flex-direction: column; gap: 12px">
+      <div class="inbox"><span style="font-size: 14px; font-weight: 700">Brandbuild</span><span style="font-size: 14px; font-weight: 600">482 913 is your Brandbuild code</span><span style="font-size: 13px; color: #5B655D">Enter it to confirm your email. It expires in [N] minutes.</span></div>
+      <article class="mail">
+        <div class="mh"><svg width="20" height="22" viewBox="0 0 59 66" aria-hidden="true"><path d="M0 63.1688V26.0688C0 24.7053 1.1053 23.6 2.46875 23.6H17.5359C18.8994 23.6 20.0047 24.7053 20.0047 26.0688V40.6953C20.0047 43.4222 22.2153 45.6328 24.9422 45.6328H31.6406C33.0041 45.6328 34.1094 46.7381 34.1094 48.1016V63.1688C34.1094 64.5322 33.0041 65.6375 31.6406 65.6375H2.46875C1.1053 65.6375 0 64.5322 0 63.1688Z" fill="#0F1A13"></path><path d="M24.8906 39.5688V2.46875C24.8906 1.1053 25.9959 0 27.3594 0H42.4266C43.79 0 44.8953 1.1053 44.8953 2.46875V17.0953C44.8953 19.8222 47.1059 22.0328 49.8328 22.0328H56.5313C57.8947 22.0328 59 23.1381 59 24.5016V39.5688C59 40.9322 57.8947 42.0375 56.5313 42.0375H27.3594C25.9959 42.0375 24.8906 40.9322 24.8906 39.5688Z" fill="#0F1A13"></path></svg><strong style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 17px">Brandbuild</strong></div>
+        <div class="mb">
+          <h2 class="mt">Your code</h2>
+          <p class="mp">Enter this on the Brandbuild page to confirm mary@novastudio.co.</p>
+          <div style="align-self: flex-start; padding: 14px 20px; border-radius: 14px; background: #F3F4EF; font-family: 'Geist Mono', monospace; font-size: 34px; font-weight: 500; letter-spacing: 0.18em">482913</div>
+          <p class="mp" style="color: #5B655D; font-size: 14px">Expires in [N] minutes. Didn't ask for this? You can ignore it.</p>
+        </div>
+        <div class="mf">[COMPANY NAME, ADDRESS] · You got this because someone signed up with this address.</div>
+      </article>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 12px">
+      <div class="inbox"><span style="font-size: 14px; font-weight: 700">Brandbuild</span><span style="font-size: 14px; font-weight: 600">Instagram didn't post “Drop is live”</span><span style="font-size: 13px; color: #5B655D">The image ratio isn't supported. Crop it and retry in a minute.</span></div>
+      <article class="mail">
+        <div class="mh"><svg width="20" height="22" viewBox="0 0 59 66" aria-hidden="true"><path d="M0 63.1688V26.0688C0 24.7053 1.1053 23.6 2.46875 23.6H17.5359C18.8994 23.6 20.0047 24.7053 20.0047 26.0688V40.6953C20.0047 43.4222 22.2153 45.6328 24.9422 45.6328H31.6406C33.0041 45.6328 34.1094 46.7381 34.1094 48.1016V63.1688C34.1094 64.5322 33.0041 65.6375 31.6406 65.6375H2.46875C1.1053 65.6375 0 64.5322 0 63.1688Z" fill="#0F1A13"></path><path d="M24.8906 39.5688V2.46875C24.8906 1.1053 25.9959 0 27.3594 0H42.4266C43.79 0 44.8953 1.1053 44.8953 2.46875V17.0953C44.8953 19.8222 47.1059 22.0328 49.8328 22.0328H56.5313C57.8947 22.0328 59 23.1381 59 24.5016V39.5688C59 40.9322 57.8947 42.0375 56.5313 42.0375H27.3594C25.9959 42.0375 24.8906 40.9322 24.8906 39.5688Z" fill="#0F1A13"></path></svg><strong style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 17px">Brandbuild</strong></div>
+        <div class="mb">
+          <span style="align-self: flex-start; height: 26px; padding: 0 10px; border-radius: 8px; background: #FDECEA; color: #8F1D14; font-size: 12px; font-weight: 700; line-height: 26px">Needs your attention</span>
+          <h2 class="mt">One post didn't go out</h2>
+          <p class="mp">“Drop is live” posted to LinkedIn at 7:00 PM, but Instagram rejected it: the image is 2.4:1 and Instagram only accepts up to 1.91:1.</p>
+          <a class="cta" href="#" style="background: #0F1A13">Crop and retry</a>
+          <p class="mp" style="color: #5B655D; font-size: 14px">It takes about 30 seconds. Nothing else in your schedule is affected.</p>
+        </div>
+        <div class="mf">Turn off failure emails in Settings → Notifications (we recommend keeping them on).</div>
+      </article>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 12px">
+      <div class="inbox"><span style="font-size: 14px; font-weight: 700">Brandbuild</span><span style="font-size: 14px; font-weight: 600">Your week: 21.4k reach, up 14%</span><span style="font-size: 13px; color: #5B655D">Behind-the-scenes posts are winning. Here's one to write next.</span></div>
+      <article class="mail">
+        <div class="mh"><svg width="20" height="22" viewBox="0 0 59 66" aria-hidden="true"><path d="M0 63.1688V26.0688C0 24.7053 1.1053 23.6 2.46875 23.6H17.5359C18.8994 23.6 20.0047 24.7053 20.0047 26.0688V40.6953C20.0047 43.4222 22.2153 45.6328 24.9422 45.6328H31.6406C33.0041 45.6328 34.1094 46.7381 34.1094 48.1016V63.1688C34.1094 64.5322 33.0041 65.6375 31.6406 65.6375H2.46875C1.1053 65.6375 0 64.5322 0 63.1688Z" fill="#0F1A13"></path><path d="M24.8906 39.5688V2.46875C24.8906 1.1053 25.9959 0 27.3594 0H42.4266C43.79 0 44.8953 1.1053 44.8953 2.46875V17.0953C44.8953 19.8222 47.1059 22.0328 49.8328 22.0328H56.5313C57.8947 22.0328 59 23.1381 59 24.5016V39.5688C59 40.9322 57.8947 42.0375 56.5313 42.0375H27.3594C25.9959 42.0375 24.8906 40.9322 24.8906 39.5688Z" fill="#0F1A13"></path></svg><strong style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 17px">Brandbuild</strong><span style="margin-left: auto; font-size: 13px; color: #5B655D">19–25 Oct</span></div>
+        <div class="mb">
+          <h2 class="mt">A good week, Nova Studio</h2>
+          <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+            <div style="padding: 12px; border-radius: 12px; background: #F3F4EF"><div style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 24px">21.4k</div><div style="font-size: 12px; color: #5B655D">Reach ↑14%</div></div>
+            <div style="padding: 12px; border-radius: 12px; background: #F3F4EF"><div style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 24px">+134</div><div style="font-size: 12px; color: #5B655D">Followers</div></div>
+            <div style="padding: 12px; border-radius: 12px; background: #F3F4EF"><div style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 24px">4</div><div style="font-size: 12px; color: #5B655D">Posts</div></div>
+          </div>
+          <div style="padding: 16px; border-radius: 14px; background: #0F2A1B; color: #E8F1EA">
+            <div style="font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #D4F25C">Write next</div>
+            <div style="margin-top: 6px; font-size: 15px; line-height: 1.5; color: #FFFFFF">Show the five minutes before an order leaves — tape, tissue, the handwritten note.</div>
+          </div>
+          <a class="cta" href="#">Write this post</a>
+        </div>
+        <div class="mf">Weekly insights every Monday. <a href="#" style="color: #0B7A3B">Unsubscribe</a></div>
+      </article>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1300}}'>
+class Component extends DCLogic { renderVals() { return {}; } }
+</script>
+</body>
+</html>

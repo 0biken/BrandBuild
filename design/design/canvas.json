@@ -1,0 +1,474 @@
+{
+  "v": 3,
+  "attachments": {},
+  "boards": {
+    "Analytics.dc.html": {
+      "expand": "fill",
+      "h": 1400,
+      "is_interactive": true,
+      "title": "Analytics",
+      "w": 1440,
+      "x": 3040,
+      "y": 9284
+    },
+    "ApprovalEmail.dc.html": {
+      "h": 900,
+      "title": "Approval request email",
+      "w": 640,
+      "x": 5500,
+      "y": 14704
+    },
+    "ApprovalInbox.dc.html": {
+      "h": 844,
+      "title": "Approvals \u2014 phone inbox",
+      "w": 390,
+      "x": 4560,
+      "y": 14704
+    },
+    "ApprovalReview.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "Approvals \u2014 phone review",
+      "w": 390,
+      "x": 5030,
+      "y": 14704
+    },
+    "Approvals.dc.html": {
+      "expand": "fill",
+      "h": 1000,
+      "is_interactive": true,
+      "title": "Approvals \u2014 desktop",
+      "w": 1440,
+      "x": 3040,
+      "y": 14704
+    },
+    "Billing.dc.html": {
+      "expand": "fill",
+      "h": 1140,
+      "title": "Plan & billing",
+      "w": 1440,
+      "x": 1520,
+      "y": 11104
+    },
+    "BrandProfile.dc.html": {
+      "expand": "fill",
+      "h": 1240,
+      "is_interactive": true,
+      "title": "Brand profile",
+      "w": 1440,
+      "x": 1520,
+      "y": 14704
+    },
+    "BrandSetup.dc.html": {
+      "expand": "fill",
+      "h": 1040,
+      "is_interactive": true,
+      "title": "Onboarding 4 \u2014 Brand voice",
+      "w": 1440,
+      "x": 3040,
+      "y": 1600
+    },
+    "Calendar.dc.html": {
+      "expand": "fill",
+      "h": 1040,
+      "title": "Calendar \u2014 month",
+      "w": 1440,
+      "x": 3040,
+      "y": 0
+    },
+    "Code.dc.html": {
+      "expand": "fill",
+      "h": 920,
+      "title": "Verification code",
+      "w": 1440,
+      "x": 3040,
+      "y": 7944
+    },
+    "Composer.dc.html": {
+      "expand": "fill",
+      "h": 1180,
+      "is_interactive": true,
+      "title": "Composer \u2014 AI generation",
+      "w": 1440,
+      "x": 1520,
+      "y": 0
+    },
+    "Connect.dc.html": {
+      "expand": "fill",
+      "h": 980,
+      "title": "Onboarding 3 \u2014 Connect accounts",
+      "w": 1440,
+      "x": 0,
+      "y": 1600
+    },
+    "Dialogs.dc.html": {
+      "h": 1000,
+      "title": "Dialogs & toasts",
+      "w": 1440,
+      "x": 1520,
+      "y": 12724
+    },
+    "Drafts.dc.html": {
+      "expand": "fill",
+      "h": 1040,
+      "title": "Drafts",
+      "w": 1440,
+      "x": 0,
+      "y": 9284
+    },
+    "Emails.dc.html": {
+      "h": 1300,
+      "title": "Transactional emails",
+      "w": 1440,
+      "x": 6080,
+      "y": 12724
+    },
+    "Landing.dc.html": {
+      "expand": "fill",
+      "h": 3200,
+      "title": "Landing page",
+      "w": 1440,
+      "x": 0,
+      "y": 4324
+    },
+    "Legal.dc.html": {
+      "expand": "fill",
+      "h": 1400,
+      "title": "Privacy, terms & data deletion",
+      "w": 1440,
+      "x": 3040,
+      "y": 4324
+    },
+    "LogIn.dc.html": {
+      "expand": "fill",
+      "h": 920,
+      "title": "Log in",
+      "w": 1440,
+      "x": 1520,
+      "y": 7944
+    },
+    "Main.dc.html": {
+      "expand": "fill",
+      "h": 1080,
+      "title": "Home",
+      "w": 1440,
+      "x": 0,
+      "y": 0
+    },
+    "MobileComposer.dc.html": {
+      "h": 844,
+      "title": "Mobile \u2014 Generating",
+      "w": 390,
+      "x": 470,
+      "y": 3060
+    },
+    "MobileHome.dc.html": {
+      "h": 844,
+      "title": "Mobile \u2014 Home",
+      "w": 390,
+      "x": 0,
+      "y": 3060
+    },
+    "MobileSchedule.dc.html": {
+      "h": 844,
+      "title": "Mobile \u2014 Schedule",
+      "w": 390,
+      "x": 940,
+      "y": 3060
+    },
+    "NotFound.dc.html": {
+      "expand": "fill",
+      "h": 800,
+      "title": "404",
+      "w": 1440,
+      "x": 4560,
+      "y": 12724
+    },
+    "Notifications.dc.html": {
+      "expand": "fill",
+      "h": 980,
+      "title": "Notifications",
+      "w": 1440,
+      "x": 4560,
+      "y": 9284
+    },
+    "Paywall.dc.html": {
+      "expand": "fill",
+      "h": 900,
+      "title": "Plan limit reached",
+      "w": 1440,
+      "x": 3040,
+      "y": 12724
+    },
+    "PostDetail.dc.html": {
+      "expand": "fill",
+      "h": 1140,
+      "is_interactive": true,
+      "title": "Post detail \u2014 all six states",
+      "w": 1440,
+      "x": 1520,
+      "y": 9284
+    },
+    "Pricing.dc.html": {
+      "expand": "fill",
+      "h": 1500,
+      "is_interactive": true,
+      "title": "Pricing",
+      "w": 1440,
+      "x": 1520,
+      "y": 4324
+    },
+    "Reset.dc.html": {
+      "expand": "fill",
+      "h": 920,
+      "is_interactive": true,
+      "title": "Forgot & reset password",
+      "w": 1440,
+      "x": 4560,
+      "y": 7944
+    },
+    "ReviewQueue.dc.html": {
+      "expand": "fill",
+      "h": 1000,
+      "title": "Admin \u2014 student ID review",
+      "w": 1440,
+      "x": 4560,
+      "y": 11104
+    },
+    "Settings.dc.html": {
+      "expand": "fill",
+      "h": 1200,
+      "is_interactive": true,
+      "title": "Settings",
+      "w": 1440,
+      "x": 0,
+      "y": 11104
+    },
+    "SignUp.dc.html": {
+      "expand": "fill",
+      "h": 920,
+      "is_interactive": true,
+      "title": "Sign up",
+      "w": 1440,
+      "x": 0,
+      "y": 7944
+    },
+    "States.dc.html": {
+      "h": 1500,
+      "title": "Empty & error states",
+      "w": 1440,
+      "x": 0,
+      "y": 12724
+    },
+    "Team.dc.html": {
+      "expand": "fill",
+      "h": 1000,
+      "is_interactive": true,
+      "title": "Team & roles",
+      "w": 1440,
+      "x": 0,
+      "y": 14704
+    },
+    "Verify.dc.html": {
+      "expand": "fill",
+      "h": 980,
+      "is_interactive": true,
+      "title": "Onboarding 2 \u2014 Student verification",
+      "w": 1440,
+      "x": 1520,
+      "y": 1600
+    },
+    "VerifyStatus.dc.html": {
+      "expand": "fill",
+      "h": 1000,
+      "is_interactive": true,
+      "title": "Student check \u2014 results",
+      "w": 1440,
+      "x": 3040,
+      "y": 11104
+    },
+    "AdminHome.dc.html": {
+      "x": 0,
+      "y": 16364,
+      "w": 1440,
+      "h": 1040,
+      "title": "Admin \u2014 overview",
+      "expand": "fill"
+    },
+    "AdminWorkspace.dc.html": {
+      "x": 1520,
+      "y": 16364,
+      "w": 1440,
+      "h": 1200,
+      "title": "Admin \u2014 workspace, pause & support access",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "AdminUnclear.dc.html": {
+      "x": 3040,
+      "y": 16364,
+      "w": 1440,
+      "h": 1040,
+      "title": "Admin \u2014 outcome unclear queue",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "AdminSpend.dc.html": {
+      "x": 4560,
+      "y": 16364,
+      "w": 1440,
+      "h": 1100,
+      "title": "Admin \u2014 AI spend",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "AdminAudit.dc.html": {
+      "x": 6080,
+      "y": 16364,
+      "w": 1440,
+      "h": 1000,
+      "title": "Admin \u2014 audit log",
+      "expand": "fill"
+    }
+  },
+  "createdOnFiles": {
+    "at": "2026-10-25T17:10:00Z",
+    "v": 1
+  },
+  "designSystems": [],
+  "launch": {
+    "view": "canvas"
+  },
+  "notes": {
+    "rowApp": {
+      "kind": "title1",
+      "maxW": 6000,
+      "text": "Core app \u2014 drafts, post states, analytics, notifications",
+      "w": 240,
+      "x": 0,
+      "y": 8984
+    },
+    "rowAuth": {
+      "kind": "title1",
+      "maxW": 6000,
+      "text": "Sign in \u2014 sign up, log in, codes, password reset",
+      "w": 240,
+      "x": 0,
+      "y": 7644
+    },
+    "rowCust": {
+      "kind": "title1",
+      "maxW": 6140,
+      "text": "Customer app \u2014 team, brand profile, approvals",
+      "w": 240,
+      "x": 0,
+      "y": 14404
+    },
+    "rowMob": {
+      "kind": "title1",
+      "maxW": 1330,
+      "text": "Mobile",
+      "w": 240,
+      "x": 0,
+      "y": 2760
+    },
+    "rowOnb": {
+      "kind": "title1",
+      "maxW": 4480,
+      "text": "Onboarding \u2014 the steps the old file was missing",
+      "w": 240,
+      "x": 0,
+      "y": 1300
+    },
+    "rowPub": {
+      "kind": "title1",
+      "maxW": 4480,
+      "text": "Public website \u2014 landing, pricing, legal",
+      "w": 240,
+      "x": 0,
+      "y": 4024
+    },
+    "rowSet": {
+      "kind": "title1",
+      "maxW": 6000,
+      "text": "Settings, billing, verification results, admin",
+      "w": 240,
+      "x": 0,
+      "y": 10804
+    },
+    "rowSys": {
+      "kind": "title1",
+      "maxW": 7520,
+      "text": "System \u2014 states, dialogs, limits, emails",
+      "w": 240,
+      "x": 0,
+      "y": 12424
+    },
+    "rowWeb": {
+      "kind": "title1",
+      "maxW": 4480,
+      "text": "Web app \u2014 desktop, collapses to phone below 860px",
+      "w": 240,
+      "x": 0,
+      "y": -300
+    },
+    "shape-4uxr10": {
+      "kind": "line",
+      "x": 6973,
+      "x2": 7133,
+      "y": 2939,
+      "y2": 2939
+    },
+    "rowAdmin": {
+      "x": 0,
+      "y": 16064,
+      "text": "Internal admin console \u2014 BrandBuild staff only",
+      "kind": "title1",
+      "maxW": 7520
+    }
+  },
+  "order": [
+    "Main.dc.html",
+    "Composer.dc.html",
+    "Calendar.dc.html",
+    "Connect.dc.html",
+    "Verify.dc.html",
+    "BrandSetup.dc.html",
+    "MobileHome.dc.html",
+    "MobileComposer.dc.html",
+    "MobileSchedule.dc.html",
+    "Landing.dc.html",
+    "Pricing.dc.html",
+    "Legal.dc.html",
+    "SignUp.dc.html",
+    "LogIn.dc.html",
+    "Code.dc.html",
+    "Reset.dc.html",
+    "Drafts.dc.html",
+    "PostDetail.dc.html",
+    "Analytics.dc.html",
+    "Notifications.dc.html",
+    "Settings.dc.html",
+    "Billing.dc.html",
+    "VerifyStatus.dc.html",
+    "ReviewQueue.dc.html",
+    "States.dc.html",
+    "Dialogs.dc.html",
+    "Paywall.dc.html",
+    "NotFound.dc.html",
+    "Emails.dc.html",
+    "Team.dc.html",
+    "BrandProfile.dc.html",
+    "Approvals.dc.html",
+    "ApprovalInbox.dc.html",
+    "ApprovalReview.dc.html",
+    "ApprovalEmail.dc.html",
+    "AdminHome.dc.html",
+    "AdminWorkspace.dc.html",
+    "AdminUnclear.dc.html",
+    "AdminSpend.dc.html",
+    "AdminAudit.dc.html"
+  ],
+  "pages": [],
+  "title": "Brandbuild \u2014 Product UI"
+}

@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Brandbuild Admin — Outcome unclear</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&amp;family=Geist:wght@400..700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#EEF0EA;color:#0F1A13;font-family:Geist,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:#0B7A3B}
+*{box-sizing:border-box}
+.btn{cursor:pointer;border:0;font:inherit;transition:transform 120ms cubic-bezier(.23,1,.32,1),background-color 150ms ease,box-shadow 150ms ease}
+.btn:active{transform:scale(.97)}
+.btn[disabled]{cursor:not-allowed}
+:focus-visible{outline:2px solid #12A150;outline-offset:2px}
+.tab{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 12px;border-radius:8px;color:#B9C2BB;font-size:14px;text-decoration:none;transition:background-color 150ms ease}
+.tab.on{background:#26322A;color:#FFFFFF}
+.tb{min-width:20px;height:20px;padding:0 6px;border-radius:10px;font-size:11px;font-weight:700;line-height:20px;text-align:center}
+.q{display:flex;flex-direction:column;gap:6px;padding:12px 14px;border-radius:12px;text-align:left;width:100%;transition:background-color 150ms ease}
+.pf{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:6px;color:#FFFFFF;font-size:9px;font-weight:700;flex:none}
+.mono{font-family:'Geist Mono',monospace;font-size:13px}
+@keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.rise{animation:rise 240ms cubic-bezier(.23,1,.32,1) both}
+@media (hover:hover) and (pointer:fine){.tab:not(.on):hover{background:#1C2620;color:#FFFFFF}.q:hover{background:#F3F4EF}}
+@media (max-width:860px){.pad{padding:16px !important}.adnav{overflow-x:auto}}
+@media (prefers-reduced-motion:reduce){*{animation-duration:1ms !important;transition-duration:1ms !important}}
+</style>
+</helmet>
+<div style="min-height: 100vh; width: 100%; background: #EEF0EA">
+  <header style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap; padding: 12px 24px; background: #0F1A13; color: #FFFFFF">
+    <svg width="20" height="22" viewBox="0 0 59 66" role="img" aria-label="Brandbuild"><path d="M0 63.1688V26.0688C0 24.7053 1.1053 23.6 2.46875 23.6H17.5359C18.8994 23.6 20.0047 24.7053 20.0047 26.0688V40.6953C20.0047 43.4222 22.2153 45.6328 24.9422 45.6328H31.6406C33.0041 45.6328 34.1094 46.7381 34.1094 48.1016V63.1688C34.1094 64.5322 33.0041 65.6375 31.6406 65.6375H2.46875C1.1053 65.6375 0 64.5322 0 63.1688Z" fill="#FFFFFF"></path><path d="M24.8906 39.5688V2.46875C24.8906 1.1053 25.9959 0 27.3594 0H42.4266C43.79 0 44.8953 1.1053 44.8953 2.46875V17.0953C44.8953 19.8222 47.1059 22.0328 49.8328 22.0328H56.5313C57.8947 22.0328 59 23.1381 59 24.5016V39.5688C59 40.9322 57.8947 42.0375 56.5313 42.0375H27.3594C25.9959 42.0375 24.8906 40.9322 24.8906 39.5688Z" fill="#FFFFFF"></path></svg>
+    <span style="font-weight: 600; font-size: 15px">Admin</span>
+    <nav class="adnav" aria-label="Admin" style="display: flex; gap: 2px; margin-left: 8px">
+      <a class="tab" href="AdminHome.dc.html">Overview</a>
+      <a class="tab" href="AdminWorkspace.dc.html">Workspaces</a>
+      <a class="tab on" href="AdminUnclear.dc.html" aria-current="page">Outcome unclear<span class="tb" style="background: #D4F25C; color: #0F2A1B">{{open}}</span></a>
+      <a class="tab" href="ReviewQueue.dc.html">Student reviews<span class="tb" style="background: #3A4A3F; color: #FFFFFF">12</span></a>
+      <a class="tab" href="AdminSpend.dc.html">AI spend</a>
+      <a class="tab" href="AdminAudit.dc.html">Audit log</a>
+    </nav>
+    <span style="margin-left: auto; font-size: 14px; color: #B9C2BB">[NAME] · Support</span>
+  </header>
+
+  <div class="pad" style="max-width: 1360px; margin: 0 auto; padding: 24px; display: flex; flex-direction: column; gap: 16px">
+    <div style="display: flex; flex-direction: column; gap: 4px">
+      <h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 30px; letter-spacing: -0.03em">Outcome unclear</h1>
+      <p style="margin: 0; max-width: 820px; font-size: 15px; line-height: 1.5; color: #3D4840">The platform didn't confirm whether these posted. Never retry blindly: check the platform first, so nobody gets a duplicate post. The customer sees “Checking with Instagram” until you resolve it.</p>
+    </div>
+
+    <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start">
+      <aside aria-label="Queue" style="flex: 1 1 320px; min-width: 0; display: flex; flex-direction: column; gap: 2px; padding: 8px; border-radius: 18px; background: #FFFFFF">
+        <sc-for list="{{items}}" as="it" hint-placeholder-count="4">
+          <button class="btn q" aria-current="{{it.cur}}" onClick="{{it.pick}}" style="background: {{it.bg}}; box-shadow: {{it.ring}}">
+            <span style="display: flex; align-items: center; gap: 8px; width: 100%">
+              <span class="pf" style="background: {{it.pbg}}">{{it.k}}</span>
+              <strong style="font-size: 15px">{{it.ws}}</strong>
+              <span class="mono" style="margin-left: auto; color: {{it.waitFg}}">{{it.wait}}</span>
+            </span>
+            <span style="font-size: 14px; color: #3D4840">{{it.title}}</span>
+            <span style="align-self: flex-start; height: 22px; padding: 0 7px; border-radius: 6px; font-size: 12px; font-weight: 600; line-height: 22px; background: {{it.chipBg}}; color: {{it.chipFg}}">{{it.chip}}</span>
+          </button>
+        </sc-for>
+      </aside>
+
+      <main style="flex: 2.2 1 620px; min-width: 0; display: flex; flex-direction: column; gap: 16px; padding: 22px; border-radius: 20px; background: #FFFFFF">
+        <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap">
+          <span class="pf" style="width: 32px; height: 32px; border-radius: 9px; font-size: 12px; background: {{cur.pbg}}">{{cur.k}}</span>
+          <div style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+            <h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 24px; letter-spacing: -0.02em">{{cur.title}}</h2>
+            <span style="font-size: 14px; color: #5B655D"><a href="AdminWorkspace.dc.html" style="font-weight: 600">{{cur.ws}}</a> · {{cur.account}} · sent {{cur.sent}}</span>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-wrap: wrap; gap: 16px">
+          <section aria-label="What happened" style="flex: 1 1 300px; display: flex; flex-direction: column; gap: 10px; padding: 16px; border-radius: 14px; background: #FBFBF8; border: 1px solid #EEF0EA">
+            <span style="font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: #5B655D">What happened</span>
+            <sc-for list="{{cur.log}}" as="l" hint-placeholder-count="3">
+              <div style="display: flex; gap: 10px; font-size: 14px"><span class="mono" style="flex: none; color: #5B655D">{{l.t}}</span><span>{{l.e}}</span></div>
+            </sc-for>
+          </section>
+          <section aria-label="Platform check" style="flex: 1 1 300px; display: flex; flex-direction: column; gap: 10px; padding: 16px; border-radius: 14px; background: {{cur.checkBg}}; border: 1px solid {{cur.checkBorder}}">
+            <span style="font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: #5B655D">Checked on the platform</span>
+            <strong style="font-size: 16px; color: {{cur.checkFg}}">{{cur.checkTitle}}</strong>
+            <span style="font-size: 14px; line-height: 1.5; color: #2B352E">{{cur.checkBody}}</span>
+            <sc-if value="{{cur.found}}" hint-placeholder-val="{{false}}"><a href="#" class="mono" style="word-break: break-all">{{cur.url}}</a></sc-if>
+            <button class="btn" style="align-self: flex-start; height: 34px; padding: 0 12px; border-radius: 9px; background: #FFFFFF; box-shadow: inset 0 0 0 1px #C7CCC1; font-size: 13px; font-weight: 600">Check again</button>
+          </section>
+        </div>
+
+        <sc-if value="{{cur.isOpen}}" hint-placeholder-val="{{true}}">
+          <div style="display: flex; flex-direction: column; gap: 10px; padding-top: 14px; border-top: 1px solid #EEF0EA">
+            <span style="font-size: 14px; font-weight: 600">Resolve</span>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap">
+              <button class="btn" onClick="{{markPublished}}" style="height: 46px; padding: 0 18px; border-radius: 12px; background: {{pubBg}}; color: {{pubFg}}; font-size: 15px; font-weight: 600; box-shadow: {{pubRing}}">Mark as published</button>
+              <button class="btn" onClick="{{markFailed}}" style="height: 46px; padding: 0 18px; border-radius: 12px; background: {{failBg}}; color: {{failFg}}; font-size: 15px; font-weight: 600; box-shadow: {{failRing}}">Mark as failed and tell the customer</button>
+              <button class="btn" disabled="{{retryDisabled}}" onClick="{{retry}}" style="height: 46px; padding: 0 16px; border-radius: 12px; background: transparent; box-shadow: inset 0 0 0 1px #C7CCC1; color: {{retryFg}}; font-size: 15px; font-weight: 600">Retry now</button>
+            </div>
+            <span style="font-size: 13px; color: #5B655D">{{hint}}</span>
+          </div>
+        </sc-if>
+        <sc-if value="{{cur.isDone}}" hint-placeholder-val="{{false}}">
+          <div role="status" class="rise" style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 14px; background: #0F2A1B; color: #E8F1EA; font-size: 15px">
+            <span style="flex: 1">{{cur.doneText}}</span>
+            <button class="btn" onClick="{{undo}}" style="height: 36px; padding: 0 12px; border-radius: 10px; background: #D4F25C; color: #0F2A1B; font-size: 14px; font-weight: 600">Undo</button>
+          </div>
+        </sc-if>
+      </main>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1040}}'>
+var IG = ['IG', '#D62976'], FB = ['f', '#1877F2'];
+var ITEMS = [
+  { ws: 'Nova Studio', p: IG, account: '@novastudio.co', title: 'Drop is live — link in bio', sent: '00:19', wait: '38m', check: 'found', url: 'instagram.com/p/C9x2Lk81aQz', log: [['00:19:02', 'Sent to Instagram'], ['00:19:32', 'No answer after 30 seconds'], ['00:19:33', 'Not retried, to avoid a duplicate']] },
+  { ws: 'Bloom Bakes', p: FB, account: 'Bloom Bakes Page', title: 'Weekend brunch menu', sent: '00:36', wait: '21m', check: 'none', log: [['00:36:00', 'Sent to Facebook'], ['00:36:30', 'Error 500 from Meta'], ['00:36:31', 'Not retried, to avoid a duplicate']] },
+  { ws: 'Kicks.ng', p: IG, account: '@kicks.ng', title: 'Restock: the pair you missed', sent: '00:45', wait: '12m', check: 'pending', log: [['00:45:00', 'Sent to Instagram'], ['00:45:30', 'No answer after 30 seconds']] },
+  { ws: 'Lagos Thrift Co.', p: FB, account: 'Lagos Thrift Co. Page', title: 'Sunday sale, everything ₦2k', sent: '00:53', wait: '4m', check: 'found', url: 'facebook.com/lagosthrift/posts/88213', log: [['00:53:00', 'Sent to Facebook'], ['00:53:30', 'Error 500 from Meta']] }
+];
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { sel: 0, done: {} }; }
+  resolve(kind) { var d = Object.assign({}, this.state.done); d[this.state.sel] = kind; this.setState({ done: d }); }
+  renderVals() {
+    var s = this.state, self = this;
+    var CK = {
+      found: { chip: 'Match found', chipBg: '#E6F5EC', chipFg: '#0B5E2E', checkBg: '#F2FAF5', checkBorder: '#CDEBD8', checkFg: '#0B5E2E', checkTitle: 'A matching post is live', checkBody: 'Same caption and image, posted 39 seconds after we sent it. It almost certainly went through.' },
+      none: { chip: 'No match', chipBg: '#FDECEA', chipFg: '#8F1D14', checkBg: '#FFF8F7', checkBorder: '#F3B8B1', checkFg: '#8F1D14', checkTitle: 'No matching post found', checkBody: 'Nothing with this caption on the Page in the last hour. Safe to retry or mark as failed.' },
+      pending: { chip: 'Still checking', chipBg: '#FFF1D6', chipFg: '#6B4300', checkBg: '#FFF9EC', checkBorder: '#F1DDB3', checkFg: '#6B4300', checkTitle: 'Still checking', checkBody: 'Meta is slow right now. We check again every 2 minutes. Wait before resolving.' }
+    };
+    var DONE = { published: 'Marked as published. The customer sees “Published” with the live link.', failed: 'Marked as failed. The customer was told and can retry from the post.', retried: 'Retried. If it confirms, the post moves to Published on its own.' };
+    var items = ITEMS.map(function (it, i) {
+      var on = i === s.sel, ck = CK[it.check], d = s.done[i];
+      return { ws: it.ws, k: it.p[0], pbg: it.p[1], title: it.title, wait: d ? 'Done' : it.wait, waitFg: d ? '#0B7A3B' : (parseInt(it.wait) >= 30 ? '#B42318' : '#5B655D'), chip: d ? 'Resolved' : ck.chip, chipBg: d ? '#F0F1EC' : ck.chipBg, chipFg: d ? '#3D4840' : ck.chipFg, cur: on ? 'true' : 'false', bg: on ? '#F2FAF5' : 'transparent', ring: on ? 'inset 0 0 0 2px #12A150' : 'none', pick: function () { self.setState({ sel: i }); } };
+    });
+    var it = ITEMS[s.sel], ck = CK[it.check], d = s.done[s.sel];
+    var found = it.check === 'found', none = it.check === 'none';
+    var cur = Object.assign({ ws: it.ws, k: it.p[0], pbg: it.p[1], title: it.title, account: it.account, sent: it.sent, url: it.url || '', found: found, isOpen: !d, isDone: !!d, doneText: d ? DONE[d] : '', log: it.log.map(function (l) { return { t: l[0], e: l[1] }; }) }, ck);
+    var prim = { bg: '#12A150', fg: '#FFFFFF', ring: 'none' }, sec = { bg: '#FFFFFF', fg: '#0F1A13', ring: 'inset 0 0 0 1px #C7CCC1' };
+    var pub = found ? prim : sec, fail = none ? { bg: '#0F1A13', fg: '#FFFFFF', ring: 'none' } : sec;
+    return {
+      items: items, cur: cur,
+      open: ITEMS.length - Object.keys(s.done).length,
+      pubBg: pub.bg, pubFg: pub.fg, pubRing: pub.ring, failBg: fail.bg, failFg: fail.fg, failRing: fail.ring,
+      retryDisabled: !none, retryFg: none ? '#0F1A13' : '#9AA39C',
+      hint: found ? 'Recommended: mark as published. We save the live link to the post.' : (none ? 'Recommended: retry once, or mark as failed if the customer should decide.' : 'Retry stays off until the check finishes, so we never double-post.'),
+      markPublished: function () { self.resolve('published'); }, markFailed: function () { self.resolve('failed'); }, retry: function () { self.resolve('retried'); },
+      undo: function () { var dd = Object.assign({}, s.done); delete dd[s.sel]; self.setState({ done: dd }); }
+    };
+  }
+}
+</script>
+</body>
+</html>

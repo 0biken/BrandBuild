@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Brandbuild — Approval request email</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&amp;family=Geist:wght@400..700&amp;display=swap">
+<style>
+body{margin:0;font-family:Geist,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+</style>
+</helmet>
+<div style="width: 640px; height: 900px; padding: 32px; background: #F3F4EF; color: #0F1A13; display: flex; flex-direction: column; gap: 14px">
+  <div style="display: flex; flex-direction: column; gap: 2px; padding: 12px 16px; border-radius: 14px; background: #FFFFFF; border: 1px solid #E3E5DD">
+    <span style="font-size: 14px; font-weight: 700">Brandbuild</span>
+    <span style="font-size: 14px; font-weight: 600">Tobi needs your OK on 3 posts</span>
+    <span style="font-size: 13px; color: #5B655D">The first goes out Thursday at 6 PM. Approve from your phone in one tap.</span>
+  </div>
+  <article style="display: flex; flex-direction: column; border-radius: 20px; background: #FFFFFF; border: 1px solid #E3E5DD; overflow: hidden">
+    <div style="display: flex; align-items: center; gap: 8px; padding: 20px 28px; border-bottom: 1px solid #EEF0EA">
+      <svg width="20" height="22" viewBox="0 0 59 66" aria-hidden="true"><path d="M0 63.1688V26.0688C0 24.7053 1.1053 23.6 2.46875 23.6H17.5359C18.8994 23.6 20.0047 24.7053 20.0047 26.0688V40.6953C20.0047 43.4222 22.2153 45.6328 24.9422 45.6328H31.6406C33.0041 45.6328 34.1094 46.7381 34.1094 48.1016V63.1688C34.1094 64.5322 33.0041 65.6375 31.6406 65.6375H2.46875C1.1053 65.6375 0 64.5322 0 63.1688Z" fill="#0F1A13"></path><path d="M24.8906 39.5688V2.46875C24.8906 1.1053 25.9959 0 27.3594 0H42.4266C43.79 0 44.8953 1.1053 44.8953 2.46875V17.0953C44.8953 19.8222 47.1059 22.0328 49.8328 22.0328H56.5313C57.8947 22.0328 59 23.1381 59 24.5016V39.5688C59 40.9322 57.8947 42.0375 56.5313 42.0375H27.3594C25.9959 42.0375 24.8906 40.9322 24.8906 39.5688Z" fill="#0F1A13"></path></svg>
+      <strong style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 17px">Brandbuild</strong>
+      <span style="margin-left: auto; font-size: 13px; color: #5B655D">Nova Studio</span>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 16px; padding: 28px">
+      <h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 28px; line-height: 1.1; letter-spacing: -0.025em">3 posts are waiting for you</h1>
+      <p style="margin: 0; font-size: 15px; line-height: 1.6; color: #2B352E">Tobi wrote these and needs an owner or reviewer to approve them before they go out.</p>
+      <div style="display: flex; gap: 14px; padding: 14px; border-radius: 16px; background: #FBFBF8; border: 1px solid #EEF0EA">
+        <span style="flex: none; width: 88px; height: 88px; border-radius: 12px; background: #DCE6DE"></span>
+        <div style="display: flex; flex-direction: column; gap: 4px">
+          <span style="font-size: 12px; font-weight: 700; color: #6B4300">Goes out Thu 29 Oct, 6:00 PM · Instagram</span>
+          <strong style="font-size: 16px">Customer shout-out: Adaeze's unboxing</strong>
+          <span style="font-size: 14px; line-height: 1.45; color: #3D4840">Adaeze filmed her unboxing and we haven't stopped smiling…</span>
+        </div>
+      </div>
+      <a href="ApprovalInbox.dc.html" style="align-self: stretch; display: block; height: 52px; border-radius: 14px; background: #12A150; color: #FFFFFF; font-size: 16px; font-weight: 600; line-height: 52px; text-align: center; text-decoration: none">Review all 3</a>
+      <ul style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; font-size: 14px; color: #3D4840">
+        <li>Halloween shade picks · Sat 31 Oct</li>
+        <li>Meet the team: who packs your order · Mon 2 Nov</li>
+      </ul>
+    </div>
+    <div style="padding: 18px 28px; background: #FBFBF8; border-top: 1px solid #EEF0EA; font-size: 12px; line-height: 1.6; color: #5B655D">This button signs you in on this device for [N] hours, no password needed. If you didn't expect this, ignore it — nothing posts without approval. Manage approval emails in Settings → Notifications.</div>
+  </article>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":640,"height":900}}'>
+class Component extends DCLogic { renderVals() { return {}; } }
+</script>
+</body>
+</html>

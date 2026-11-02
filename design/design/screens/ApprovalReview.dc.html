@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Brandbuild mobile — Review a post</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&amp;family=Geist:wght@400..700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;font-family:Geist,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+.btn{cursor:pointer;border:0;font:inherit;transition:transform 120ms cubic-bezier(.23,1,.32,1),background-color 150ms ease}
+.btn:active{transform:scale(.97)}
+:focus-visible{outline:2px solid #12A150;outline-offset:2px}
+.pf{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:6px;color:#FFFFFF;font-size:9px;font-weight:700}
+@keyframes sheet{from{transform:translateY(100%)}to{transform:none}}
+.sheet{animation:sheet 300ms cubic-bezier(.32,.72,0,1) both}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.fade{animation:fade 200ms ease both}
+@keyframes pop{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:none}}
+.pop{animation:pop 260ms cubic-bezier(.23,1,.32,1) both}
+@media (prefers-reduced-motion:reduce){*{animation-duration:1ms !important}}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; overflow: hidden; background: #F3F4EF; color: #0F1A13; font-family: Geist, system-ui, sans-serif">
+  <header style="display: flex; align-items: center; gap: 10px; padding: 14px 12px 8px">
+    <a class="btn" href="ApprovalInbox.dc.html" aria-label="Back to approvals" style="display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 12px; background: #FFFFFF; box-shadow: inset 0 0 0 1px #E3E5DD; color: #2B352E">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg></a>
+    <span style="font-size: 15px; font-weight: 600">1 of 3</span>
+    <span style="margin-left: auto; height: 26px; padding: 0 9px; border-radius: 8px; background: #FFF1D6; color: #6B4300; font-size: 12px; font-weight: 700; line-height: 26px">Goes out in 4 days</span>
+  </header>
+
+  <div style="display: flex; flex-direction: column; gap: 12px; padding: 4px 16px 140px">
+    <div style="display: flex; align-items: center; gap: 8px; font-size: 14px; color: #3D4840">
+      <span style="display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 14px; background: #E9EBE4; font-weight: 700; font-size: 12px; color: #0F1A13">T</span>
+      Tobi · sent yesterday
+    </div>
+    <article style="border-radius: 20px; background: #FFFFFF; border: 1px solid #E3E5DD; overflow: hidden">
+      <div role="img" aria-label="Customer unboxing photo placeholder" style="height: 260px; background: #DCE6DE; display: flex; align-items: center; justify-content: center; font-size: 13px; color: #3D4840">[PHOTO: customer unboxing]</div>
+      <div style="display: flex; flex-direction: column; gap: 8px; padding: 14px 16px 16px">
+        <h1 style="margin: 0; font-size: 18px; font-weight: 600">Customer shout-out: Adaeze's unboxing</h1>
+        <p style="margin: 0; font-size: 15px; line-height: 1.55">Adaeze filmed her unboxing and we haven't stopped smiling. Thank you for sharing it with us.</p>
+        <p style="margin: 0; font-size: 14px; color: #0A5CA8">#customerlove #lipgloss</p>
+      </div>
+    </article>
+    <div style="display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 14px; background: #FFFFFF; border: 1px solid #E3E5DD; font-size: 14px">
+      <span class="pf" style="background: #D62976">IG</span>
+      <span style="flex: 1">Thu 29 Oct, 6:00 PM</span>
+      <a href="Composer.dc.html" style="font-weight: 600; color: #0B7A3B">Edit</a>
+    </div>
+  </div>
+
+  <sc-if value="{{isReview}}" hint-placeholder-val="{{true}}">
+    <div style="position: absolute; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; gap: 8px; padding: 12px 16px 26px; background: rgba(243,244,239,0.96); border-top: 1px solid #E3E5DD">
+      <button class="btn" onClick="{{approve}}" style="height: 52px; border-radius: 14px; background: #12A150; color: #FFFFFF; font-size: 16px; font-weight: 600">Approve and schedule</button>
+      <div style="display: flex; gap: 8px">
+        <button class="btn" onClick="{{openChanges}}" style="flex: 1; height: 48px; border-radius: 14px; background: #FFFFFF; box-shadow: inset 0 0 0 1px #C7CCC1; color: #0F1A13; font-size: 15px; font-weight: 600">Request changes</button>
+        <button class="btn" onClick="{{reject}}" style="flex: 0 0 auto; height: 48px; padding: 0 18px; border-radius: 14px; background: transparent; color: #B42318; font-size: 15px; font-weight: 600">Reject</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{isChanges}}" hint-placeholder-val="{{false}}">
+    <div class="fade" style="position: absolute; inset: 0; background: rgba(15,26,19,0.45)"></div>
+    <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="rc" style="position: absolute; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; gap: 12px; padding: 10px 16px 26px; border-radius: 24px 24px 0 0; background: #FFFFFF">
+      <span aria-hidden="true" style="align-self: center; width: 40px; height: 5px; border-radius: 3px; background: #D5D9CF"></span>
+      <h2 id="rc" style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 22px; letter-spacing: -0.02em">What should Tobi change?</h2>
+      <div style="display: flex; gap: 6px; flex-wrap: wrap">
+        <button class="btn" style="height: 34px; padding: 0 12px; border-radius: 9px; background: #F3F4EF; color: #2B352E; font-size: 14px">Different photo</button>
+        <button class="btn" style="height: 34px; padding: 0 12px; border-radius: 9px; background: #F3F4EF; color: #2B352E; font-size: 14px">Shorter caption</button>
+        <button class="btn" style="height: 34px; padding: 0 12px; border-radius: 9px; background: #F3F4EF; color: #2B352E; font-size: 14px">Change the time</button>
+      </div>
+      <textarea aria-label="Note to Tobi" rows="3" style="resize: none; padding: 12px; border-radius: 12px; border: 1px solid #D5D9CF; font: inherit; font-size: 16px">Tag Adaeze so she sees it.</textarea>
+      <div style="display: flex; gap: 8px">
+        <button class="btn" onClick="{{cancel}}" style="flex: 0 0 auto; height: 52px; padding: 0 18px; border-radius: 14px; background: transparent; color: #0F1A13; font-size: 15px; font-weight: 600">Cancel</button>
+        <button class="btn" onClick="{{sendChanges}}" style="flex: 1; height: 52px; border-radius: 14px; background: #0F1A13; color: #FFFFFF; font-size: 15px; font-weight: 600">Send to Tobi</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{isDone}}" hint-placeholder-val="{{false}}">
+    <div class="pop" role="status" style="position: absolute; left: 16px; right: 16px; bottom: 26px; display: flex; flex-direction: column; gap: 12px; padding: 18px; border-radius: 20px; background: {{doneBg}}; color: {{doneFg}}; box-shadow: 0 20px 40px -20px rgba(0,0,0,0.4)">
+      <strong style="font-size: 17px">{{doneTitle}}</strong>
+      <span style="font-size: 14px; line-height: 1.5; opacity: 0.9">{{doneBody}}</span>
+      <div style="display: flex; gap: 8px">
+        <a class="btn" href="ApprovalInbox.dc.html" style="flex: 1; display: inline-flex; align-items: center; justify-content: center; height: 48px; border-radius: 13px; background: {{nextBg}}; color: {{nextFg}}; font-size: 15px; font-weight: 600; text-decoration: none">Next post (2 left)</a>
+        <button class="btn" onClick="{{undo}}" style="height: 48px; padding: 0 16px; border-radius: 13px; background: transparent; color: inherit; font-size: 15px; font-weight: 600">Undo</button>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { mode: 'review' }; }
+  renderVals() {
+    var m = this.state.mode, self = this;
+    var D = {
+      approved: ['Approved', 'Scheduled for Thu 29 Oct, 6:00 PM. Tobi has been told.', '#0F2A1B', '#FFFFFF', '#D4F25C', '#0F2A1B'],
+      changes: ['Sent back to Tobi', 'He’ll get your note and send it again when it’s ready.', '#FFFFFF', '#0F1A13', '#0F1A13', '#FFFFFF'],
+      rejected: ['Rejected', 'The post is back in Tobi’s drafts. It won’t go out.', '#FFFFFF', '#0F1A13', '#0F1A13', '#FFFFFF']
+    };
+    var d = D[m] || D.approved;
+    var go = function (x) { return function () { self.setState({ mode: x }); }; };
+    return {
+      isReview: m === 'review', isChanges: m === 'asking', isDone: m === 'approved' || m === 'changes' || m === 'rejected',
+      doneTitle: d[0], doneBody: d[1], doneBg: d[2], doneFg: d[3], nextBg: d[4], nextFg: d[5],
+      approve: go('approved'), openChanges: go('asking'), reject: go('rejected'), sendChanges: go('changes'), cancel: go('review'), undo: go('review')
+    };
+  }
+}
+</script>
+</body>
+</html>

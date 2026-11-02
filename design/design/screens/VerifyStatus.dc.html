@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Brandbuild — Student check result</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&amp;family=Geist:wght@400..700&amp;display=swap">
+<style>
+body{margin:0;background:#F3F4EF;color:#0F1A13;font-family:Geist,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:#0B7A3B}a:hover{color:#075A2B}
+*{box-sizing:border-box}
+.btn{cursor:pointer;border:0;font:inherit;transition:transform 120ms cubic-bezier(.23,1,.32,1),background-color 150ms ease}
+.btn:active{transform:scale(.97)}
+:focus-visible{outline:2px solid #12A150;outline-offset:2px}
+@keyframes pop{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:none}}
+.pop{animation:pop 260ms cubic-bezier(.23,1,.32,1) both}
+@keyframes pulse{50%{transform:scale(1.08);opacity:.7}}
+.pulse{animation:pulse 1.6s ease-in-out infinite}
+@media (hover:hover) and (pointer:fine){.bp:hover{filter:brightness(0.92)}.bs:hover{background:#F3F4EF}}
+@media (max-width:860px){.pad{padding:20px 16px !important}}
+@media (prefers-reduced-motion:reduce){*{animation-duration:1ms !important;animation-iteration-count:1 !important}}
+</style>
+</helmet>
+<div class="pad" style="min-height: 100vh; width: 100%; padding: 32px 56px 56px; background: #F3F4EF; display: flex; flex-direction: column; gap: 32px">
+  <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap">
+    <a href="Main.dc.html" style="display: flex; align-items: center; gap: 10px; color: #0F1A13; text-decoration: none; margin-right: auto">
+      <svg width="23" height="26" viewBox="0 0 59 66" role="img" aria-label="Brandbuild"><path d="M0 63.1688V26.0688C0 24.7053 1.1053 23.6 2.46875 23.6H17.5359C18.8994 23.6 20.0047 24.7053 20.0047 26.0688V40.6953C20.0047 43.4222 22.2153 45.6328 24.9422 45.6328H31.6406C33.0041 45.6328 34.1094 46.7381 34.1094 48.1016V63.1688C34.1094 64.5322 33.0041 65.6375 31.6406 65.6375H2.46875C1.1053 65.6375 0 64.5322 0 63.1688Z" fill="#0F1A13"></path><path d="M24.8906 39.5688V2.46875C24.8906 1.1053 25.9959 0 27.3594 0H42.4266C43.79 0 44.8953 1.1053 44.8953 2.46875V17.0953C44.8953 19.8222 47.1059 22.0328 49.8328 22.0328H56.5313C57.8947 22.0328 59 23.1381 59 24.5016V39.5688C59 40.9322 57.8947 42.0375 56.5313 42.0375H27.3594C25.9959 42.0375 24.8906 40.9322 24.8906 39.5688Z" fill="#0F1A13"></path></svg>
+      <span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 20px; letter-spacing: -0.02em">Brandbuild</span>
+    </a>
+    <div role="radiogroup" aria-label="Preview state (design only)" style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 4px 4px 12px; border-radius: 12px; border: 1px dashed #9AA39C; font-size: 13px; color: #5B655D">
+      Preview state
+      <sc-for list="{{tabs}}" as="t" hint-placeholder-count="4">
+        <button class="btn" role="radio" aria-checked="{{t.on}}" onClick="{{t.pick}}" style="height: 30px; padding: 0 10px; border-radius: 8px; font-size: 13px; font-weight: 600; background: {{t.bg}}; color: {{t.fg}}">{{t.label}}</button>
+      </sc-for>
+    </div>
+  </div>
+
+  <div style="display: flex; justify-content: center; padding-top: 24px">
+    <sc-for list="{{views}}" as="v" hint-placeholder-count="1">
+      <sc-if value="{{v.show}}" hint-placeholder-val="{{true}}">
+        <section class="pop" aria-live="polite" style="width: 100%; max-width: 520px; display: flex; flex-direction: column; align-items: flex-start; gap: 18px; padding: 40px; border-radius: 28px; background: #FFFFFF; border: 1px solid #E3E5DD; box-shadow: 0 24px 48px -28px rgba(15,26,19,0.22)">
+          <span class="{{v.iconClass}}" style="display: inline-flex; align-items: center; justify-content: center; width: 64px; height: 64px; border-radius: 20px; background: {{v.iconBg}}; color: {{v.iconFg}}">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{v.icon}}"></path></svg>
+          </span>
+          <h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 34px; line-height: 1.05; letter-spacing: -0.03em">{{v.title}}</h1>
+          <p style="margin: 0; font-size: 16px; line-height: 1.55; color: #3D4840">{{v.body}}</p>
+          <sc-if value="{{v.hasNote}}" hint-placeholder-val="{{false}}">
+            <div style="align-self: stretch; padding: 14px 16px; border-radius: 14px; background: {{v.noteBg}}; font-size: 14px; line-height: 1.5; color: {{v.noteFg}}"><strong>{{v.noteTitle}}</strong> {{v.note}}</div>
+          </sc-if>
+          <div style="display: flex; gap: 10px; flex-wrap: wrap; padding-top: 4px">
+            <a class="btn bp" href="{{v.href}}" style="display: inline-flex; align-items: center; height: 48px; padding: 0 20px; border-radius: 14px; background: {{v.ctaBg}}; color: {{v.ctaFg}}; font-size: 15px; font-weight: 600; text-decoration: none">{{v.cta}}</a>
+            <a class="btn bs" href="{{v.href2}}" style="display: inline-flex; align-items: center; height: 48px; padding: 0 18px; border-radius: 14px; background: #FFFFFF; box-shadow: inset 0 0 0 1px #C7CCC1; color: #0F1A13; font-size: 15px; font-weight: 600; text-decoration: none">{{v.cta2}}</a>
+          </div>
+        </section>
+      </sc-if>
+    </sc-for>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1000}}'>
+var V = {
+  pending: { title: 'We’re checking your ID', body: 'A person reviews every ID. You’ll get an email within [X HOURS]. Keep setting up — nothing waits on this.', icon: 'M12 7v5l3 2M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z', iconBg: '#FFF1D6', iconFg: '#8A5300', iconClass: 'pulse', hasNote: true, noteBg: '#F3F4EF', noteFg: '#2B352E', noteTitle: 'Submitted:', note: 'student-id-front.jpg · Sun 25 Oct, 4:02 PM', cta: 'Continue setup', ctaBg: '#12A150', ctaFg: '#FFFFFF', href: 'Connect.dc.html', cta2: 'Replace photo', href2: 'Verify.dc.html' },
+  approved: { title: 'You’re verified', body: 'Student Access is on. Every core feature is free until [END DATE].', icon: 'm5 12.5 4.5 4.5L19 7.5', iconBg: '#12A150', iconFg: '#FFFFFF', iconClass: '', hasNote: false, cta: 'Write your first post', ctaBg: '#12A150', ctaFg: '#FFFFFF', href: 'Composer.dc.html', cta2: 'See what’s included', href2: 'Billing.dc.html' },
+  rejected: { title: 'We couldn’t verify this ID', body: 'Nothing’s wrong with your account. We just need a clearer look.', icon: 'M12 8v5M12 16.5v.01M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z', iconBg: '#FDECEA', iconFg: '#8F1D14', iconClass: '', hasNote: true, noteBg: '#FDECEA', noteFg: '#5C130D', noteTitle: 'Reason:', note: 'The expiry date isn’t readable. Retake the photo in good light with the whole card in frame.', cta: 'Try again', ctaBg: '#0F1A13', ctaFg: '#FFFFFF', href: 'Verify.dc.html', cta2: 'Use school email instead', href2: 'Verify.dc.html' },
+  expired: { title: 'Time to re-verify', body: 'Student Access needs a fresh check each [PERIOD]. It takes a minute with your school email.', icon: 'M21 12a9 9 0 1 1-3-6.7L21 8M21 3v5h-5', iconBg: '#E6F5EC', iconFg: '#0B7A3B', iconClass: '', hasNote: true, noteBg: '#FFF6E5', noteFg: '#4A2E00', noteTitle: 'Until then:', note: '[DECISION NEEDED: what the account can still do.]', cta: 'Re-verify', ctaBg: '#12A150', ctaFg: '#FFFFFF', href: 'Verify.dc.html', cta2: 'See plans', href2: 'Pricing.dc.html' }
+};
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { st: 'pending' }; }
+  renderVals() {
+    var st = this.state.st, self = this;
+    var tabs = [['pending', 'Pending'], ['approved', 'Approved'], ['rejected', 'Rejected'], ['expired', 'Expired']].map(function (t) {
+      var on = st === t[0];
+      return { label: t[1], on: on ? 'true' : 'false', bg: on ? '#0F1A13' : 'transparent', fg: on ? '#FFFFFF' : '#3D4840', pick: function () { self.setState({ st: t[0] }); } };
+    });
+    var views = Object.keys(V).map(function (k) { return Object.assign({ show: k === st }, V[k]); });
+    return { tabs: tabs, views: views };
+  }
+}
+</script>
+</body>
+</html>

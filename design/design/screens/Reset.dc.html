@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Brandbuild — Reset your password</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&amp;family=Geist:wght@400..700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#F3F4EF;color:#0F1A13;font-family:Geist,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:#0B7A3B}a:hover{color:#075A2B}
+*{box-sizing:border-box}
+.btn{cursor:pointer;border:0;font:inherit;transition:transform 120ms cubic-bezier(.23,1,.32,1),background-color 150ms ease}
+.btn:active{transform:scale(.97)}
+:focus-visible{outline:2px solid #12A150;outline-offset:2px}
+.in{width:100%;height:48px;padding:0 14px;border-radius:12px;border:1px solid #D5D9CF;background:#FFFFFF;font:inherit;font-size:16px;color:#0F1A13}
+.d{width:48px;height:56px;text-align:center;border-radius:12px;font-family:'Bricolage Grotesque',sans-serif;font-size:24px;font-weight:600;color:#0F1A13;background:#FFFFFF;border:1.5px solid #0F1A13}
+@keyframes step{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:none}}
+.step{animation:step 260ms cubic-bezier(.23,1,.32,1) both}
+@media (hover:hover) and (pointer:fine){.btn-primary:hover{background:#0B7A3B}.btn-ghost:hover{background:#E9EBE4}}
+@media (max-width:860px){.pad{padding:24px 16px !important}}
+@media (prefers-reduced-motion:reduce){.step{animation-duration:1ms}}
+</style>
+</helmet>
+<div class="pad" style="min-height: 100vh; width: 100%; padding: 32px 56px 56px; background: #F3F4EF; display: flex; flex-direction: column; gap: 40px">
+  <a href="Landing.dc.html" style="display: flex; align-items: center; gap: 10px; color: #0F1A13; text-decoration: none">
+    <svg width="23" height="26" viewBox="0 0 59 66" role="img" aria-label="Brandbuild"><path d="M0 63.1688V26.0688C0 24.7053 1.1053 23.6 2.46875 23.6H17.5359C18.8994 23.6 20.0047 24.7053 20.0047 26.0688V40.6953C20.0047 43.4222 22.2153 45.6328 24.9422 45.6328H31.6406C33.0041 45.6328 34.1094 46.7381 34.1094 48.1016V63.1688C34.1094 64.5322 33.0041 65.6375 31.6406 65.6375H2.46875C1.1053 65.6375 0 64.5322 0 63.1688Z" fill="#0F1A13"></path><path d="M24.8906 39.5688V2.46875C24.8906 1.1053 25.9959 0 27.3594 0H42.4266C43.79 0 44.8953 1.1053 44.8953 2.46875V17.0953C44.8953 19.8222 47.1059 22.0328 49.8328 22.0328H56.5313C57.8947 22.0328 59 23.1381 59 24.5016V39.5688C59 40.9322 57.8947 42.0375 56.5313 42.0375H27.3594C25.9959 42.0375 24.8906 40.9322 24.8906 39.5688Z" fill="#0F1A13"></path></svg>
+    <span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 20px; letter-spacing: -0.02em">Brandbuild</span>
+  </a>
+  <div style="display: flex; justify-content: center">
+    <section style="width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 22px; padding: 36px; border-radius: 28px; background: #FFFFFF; border: 1px solid #E3E5DD; box-shadow: 0 24px 48px -28px rgba(15,26,19,0.22)">
+      <ol aria-label="Steps" style="list-style: none; margin: 0; padding: 0; display: flex; gap: 6px">
+        <sc-for list="{{bars}}" as="b" hint-placeholder-count="3">
+          <li aria-current="{{b.cur}}" style="flex: 1; height: 4px; border-radius: 2px; background: {{b.bg}}; transition: background-color 240ms ease"><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">{{b.label}}</span></li>
+        </sc-for>
+      </ol>
+
+      <sc-if value="{{s0}}" hint-placeholder-val="{{true}}">
+        <div class="step" style="display: flex; flex-direction: column; gap: 18px">
+          <div style="display: flex; flex-direction: column; gap: 6px">
+            <h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 32px; letter-spacing: -0.03em">Forgot your password?</h1>
+            <p style="margin: 0; font-size: 16px; line-height: 1.5; color: #3D4840">Enter the email or phone number on your account. We'll send a code.</p>
+          </div>
+          <label style="display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 600">Email or phone number<input class="in" type="text" value="mary@novastudio.co"></label>
+          <button class="btn btn-primary" onClick="{{next}}" style="height: 52px; border-radius: 14px; background: #12A150; color: #FFFFFF; font-size: 16px; font-weight: 600">Send code</button>
+          <a href="LogIn.dc.html" style="align-self: center; font-size: 15px; font-weight: 600">Back to log in</a>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{s1}}" hint-placeholder-val="{{false}}">
+        <div class="step" style="display: flex; flex-direction: column; gap: 18px">
+          <div style="display: flex; flex-direction: column; gap: 6px">
+            <h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 32px; letter-spacing: -0.03em">Enter the code</h1>
+            <p style="margin: 0; font-size: 16px; line-height: 1.5; color: #3D4840">Sent to <strong>mary@novastudio.co</strong>.</p>
+          </div>
+          <div role="group" aria-label="6-digit code" style="display: flex; gap: 8px">
+            <input class="d" aria-label="Digit 1" value="7"><input class="d" aria-label="Digit 2" value="3"><input class="d" aria-label="Digit 3" value="0"><input class="d" aria-label="Digit 4" value="5"><input class="d" aria-label="Digit 5" value="1"><input class="d" aria-label="Digit 6" value="8">
+          </div>
+          <button class="btn btn-primary" onClick="{{next}}" style="height: 52px; border-radius: 14px; background: #12A150; color: #FFFFFF; font-size: 16px; font-weight: 600">Continue</button>
+          <button class="btn btn-ghost" onClick="{{back}}" style="align-self: center; height: 40px; padding: 0 12px; border-radius: 10px; background: transparent; color: #0B7A3B; font-size: 15px; font-weight: 600">Use a different email</button>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{s2}}" hint-placeholder-val="{{false}}">
+        <div class="step" style="display: flex; flex-direction: column; gap: 18px">
+          <div style="display: flex; flex-direction: column; gap: 6px">
+            <h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 32px; letter-spacing: -0.03em">Choose a new password</h1>
+            <p style="margin: 0; font-size: 16px; line-height: 1.5; color: #3D4840">You'll be logged out on other devices.</p>
+          </div>
+          <label style="display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 600">New password<input class="in" type="password" value="Glossdrop26" autocomplete="new-password"></label>
+          <ul style="list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 12px; font-size: 14px; color: #0B5E2E">
+            <li style="display: flex; align-items: center; gap: 8px"><span style="width: 18px; height: 18px; border-radius: 9px; background: #12A150"></span>One capital letter</li>
+            <li style="display: flex; align-items: center; gap: 8px"><span style="width: 18px; height: 18px; border-radius: 9px; background: #12A150"></span>One small letter</li>
+            <li style="display: flex; align-items: center; gap: 8px"><span style="width: 18px; height: 18px; border-radius: 9px; background: #12A150"></span>One number</li>
+            <li style="display: flex; align-items: center; gap: 8px"><span style="width: 18px; height: 18px; border-radius: 9px; background: #12A150"></span>8 or more characters</li>
+          </ul>
+          <button class="btn btn-primary" onClick="{{next}}" style="height: 52px; border-radius: 14px; background: #12A150; color: #FFFFFF; font-size: 16px; font-weight: 600">Save new password</button>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{s3}}" hint-placeholder-val="{{false}}">
+        <div class="step" style="display: flex; flex-direction: column; align-items: flex-start; gap: 16px">
+          <span style="display: inline-flex; align-items: center; justify-content: center; width: 56px; height: 56px; border-radius: 18px; background: #12A150; color: #FFFFFF">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"></path></svg></span>
+          <h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 32px; letter-spacing: -0.03em">Password changed</h1>
+          <p style="margin: 0; font-size: 16px; line-height: 1.5; color: #3D4840">You're logged in. We've signed you out everywhere else.</p>
+          <a class="btn btn-primary" href="Main.dc.html" style="align-self: stretch; display: inline-flex; align-items: center; justify-content: center; height: 52px; border-radius: 14px; background: #12A150; color: #FFFFFF; font-size: 16px; font-weight: 600; text-decoration: none">Go to Home</a>
+          <button class="btn btn-ghost" onClick="{{restart}}" style="align-self: center; height: 40px; padding: 0 12px; border-radius: 10px; background: transparent; color: #5B655D; font-size: 14px">Replay this flow</button>
+        </div>
+      </sc-if>
+    </section>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":920}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { step: 0 }; }
+  renderVals() {
+    var st = this.state.step, self = this;
+    var labels = ['Request a code', 'Enter the code', 'New password'];
+    return {
+      s0: st === 0, s1: st === 1, s2: st === 2, s3: st === 3,
+      bars: labels.map(function (l, i) { return { label: l + (i < st ? ', done' : (i === st ? ', current' : '')), cur: i === st ? 'step' : 'false', bg: i <= st ? '#12A150' : '#E3E5DD' }; }),
+      next: function () { self.setState({ step: Math.min(3, st + 1) }); },
+      back: function () { self.setState({ step: 0 }); },
+      restart: function () { self.setState({ step: 0 }); }
+    };
+  }
+}
+</script>
+</body>
+</html>

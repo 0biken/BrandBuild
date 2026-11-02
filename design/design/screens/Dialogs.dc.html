@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Brandbuild — Dialogs and toasts</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&amp;family=Geist:wght@400..700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;font-family:Geist,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+.btn{cursor:pointer;border:0;font:inherit;transition:transform 120ms cubic-bezier(.23,1,.32,1)}
+.btn:active{transform:scale(.97)}
+:focus-visible{outline:2px solid #12A150;outline-offset:2px}
+.scrim{display:flex;align-items:center;justify-content:center;padding:28px;border-radius:24px;background:rgba(15,26,19,0.55)}
+.dlg{width:100%;display:flex;flex-direction:column;gap:14px;padding:24px;border-radius:22px;background:#FFFFFF;box-shadow:0 30px 60px -20px rgba(0,0,0,0.45)}
+.dt{margin:0;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:22px;letter-spacing:-0.02em;color:#0F1A13}
+.db{margin:0;font-size:15px;line-height:1.5;color:#3D4840}
+.row{display:flex;gap:8px;justify-content:flex-end;padding-top:4px}
+.b1{height:44px;padding:0 16px;border-radius:12px;font-size:15px;font-weight:600}
+.toast{display:flex;align-items:center;gap:12px;min-height:52px;padding:10px 10px 10px 16px;border-radius:14px;background:#0F1A13;color:#FFFFFF;font-size:15px;box-shadow:0 16px 32px -16px rgba(0,0,0,0.5);position:relative;overflow:hidden}
+@keyframes drain{from{transform:scaleX(1)}to{transform:scaleX(0)}}
+.drain{position:absolute;left:0;bottom:0;height:3px;width:100%;background:#D4F25C;transform-origin:0 50%;animation:drain 5s linear infinite}
+@media (prefers-reduced-motion:reduce){.drain{animation:none}}
+</style>
+</helmet>
+<div style="width: 1440px; height: 1000px; padding: 56px; background: #F3F4EF; color: #0F1A13; display: flex; flex-direction: column; gap: 28px">
+  <div style="display: flex; flex-direction: column; gap: 8px">
+    <h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 40px; letter-spacing: -0.035em">Dialogs and toasts</h1>
+    <p style="margin: 0; max-width: 820px; font-size: 16px; line-height: 1.5; color: #3D4840">Dialogs only for decisions that can't be undone or that lose work. Everything else gets a toast with Undo. Buttons say exactly what happens; red is reserved for permanent deletion.</p>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px">
+    <div class="scrim">
+      <div class="dlg" role="dialog" aria-modal="true" aria-labelledby="d1">
+        <h2 class="dt" id="d1">Log out?</h2>
+        <p class="db">You'll need your email and password to log back in. Scheduled posts still go out.</p>
+        <div class="row"><button class="btn b1" style="background: transparent; color: #0F1A13">Cancel</button><button class="btn b1" style="background: #0F1A13; color: #FFFFFF">Log out</button></div>
+      </div>
+    </div>
+    <div class="scrim">
+      <div class="dlg" role="dialog" aria-modal="true" aria-labelledby="d2">
+        <h2 class="dt" id="d2">Leave without saving?</h2>
+        <p class="db">Your edits to “Weekend drop prep” haven't been saved.</p>
+        <div class="row"><button class="btn b1" style="background: transparent; color: #B42318">Discard</button><button class="btn b1" style="background: #12A150; color: #FFFFFF">Keep editing</button></div>
+      </div>
+    </div>
+    <div class="scrim">
+      <div class="dlg" role="dialog" aria-modal="true" aria-labelledby="d3">
+        <h2 class="dt" id="d3">Delete your account?</h2>
+        <p class="db">Everything goes: posts, drafts, brand voice and connected accounts. This can't be undone.</p>
+        <label style="display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 600; color: #0F1A13">Type DELETE to confirm
+          <input type="text" value="DELE" style="height: 44px; padding: 0 12px; border-radius: 10px; border: 1px solid #D5D9CF; font-family: 'Geist Mono', monospace; font-size: 15px; font-weight: 400">
+        </label>
+        <div class="row"><button class="btn b1" style="background: transparent; color: #0F1A13">Cancel</button><button class="btn b1" disabled="{{true}}" style="background: #F3C4BF; color: #7A1A12; cursor: not-allowed">Delete account</button></div>
+      </div>
+    </div>
+    <div class="scrim">
+      <div class="dlg" role="dialog" aria-modal="true" aria-labelledby="d4" style="background: #0F2A1B; color: #E8F1EA">
+        <span style="display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 16px; background: #D4F25C; color: #0F2A1B">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"></path></svg></span>
+        <h2 class="dt" id="d4" style="color: #FFFFFF">Scheduled for Fri, 7:00 PM</h2>
+        <p class="db" style="color: #B9CBBE">Going to Instagram and LinkedIn. We'll tell you when it's live.</p>
+        <div class="row" style="justify-content: flex-start"><button class="btn b1" style="background: #D4F25C; color: #0F2A1B">Write another</button><button class="btn b1" style="background: transparent; color: #FFFFFF">View calendar</button></div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 12px">
+    <span style="font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: #5B655D">Toasts · bottom centre on mobile, bottom left on desktop · 5 seconds, paused on hover</span>
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; max-width: 980px">
+      <div class="toast" role="status"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D4F25C" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"></path></svg>Draft saved</div>
+      <div class="toast" role="status"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D4F25C" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"></path></svg>Moved to Tue 27 Oct, 7:00 PM<button class="btn" style="margin-left: auto; height: 34px; padding: 0 12px; border-radius: 9px; background: transparent; color: #D4F25C; font-size: 14px; font-weight: 600">Undo</button></div>
+      <div class="toast" role="status">Post deleted<button class="btn" style="margin-left: auto; height: 34px; padding: 0 12px; border-radius: 9px; background: #FFFFFF; color: #0F1A13; font-size: 14px; font-weight: 600">Undo</button><span class="drain" aria-hidden="true"></span></div>
+      <div class="toast" role="alert" style="background: #7A1A12"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5M12 16.5v.01"></path></svg>Couldn't save. Check your connection.<button class="btn" style="margin-left: auto; height: 34px; padding: 0 12px; border-radius: 9px; background: #FFFFFF; color: #7A1A12; font-size: 14px; font-weight: 600">Retry</button></div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic { renderVals() { return {}; } }
+</script>
+</body>
+</html>

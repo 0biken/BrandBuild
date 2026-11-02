@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Brandbuild — Empty and error states</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&amp;family=Geist:wght@400..700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;font-family:Geist,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+.btn{cursor:pointer;border:0;font:inherit;transition:transform 120ms cubic-bezier(.23,1,.32,1)}
+.btn:active{transform:scale(.97)}
+:focus-visible{outline:2px solid #12A150;outline-offset:2px}
+</style>
+</helmet>
+<div style="width: 1440px; height: 1500px; padding: 56px; background: #F3F4EF; color: #0F1A13; display: flex; flex-direction: column; gap: 28px">
+  <div style="display: flex; align-items: flex-end; gap: 24px">
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 40px; letter-spacing: -0.035em">Empty and error states</h1>
+      <p style="margin: 0; max-width: 760px; font-size: 16px; line-height: 1.5; color: #3D4840">One pattern everywhere: an icon, a plain title that says what happened, one sentence on what to do, and one main action. Errors never blame the user and always offer a way forward.</p>
+    </div>
+    <div style="margin-left: auto; display: flex; gap: 12px; font-size: 13px; color: #3D4840">
+      <span style="display: inline-flex; align-items: center; gap: 6px"><span style="width: 10px; height: 10px; border-radius: 3px; background: #E6F5EC; box-shadow: inset 0 0 0 1px #9ED3B2"></span>Empty</span>
+      <span style="display: inline-flex; align-items: center; gap: 6px"><span style="width: 10px; height: 10px; border-radius: 3px; background: #FDECEA; box-shadow: inset 0 0 0 1px #F3B8B1"></span>Error</span>
+      <span style="display: inline-flex; align-items: center; gap: 6px"><span style="width: 10px; height: 10px; border-radius: 3px; background: #FFF1D6; box-shadow: inset 0 0 0 1px #E5C98F"></span>Warning</span>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px">
+    <sc-for list="{{states}}" as="s" hint-placeholder-count="12">
+      <article style="display: flex; flex-direction: column; align-items: center; gap: 12px; min-height: 300px; padding: 24px 20px; border-radius: 20px; background: #FFFFFF; border: 1px solid #E3E5DD; text-align: center">
+        <span style="align-self: flex-start; height: 24px; padding: 0 8px; border-radius: 7px; background: {{s.tagBg}}; color: {{s.tagFg}}; font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; line-height: 24px">{{s.where}}</span>
+        <span style="margin-top: 8px; display: inline-flex; align-items: center; justify-content: center; width: 56px; height: 56px; border-radius: 18px; background: {{s.iconBg}}; color: {{s.iconFg}}">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{s.icon}}"></path></svg>
+        </span>
+        <h2 style="margin: 0; font-size: 17px; font-weight: 600; line-height: 1.3">{{s.title}}</h2>
+        <p style="margin: 0; font-size: 14px; line-height: 1.5; color: #3D4840">{{s.body}}</p>
+        <div style="margin-top: auto; display: flex; gap: 8px; flex-wrap: wrap; justify-content: center">
+          <button class="btn" style="height: 40px; padding: 0 14px; border-radius: 11px; background: {{s.ctaBg}}; color: {{s.ctaFg}}; font-size: 14px; font-weight: 600">{{s.cta}}</button>
+          <sc-if value="{{s.hasCta2}}" hint-placeholder-val="{{false}}">
+            <button class="btn" style="height: 40px; padding: 0 12px; border-radius: 11px; background: transparent; color: #0B7A3B; font-size: 14px; font-weight: 600">{{s.cta2}}</button>
+          </sc-if>
+        </div>
+      </article>
+    </sc-for>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 10px">
+    <span style="font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: #5B655D">Page-level banners</span>
+    <div role="status" style="display: flex; align-items: center; gap: 12px; padding: 12px 18px; border-radius: 14px; background: #0F1A13; color: #FFFFFF; font-size: 15px">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M2 8.8a15 15 0 0 1 20 0M5.5 12.3a10 10 0 0 1 13 0M9 15.8a5 5 0 0 1 6 0M12 19.5h.01M3 3l18 18"></path></svg>
+      You're offline. Changes save on this device and sync when you're back.
+    </div>
+    <div role="status" style="display: flex; align-items: center; gap: 12px; padding: 12px 18px; border-radius: 14px; background: #FFF1D6; color: #4A2E00; font-size: 15px">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>
+      Scheduled maintenance Sat 31 Oct, 2–3 AM. Posts scheduled in that hour go out right after.
+      <button class="btn" style="margin-left: auto; height: 34px; padding: 0 12px; border-radius: 9px; background: transparent; color: #4A2E00; font-size: 14px; font-weight: 600">Dismiss</button>
+    </div>
+    <div role="status" style="display: flex; align-items: center; gap: 12px; padding: 12px 18px; border-radius: 14px; background: #0F2A1B; color: #FFFFFF; font-size: 15px">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D4F25C" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M9 6v12M15 6v12"></path></svg>
+      Publishing is paused for Nova Studio. Scheduled posts are held, nothing is lost.
+      <a href="PostDetail.dc.html" style="margin-left: auto; color: #D4F25C; font-size: 14px; font-weight: 600">Why?</a>
+    </div>
+    <div role="status" style="display: flex; align-items: center; gap: 12px; padding: 12px 18px; border-radius: 14px; background: #FDECEA; color: #5C130D; font-size: 15px">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"></path></svg>
+      Instagram and Facebook are having problems. Posts due now will retry automatically when Meta recovers.
+      <a href="#" style="margin-left: auto; color: #5C130D; font-size: 14px; font-weight: 600">Status page ↗</a>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1500}}'>
+var I = {
+  cal: 'M3 9.5h18M8 2.5v4M16 2.5v4M5.5 4.5h13a2.5 2.5 0 0 1 2.5 2.5v11.5a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 18.5V7a2.5 2.5 0 0 1 2.5-2.5z',
+  link: 'M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1',
+  doc: 'M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9zM14 3v6h6',
+  chart: 'M3 20h18M6 16v-5M11 16V7M16 16v-8M21 16V4',
+  bell: 'M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.9 1.9 0 0 0 3.4 0',
+  search: 'M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM20 20l-3.5-3.5',
+  spark: 'M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9zM4 4l16 16',
+  up: 'M12 15V4M7.5 8.5 12 4l4.5 4.5M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3',
+  key: 'M15 7a4 4 0 1 0-3.9 5L4 19v2h3v-2h2v-2h2l1.3-1.3A4 4 0 0 0 15 7z',
+  clock: 'M12 7v5l3 2M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z',
+  x: 'M12 8v5M12 16.5v.01M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z',
+  img: 'M4 5h16v14H4zM4 15l4-4 4 4 3-3 5 5M15 9h.01'
+};
+var E = { tagBg: '#E6F5EC', tagFg: '#0B5E2E', iconBg: '#F3F4EF', iconFg: '#3D4840', ctaBg: '#12A150', ctaFg: '#FFFFFF' };
+var R = { tagBg: '#FDECEA', tagFg: '#8F1D14', iconBg: '#FDECEA', iconFg: '#8F1D14', ctaBg: '#0F1A13', ctaFg: '#FFFFFF' };
+var W = { tagBg: '#FFF1D6', tagFg: '#6B4300', iconBg: '#FFF1D6', iconFg: '#8A5300', ctaBg: '#0F1A13', ctaFg: '#FFFFFF' };
+function st(base, o) { return Object.assign({ hasCta2: !!o.cta2 }, base, o); }
+class Component extends DCLogic {
+  renderVals() {
+    return { states: [
+      st(E, { where: 'Calendar', icon: I.cal, title: 'Nothing scheduled yet', body: 'Write a post and pick a time. It shows up here.', cta: 'Write a post', cta2: 'Get an idea' }),
+      st(E, { where: 'Home', icon: I.link, title: 'Connect an account to start', body: 'Brandbuild needs at least one account to post to.', cta: 'Connect an account' }),
+      st(E, { where: 'Drafts', icon: I.doc, title: 'No drafts', body: 'Anything you save without scheduling lands here.', cta: 'Start a draft' }),
+      st(E, { where: 'Analytics', icon: I.chart, title: 'Results show up after your first post', body: 'Give it a day or two after something goes live.', cta: 'Schedule a post' }),
+      st(E, { where: 'Notifications', icon: I.bell, title: 'You’re all caught up', body: 'We’ll let you know when a post goes live or needs you.', cta: 'Notification settings' }),
+      st(E, { where: 'Search', icon: I.search, title: 'No drafts match “halloween”', body: 'Check the spelling or try a shorter word.', cta: 'Clear search' }),
+      st(R, { where: 'Composer', icon: I.spark, title: 'Couldn’t write the post', body: 'Our AI didn’t respond. Your idea is saved, so nothing is lost.', cta: 'Try again', cta2: 'Write it myself' }),
+      st(R, { where: 'Media', icon: I.img, title: 'That file is too big', body: 'Videos up to [N] MB and images up to [N] MB. Try compressing it first.', cta: 'Choose another file' }),
+      st(W, { where: 'Any account', icon: I.key, title: 'TikTok needs reconnecting', body: 'Access expired. 1 scheduled post is on hold until you reconnect.', cta: 'Reconnect' }),
+      st(W, { where: 'Composer', icon: I.clock, title: 'Too many requests', body: 'Give it a minute. You can try again in 0:45.', cta: 'Try again', cta2: 'Save draft' }),
+      st(R, { where: 'Any page', icon: I.x, title: 'Something went wrong', body: 'It’s on our side. Refresh the page; if it keeps happening, tell us.', cta: 'Refresh', cta2: 'Contact support' }),
+      st(R, { where: 'Upload', icon: I.up, title: 'Upload didn’t finish', body: 'The connection dropped at 64%. We’ll pick up where it stopped.', cta: 'Resume upload' })
+    ] };
+  }
+}
+</script>
+</body>
+</html>

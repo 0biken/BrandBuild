@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Brandbuild — Calendar</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&amp;family=Geist:wght@400..700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#F3F4EF;color:#0F1A13;font-family:Geist,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:#0B7A3B}a:hover{color:#075A2B}
+*{box-sizing:border-box}
+.btn{cursor:pointer;border:0;font:inherit;transition:transform 120ms cubic-bezier(.23,1,.32,1),background-color 150ms ease}
+.btn:active{transform:scale(.97)}
+.nav,.cell,.post{transition:background-color 150ms ease,box-shadow 150ms ease}
+:focus-visible{outline:2px solid #12A150;outline-offset:2px}
+@media (hover:hover) and (pointer:fine){
+.btn-primary:hover{background:#0B7A3B}
+.btn-ghost:hover{background:#E9EBE4}
+.nav:hover{background:#E9EBE4}
+.cell:hover{background:#FBFBF8}
+.post:hover{box-shadow:0 0 0 1px rgba(15,26,19,0.18)}
+}
+@media (max-width:860px){.rail{display:none !important}.pad{padding:16px !important}.side{flex-basis:100% !important}}
+@media (prefers-reduced-motion:reduce){*{transition-duration:1ms !important}}
+</style>
+</helmet>
+<div style="display: flex; flex-wrap: wrap; min-height: 100vh; width: 100%; background: #F3F4EF">
+
+<nav class="rail" aria-label="Main" style="flex: 0 0 240px; display: flex; flex-direction: column; gap: 28px; padding: 24px 16px; background: #FBFBF8; border-right: 1px solid #E3E5DD">
+  <div style="display: flex; align-items: center; gap: 10px; padding: 0 8px">
+    <svg width="23" height="26" viewBox="0 0 59 66" role="img" aria-label="Brandbuild"><path d="M0 63.1688V26.0688C0 24.7053 1.1053 23.6 2.46875 23.6H17.5359C18.8994 23.6 20.0047 24.7053 20.0047 26.0688V40.6953C20.0047 43.4222 22.2153 45.6328 24.9422 45.6328H31.6406C33.0041 45.6328 34.1094 46.7381 34.1094 48.1016V63.1688C34.1094 64.5322 33.0041 65.6375 31.6406 65.6375H2.46875C1.1053 65.6375 0 64.5322 0 63.1688Z" fill="#0F1A13"></path><path d="M24.8906 39.5688V2.46875C24.8906 1.1053 25.9959 0 27.3594 0H42.4266C43.79 0 44.8953 1.1053 44.8953 2.46875V17.0953C44.8953 19.8222 47.1059 22.0328 49.8328 22.0328H56.5313C57.8947 22.0328 59 23.1381 59 24.5016V39.5688C59 40.9322 57.8947 42.0375 56.5313 42.0375H27.3594C25.9959 42.0375 24.8906 40.9322 24.8906 39.5688Z" fill="#0F1A13"></path></svg>
+    <span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 19px; letter-spacing: -0.02em">Brandbuild</span>
+  </div>
+  <a class="btn btn-primary" href="Composer.dc.html" style="display: flex; align-items: center; justify-content: center; gap: 8px; height: 44px; border-radius: 12px; background: #12A150; color: #FFFFFF; font-weight: 600; font-size: 15px; text-decoration: none">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>New post</a>
+  <div style="display: flex; flex-direction: column; gap: 2px">
+    <a class="nav" href="Main.dc.html" style="display: flex; align-items: center; gap: 12px; height: 44px; padding: 0 12px; border-radius: 10px; color: #3D4840; font-weight: 500; font-size: 15px; text-decoration: none">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"></path></svg>Home</a>
+    <a class="nav" href="Calendar.dc.html" aria-current="page" style="display: flex; align-items: center; gap: 12px; height: 44px; padding: 0 12px; border-radius: 10px; background: #E6F5EC; color: #0B5E2E; font-weight: 600; font-size: 15px; text-decoration: none">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16.5" rx="2.5"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg>Calendar</a>
+    <a class="nav" href="Drafts.dc.html" style="display: flex; align-items: center; gap: 12px; height: 44px; padding: 0 12px; border-radius: 10px; color: #3D4840; font-weight: 500; font-size: 15px; text-decoration: none">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><path d="M14 3v6h6M8 13h8M8 17h5"></path></svg>Drafts</a>
+    <a class="nav" href="Approvals.dc.html" style="display: flex; align-items: center; gap: 12px; height: 44px; padding: 0 12px; border-radius: 10px; color: #3D4840; font-weight: 500; font-size: 15px; text-decoration: none">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3.5h6v3H9z"></path><path d="M7 5H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1M9 14l2 2 4-4"></path></svg>Approvals<span style="margin-left: auto; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 11px; background: #12A150; color: #FFFFFF; font-size: 12px; font-weight: 700; line-height: 22px; text-align: center">3</span></a>
+    <a class="nav" href="Analytics.dc.html" style="display: flex; align-items: center; gap: 12px; height: 44px; padding: 0 12px; border-radius: 10px; color: #3D4840; font-weight: 500; font-size: 15px; text-decoration: none">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 20h18M6 16v-5M11 16V7M16 16v-8M21 16V4"></path></svg>Analytics</a>
+    <a class="nav" href="BrandProfile.dc.html" style="display: flex; align-items: center; gap: 12px; height: 44px; padding: 0 12px; border-radius: 10px; color: #3D4840; font-weight: 500; font-size: 15px; text-decoration: none">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.6-.8 1.6-1.6 0-.5-.2-.8-.4-1.1-.3-.4-.5-.7-.5-1.2 0-.9.7-1.6 1.6-1.6H16a5 5 0 0 0 5-5c0-4.1-4-7.5-9-7.5z"></path></svg>Brand profile</a>
+    <a class="nav" href="Settings.dc.html" style="display: flex; align-items: center; gap: 12px; height: 44px; padding: 0 12px; border-radius: 10px; color: #3D4840; font-weight: 500; font-size: 15px; text-decoration: none">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><circle cx="12" cy="12" r="8.5"></circle></svg>Settings</a>
+  </div>
+</nav>
+
+<main class="pad" style="flex: 999 1 560px; min-width: 0; padding: 28px 32px 48px">
+  <div style="max-width: 1240px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px">
+
+    <header style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap">
+      <h1 style="margin: 0 8px 0 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 34px; letter-spacing: -0.03em">October <span style="color: #9AA39C">2026</span></h1>
+      <div style="display: flex; gap: 4px">
+        <button class="btn btn-ghost" aria-label="Previous month" style="display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 12px; background: #FBFBF8; border: 1px solid #E3E5DD; color: #2B352E">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg></button>
+        <button class="btn btn-ghost" aria-label="Next month" style="display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 12px; background: #FBFBF8; border: 1px solid #E3E5DD; color: #2B352E">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></button>
+      </div>
+      <button class="btn btn-ghost" style="height: 44px; padding: 0 14px; border-radius: 12px; background: #FBFBF8; border: 1px solid #E3E5DD; color: #2B352E; font-size: 14px; font-weight: 600">Today</button>
+      <div role="radiogroup" aria-label="View" style="margin-left: auto; display: inline-flex; padding: 4px; border-radius: 12px; background: #E9EBE4">
+        <button class="btn" role="radio" aria-checked="true" style="height: 36px; padding: 0 14px; border-radius: 9px; font-size: 14px; font-weight: 600; background: #FFFFFF; color: #0F1A13; box-shadow: 0 1px 2px rgba(15,26,19,0.12)">Month</button>
+        <button class="btn" role="radio" aria-checked="false" style="height: 36px; padding: 0 14px; border-radius: 9px; font-size: 14px; font-weight: 600; background: transparent; color: #3D4840">Week</button>
+        <button class="btn" role="radio" aria-checked="false" style="height: 36px; padding: 0 14px; border-radius: 9px; font-size: 14px; font-weight: 600; background: transparent; color: #3D4840">List</button>
+      </div>
+    </header>
+
+    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 14px">
+      <span style="color: #5B655D; margin-right: 4px">Show</span>
+      <button class="btn" aria-pressed="true" style="display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 10px; border-radius: 9px; background: #FFFFFF; box-shadow: inset 0 0 0 1px #D5D9CF; color: #2B352E; font-size: 14px"><span style="width: 8px; height: 8px; border-radius: 4px; background: #D62976"></span>Instagram</button>
+      <button class="btn" aria-pressed="true" style="display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 10px; border-radius: 9px; background: #FFFFFF; box-shadow: inset 0 0 0 1px #D5D9CF; color: #2B352E; font-size: 14px"><span style="width: 8px; height: 8px; border-radius: 4px; background: #0A66C2"></span>LinkedIn</button>
+      <button class="btn" aria-pressed="true" style="display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 10px; border-radius: 9px; background: #FFFFFF; box-shadow: inset 0 0 0 1px #D5D9CF; color: #2B352E; font-size: 14px"><span style="width: 8px; height: 8px; border-radius: 4px; background: #111111"></span>TikTok</button>
+      <span style="margin-left: auto; display: inline-flex; gap: 14px; color: #5B655D">
+        <span style="display: inline-flex; align-items: center; gap: 6px"><span style="width: 10px; height: 10px; border-radius: 3px; background: #E6F5EC; box-shadow: inset 0 0 0 1px #9ED3B2"></span>Scheduled</span>
+        <span style="display: inline-flex; align-items: center; gap: 6px"><span style="width: 10px; height: 10px; border-radius: 3px; background: #FFF1D6; box-shadow: inset 0 0 0 1px #E5C98F"></span>On hold</span>
+        <span style="display: inline-flex; align-items: center; gap: 6px"><span style="width: 10px; height: 10px; border-radius: 3px; background: #E7F1FB; box-shadow: inset 0 0 0 1px #A9CBEE"></span>Awaiting approval</span>
+        <span style="display: inline-flex; align-items: center; gap: 6px"><span style="width: 10px; height: 10px; border-radius: 3px; background: #F0F1EC; box-shadow: inset 0 0 0 1px #D5D9CF"></span>Published</span>
+      </span>
+    </div>
+
+    <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start">
+      <section aria-label="October 2026" style="flex: 999 1 640px; min-width: 0; overflow-x: auto; border-radius: 20px; background: #FFFFFF; border: 1px solid #E3E5DD">
+        <div style="min-width: 720px">
+          <div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); border-bottom: 1px solid #E3E5DD">
+            <sc-for list="{{dows}}" as="d" hint-placeholder-count="7">
+              <div style="padding: 12px 12px 10px; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #5B655D">{{d}}</div>
+            </sc-for>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr))">
+            <sc-for list="{{cells}}" as="c" hint-placeholder-count="35">
+              <div class="cell" style="min-height: 128px; padding: 8px; display: flex; flex-direction: column; gap: 6px; border-right: {{c.br}}; border-bottom: {{c.bb}}; background: {{c.bg}}; box-shadow: {{c.drop}}">
+                <span style="align-self: flex-start; display: inline-flex; align-items: center; justify-content: center; min-width: 28px; height: 28px; padding: 0 6px; border-radius: 14px; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 15px; letter-spacing: -0.01em; background: {{c.numBg}}; color: {{c.numFg}}">{{c.num}}</span>
+                <sc-for list="{{c.posts}}" as="p" hint-placeholder-count="1">
+                  <a class="post" href="#" style="display: flex; flex-direction: column; gap: 3px; padding: 6px 8px; border-radius: 9px; text-decoration: none; background: {{p.bg}}; color: {{p.fg}}; box-shadow: {{p.ring}}; opacity: {{p.opacity}}; transform: {{p.transform}}">
+                    <span style="display: flex; align-items: center; gap: 4px">
+                      <sc-for list="{{p.pfs}}" as="pf" hint-placeholder-count="2">
+                        <span style="width: 8px; height: 8px; border-radius: 4px; background: {{pf}}"></span>
+                      </sc-for>
+                      <span style="margin-left: 2px; font-family: 'Geist Mono', monospace; font-size: 11px">{{p.time}}</span>
+                    </span>
+                    <span style="font-size: 13px; font-weight: 500; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden">{{p.title}}</span>
+                  </a>
+                </sc-for>
+                <sc-if value="{{c.hint}}" hint-placeholder-val="{{false}}">
+                  <span style="font-size: 12px; font-weight: 600; color: #0B7A3B">Drop to move here</span>
+                </sc-if>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </section>
+
+      <aside class="side" aria-label="Drafts" style="flex: 1 1 280px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+        <section style="display: flex; flex-direction: column; gap: 10px; padding: 18px; border-radius: 20px; background: #FFFFFF; border: 1px solid #E3E5DD">
+          <div style="display: flex; align-items: baseline; gap: 8px">
+            <h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 20px; letter-spacing: -0.02em">Drafts</h2>
+            <span style="font-size: 14px; color: #5B655D">drag onto a day</span>
+          </div>
+          <sc-for list="{{drafts}}" as="d" hint-placeholder-count="3">
+            <div style="display: flex; align-items: center; gap: 10px; padding: 10px 10px 10px 6px; border-radius: 12px; background: #FBFBF8; box-shadow: inset 0 0 0 1px #E3E5DD; cursor: grab">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="#9AA39C" aria-hidden="true"><circle cx="9" cy="6" r="1.6"></circle><circle cx="15" cy="6" r="1.6"></circle><circle cx="9" cy="12" r="1.6"></circle><circle cx="15" cy="12" r="1.6"></circle><circle cx="9" cy="18" r="1.6"></circle><circle cx="15" cy="18" r="1.6"></circle></svg>
+              <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">
+                <span style="font-size: 14px; font-weight: 500">{{d.title}}</span>
+                <span style="font-size: 12px; color: #5B655D">{{d.meta}}</span>
+              </span>
+            </div>
+          </sc-for>
+        </section>
+        <section style="display: flex; flex-direction: column; gap: 10px; padding: 18px; border-radius: 20px; background: #0F2A1B; color: #E8F1EA">
+          <span style="display: inline-flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #D4F25C">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"></path></svg>Gap spotted</span>
+          <p style="margin: 0; font-size: 15px; line-height: 1.45; color: #FFFFFF">Nothing is planned for Sat 31 or Sun 1. Weekend posts get your best saves.</p>
+          <a class="btn" href="Composer.dc.html" style="align-self: flex-start; display: inline-flex; align-items: center; height: 40px; padding: 0 14px; border-radius: 11px; background: #D4F25C; color: #0F2A1B; font-size: 14px; font-weight: 600; text-decoration: none">Suggest a weekend post</a>
+        </section>
+      </aside>
+    </div>
+  </div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1040}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var IG = '#D62976', LI = '#0A66C2', TT = '#111111';
+    var S = { bg: '#E6F5EC', fg: '#0B3D20', ring: 'inset 0 0 0 1px #9ED3B2' };
+    var H = { bg: '#FFF1D6', fg: '#4A2E00', ring: 'inset 0 0 0 1px #E5C98F' };
+    var P = { bg: '#F0F1EC', fg: '#5B655D', ring: 'none' };
+    var A = { bg: '#E7F1FB', fg: '#0A3D73', ring: 'inset 0 0 0 1px #A9CBEE' };
+    function post(st, time, title, pfs, extra) { return Object.assign({ time: time, title: title, pfs: pfs, opacity: '1', transform: 'none' }, st, extra || {}); }
+    var byDay = {
+      '2': [post(P, '7:00 PM', 'Behind the counter', [IG])],
+      '6': [post(P, '9:00 AM', 'Founder note: year one', [LI])],
+      '9': [post(P, '7:00 PM', 'Shade swatches', [IG])],
+      '13': [post(P, '6:00 PM', 'Packing, start to finish', [IG, TT])],
+      '16': [post(P, '12:30 PM', 'We’re hiring a packer', [LI])],
+      '20': [post(P, '7:00 PM', 'Your reviews, read aloud', [IG, TT])],
+      '23': [post(P, '7:00 PM', 'Weekend teaser', [IG])],
+      '26': [post(H, '7:00 PM', 'Weekend drop prep', [IG, TT], { opacity: '0.4' })],
+      '27': [post(H, '7:00 PM', 'Weekend drop prep', [IG, TT], { ring: '0 12px 24px -8px rgba(15,26,19,0.35), inset 0 0 0 1px #E5C98F', transform: 'rotate(-2deg)' })],
+      '28': [post(S, '12:30 PM', 'Shade lineup', [IG, LI])],
+      '29': [post(A, '6:00 PM', 'Customer shout-out', [IG])],
+      '30': [post(S, '7:00 PM', 'Drop is live', [IG, LI, TT])]
+    };
+    var cells = [], i;
+    var labels = [28, 29, 30];
+    for (i = 1; i <= 31; i++) labels.push(i);
+    labels.push(1);
+    for (i = 0; i < 35; i++) {
+      var n = labels[i];
+      var inMonth = i >= 3 && i <= 33;
+      var today = inMonth && n === 25;
+      var drop = inMonth && n === 27;
+      cells.push({
+        num: n,
+        posts: inMonth ? (byDay[String(n)] || []) : [],
+        bg: inMonth ? (drop ? '#F2FAF5' : '#FFFFFF') : '#FAFAF7',
+        numBg: today ? '#12A150' : 'transparent',
+        numFg: today ? '#FFFFFF' : (inMonth ? '#0F1A13' : '#9AA39C'),
+        br: (i % 7 === 6) ? 'none' : '1px solid #EEF0EA',
+        bb: (i >= 28) ? 'none' : '1px solid #EEF0EA',
+        drop: drop ? 'inset 0 0 0 2px #12A150' : 'none',
+        hint: drop
+      });
+    }
+    return {
+      dows: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+      cells: cells,
+      drafts: [
+        { title: 'Halloween shade picks', meta: 'Instagram · caption ready' },
+        { title: 'Thank you, first 100 customers', meta: 'Instagram, LinkedIn · needs a photo' },
+        { title: 'How we choose our packaging', meta: 'TikTok · idea only' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>
