@@ -101,6 +101,10 @@ export interface PostItem {
     initial: string;
     note: string;
   };
+  /** Who sent it for approval. Set while the post awaits approval. */
+  requestedBy?: { name: string; initial: string };
+  /** When it was sent for approval (ISO). */
+  requestedAt?: string;
   failureInfo?: {
     title: string;
     message: string;
@@ -127,6 +131,8 @@ export interface DraftItem {
   pfs: { k: string; bg: string }[];
   edited: string;
   action: string;
+  /** The reviewer's note when they asked for changes. */
+  feedback?: string;
 }
 
 // ---------- Analytics ----------

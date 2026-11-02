@@ -185,6 +185,11 @@ export function DraftsScreen() {
                     </Link>
                   </h2>
                   <p className="m-0 line-clamp-3 text-sm leading-relaxed text-ink-2">{d.body}</p>
+                  {d.feedback && (
+                    <p className="m-0 rounded-xl bg-amber-soft px-3 py-2.5 text-sm text-amber-ink">
+                      <strong className="font-semibold">Changes asked:</strong> {d.feedback}
+                    </p>
+                  )}
                   <div className="mt-auto flex items-center gap-2 pt-1">
                     <span className="mr-auto text-[13px] text-muted">{d.edited}</span>
                     <ButtonLink href={editHref(d)} variant="soft" className="h-10 px-3 text-sm">

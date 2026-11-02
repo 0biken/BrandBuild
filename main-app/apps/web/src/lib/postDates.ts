@@ -73,6 +73,22 @@ export function fromInputs(day: string, time: string): Date | null {
 
 export const SHORT_MONTHS = MONTH;
 
+/** "just now", "5 min ago", "1 hour ago", "yesterday", "3 days ago". */
+export function timeAgo(iso: string, now: Date): string {
+  const min = Math.floor((now.getTime() - Date.parse(iso)) / 60_000);
+  if (Number.isNaN(min) || min < 1) return "just now";
+  if (min < 60) return `${min} min ago`;
+  const h = Math.floor(min / 60);
+  if (h < 24) return h === 1 ? "1 hour ago" : `${h} hours ago`;
+  const days = Math.floor(h / 24);
+  return days === 1 ? "yesterday" : `${days} days ago`;
+}
+
+/** "Sat 7 Nov, 6:00 PM" from a post's display fields. */
+export function shortWhen(p: Pick<PostItem, "dateStr" | "time">): string {
+  return `${p.dateStr.replace(",", "").replace(/ \d{4}$/, "")}, ${p.time}`;
+}
+
 /** True if the moment has passed. Call from event handlers, not render. */
 export function isPast(d: Date): boolean {
   return d.getTime() < Date.now();

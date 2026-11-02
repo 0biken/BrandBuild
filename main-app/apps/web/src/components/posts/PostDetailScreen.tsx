@@ -209,7 +209,7 @@ export function PostDetailScreen({ id }: { id: string }) {
         <Banner
           tone="info"
           title={`Waiting for ${p.reviewer?.name ?? "the owner"} to approve`}
-          actions={<ButtonLink href={ROUTES.approvals} variant="outline" className="h-10">Review now</ButtonLink>}
+          actions={<ButtonLink href={ROUTES.approval(p.id)} variant="outline" className="h-10">Review now</ButtonLink>}
         >
           {p.reviewer?.note ??
             "It goes out at its scheduled time once approved. If it isn't approved by then, it waits."}
