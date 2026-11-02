@@ -20,7 +20,7 @@ export const CONNECTABLE: { id: AccountPlatform; name: string; badge: string; bg
   { id: "li", name: "LinkedIn", badge: "in", bg: "#0A66C2", blurb: "Personal profile or company page" },
   { id: "tt", name: "TikTok", badge: "TT", bg: "#111111", blurb: "Videos and photo posts" },
   { id: "fb", name: "Facebook", badge: "f", bg: "#1877F2", blurb: "Pages you manage" },
-  { id: "yt", name: "YouTube", badge: "YT", bg: "#FF0033", blurb: "Shorts and community posts" },
+  { id: "yt", name: "YouTube", badge: "YT", bg: "#E6002E", blurb: "Shorts and community posts" },
 ];
 
 const SAMPLE_HANDLES: Record<AccountPlatform, [string, string]> = {
