@@ -9,7 +9,8 @@ import { invalidate, useQuery } from "@/lib/api/hooks";
 import { listPosts } from "@/lib/api/posts";
 import { ROUTES } from "@/lib/routes";
 import { greeting, useNow } from "@/lib/useNow";
-import { LoadError, NeedsAttention, StartPost, Stats, TodaysIdea, UpNext } from "./HomeSections";
+import { FinishSetup, LoadError, NeedsAttention, StartPost, Stats, TodaysIdea, UpNext } from "./HomeSections";
+import { getOnboarding, nextStepPath } from "@/lib/api/onboarding";
 
 export function HomeScreen() {
   const now = useNow();
@@ -18,6 +19,9 @@ export function HomeScreen() {
   const stats = useQuery("stats", getHomeStats);
   const accounts = useQuery("accounts", listAccounts);
   const platforms = useQuery("platforms", listPlatforms);
+  const onboarding = useQuery("onboarding", getOnboarding);
+  const setupNext = onboarding.data ? nextStepPath(onboarding.data) : null;
+  const setupLeft = onboarding.data ? Object.values(onboarding.data).filter((s) => s === "todo").length : 0;
 
   const failed = posts.error || stats.error || accounts.error;
 
@@ -43,6 +47,8 @@ export function HomeScreen() {
           <BellIcon size={20} />
         </Link>
       </header>
+
+      {setupNext && <FinishSetup remaining={setupLeft} href={setupNext} />}
 
       <StartPost brand={brand.data} />
 

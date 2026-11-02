@@ -1,9 +1,9 @@
 import { mockConfig } from "@/lib/mock/store";
 import { API_MODE } from "./config";
 import { apiFetch } from "./http";
-import type { ApiResult, PlatformId } from "./types";
+import type { ApiResult, PlatformId, Tone } from "./types";
 
-export type Tone = "Warm" | "Playful" | "Professional" | "Bold";
+export type { Tone };
 export type Tweak = "rewrite" | "shorter" | "playful" | "cta";
 
 export interface GenerateInput {

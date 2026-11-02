@@ -5,7 +5,9 @@ import type {
   PostItem,
   ConnectedAccount,
   Brand,
+  OnboardingState,
   Session,
+  StudentCheck,
 } from "@/lib/api/types";
 
 export const SEED_PLATFORMS: PlatformConfig[] = [
@@ -52,6 +54,7 @@ export const SEED_ACCOUNTS: ConnectedAccount[] = [
     badge: "IG",
     badgeBg: "#D62976",
     handle: "@novastudio.co",
+    note: "2.5K followers",
     status: "connected",
   },
   {
@@ -60,6 +63,7 @@ export const SEED_ACCOUNTS: ConnectedAccount[] = [
     badge: "in",
     badgeBg: "#0A66C2",
     handle: "Nova Studio",
+    note: "company page",
     status: "connected",
   },
   {
@@ -431,7 +435,18 @@ export const SEED_BRAND: Brand = {
   voice: "warm, confident",
   plan: "student",
   planEndsLabel: "[END DATE]",
+  sells: "Handmade lip gloss and lip care",
+  audience: ["Students", "Young professionals", "Gen Z"],
+  tones: ["Warm", "Playful"],
+  wordsUse: ["shade", "glow", "the drop"],
+  wordsAvoid: ["cheap", "flawless"],
+  color: "#0F2A1B",
+  samples: "",
 };
+
+/** The seeded account has finished onboarding; a new signup starts at "todo". */
+export const SEED_ONBOARDING: OnboardingState = { verify: "done", connect: "done", brand: "done" };
+export const SEED_STUDENT_CHECK: StudentCheck = { status: "verified", method: "email", email: "mary@stu.ui.edu.ng" };
 
 export const SEED_SESSION: Session = {
   userId: "user-mary",

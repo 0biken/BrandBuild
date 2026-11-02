@@ -12,7 +12,8 @@ export const ROUTES = {
   settings: `${APP_HOME}/settings`,
   billing: `${APP_HOME}/billing`,
   notifications: `${APP_HOME}/notifications`,
-  connect: `${APP_HOME}/connect`,
+  connect: `${APP_HOME}/onboarding/connect`,
+  onboarding: `${APP_HOME}/onboarding`,
   post: (id: string) => `${APP_HOME}/posts/${encodeURIComponent(id)}`,
 } as const;
 
@@ -22,7 +23,6 @@ export const ROUTES = {
  * the navigation works throughout the build. Remove entries as they land.
  */
 export const UPCOMING: Record<string, { title: string; phase: string }> = {
-  connect: { title: "Connect accounts", phase: "Phase 2" },
   approvals: { title: "Approvals", phase: "Phase 3" },
   analytics: { title: "Analytics", phase: "Phase 3" },
   brand: { title: "Brand profile", phase: "Phase 3" },

@@ -143,6 +143,8 @@ export interface StatItem {
 
 // ---------- Brand ----------
 
+export type Tone = "Warm" | "Playful" | "Professional" | "Bold";
+
 export interface Brand {
   id: string;
   name: string;
@@ -151,15 +153,48 @@ export interface Brand {
   plan: "student" | "creator" | "business";
   /** When the current plan or Student Access ends (open decision). */
   planEndsLabel: string;
+  sells: string;
+  audience: string[];
+  /** One or two tones. */
+  tones: Tone[];
+  wordsUse: string[];
+  wordsAvoid: string[];
+  /** Hex colour used in graphics Brandbuild makes. */
+  color: string;
+  /** Captions the owner wrote and liked, for voice matching. */
+  samples: string;
+}
+
+export type BrandProfile = Omit<Brand, "id" | "plan" | "planEndsLabel" | "voice">;
+
+// ---------- Onboarding ----------
+
+export type StepStatus = "todo" | "done" | "skipped";
+
+export interface OnboardingState {
+  verify: StepStatus;
+  connect: StepStatus;
+  brand: StepStatus;
+}
+
+export interface StudentCheck {
+  status: "none" | "code_sent" | "verified" | "pending_review" | "not_student";
+  method?: "email" | "id";
+  email?: string;
 }
 
 // ---------- Accounts ----------
 
+/** Platforms an account can be connected for. YouTube is connect-only for now. */
+export type AccountPlatform = PlatformId | "yt";
+
 export interface ConnectedAccount {
   id: string;
-  platform: "ig" | "li" | "tt";
+  platform: AccountPlatform;
   badge: string;
   badgeBg: string;
   handle: string;
-  status: "connected" | "needs_attention" | "disconnected";
+  /** e.g. "2.5K followers" or "company page". */
+  note?: string;
+  status: "connected" | "needs_attention" | "disconnected" | "connecting" | "declined";
 }

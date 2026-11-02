@@ -4,19 +4,23 @@ import type {
   Brand,
   ConnectedAccount,
   DraftItem,
+  OnboardingState,
   PlatformConfig,
   PostItem,
   Session,
   StatItem,
+  StudentCheck,
 } from "@/lib/api/types";
 import {
   SEED_ACCOUNTS,
   SEED_BRAND,
   SEED_DRAFTS,
+  SEED_ONBOARDING,
   SEED_PLATFORMS,
   SEED_POSTS,
   SEED_SESSION,
   SEED_STATS,
+  SEED_STUDENT_CHECK,
 } from "./seed-data";
 
 /**
@@ -33,6 +37,10 @@ export interface MockDb {
   stats: StatItem[];
   brand: Brand;
   session: Session;
+  onboarding: OnboardingState;
+  studentCheck: StudentCheck;
+  /** Connect attempts per platform (mock OAuth decides outcomes from this). */
+  connectAttempts: Record<string, number>;
 }
 
 const STORAGE_KEY = "bb:mock-db:v1";
@@ -46,6 +54,9 @@ const seed = (): MockDb =>
     stats: SEED_STATS,
     brand: SEED_BRAND,
     session: SEED_SESSION,
+    onboarding: SEED_ONBOARDING,
+    studentCheck: SEED_STUDENT_CHECK,
+    connectAttempts: {},
   });
 
 let db: MockDb | null = null;
@@ -78,6 +89,10 @@ export const mockConfig = {
   latencyMs: 400,
   /** When set, the next mock call fails with this error, then clears. */
   failNext: null as ApiError | null,
+  /** Platforms whose first connect attempt is declined (Connect design shows Facebook). */
+  declineFirstConnect: ["fb"] as string[],
+  /** How long the mock OAuth "other tab" takes. */
+  connectMs: 1500,
 };
 
 if (typeof window !== "undefined") {

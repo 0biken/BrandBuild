@@ -9,7 +9,7 @@ test("signed-out visitors to the app are sent to log in", async ({ page }) => {
   await expect(page).toHaveURL(/\/login\?next=%2Fapp/);
 });
 
-test("signup, then the code, lands in the app", async ({ page }) => {
+test("signup, then the code, starts onboarding", async ({ page }) => {
   await page.goto("/signup");
   await page.getByLabel("Name").fill("Test User");
   await page.getByLabel("Email or phone number").fill("test@example.test");
@@ -28,7 +28,8 @@ test("signup, then the code, lands in the app", async ({ page }) => {
   await expect(alert(page, "That code isn't right")).toBeVisible();
 
   await page.getByLabel("Digit 1").fill("123456");
-  await expect(page).toHaveURL(/\/app$/);
+  // A new account continues into onboarding.
+  await expect(page).toHaveURL(/\/app\/onboarding\/verify$/);
 });
 
 test("wrong password shows the mismatch error", async ({ page }) => {

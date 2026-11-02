@@ -1,4 +1,4 @@
-import { read } from "@/lib/mock/store";
+import { read, write } from "@/lib/mock/store";
 import { API_MODE, API_URL } from "./config";
 import { apiFetch } from "./http";
 import {
@@ -39,8 +39,15 @@ export async function signUp(input: {
   password: string;
 }): Promise<ApiResult> {
   if (API_MODE === "http") return apiFetch("/v1/auth/signup", { method: "POST", body: input });
-  await wait();
-  return ok;
+  // A new account starts onboarding from scratch.
+  return write((d) => {
+    d.onboarding = { verify: "todo", connect: "todo", brand: "todo" };
+    d.studentCheck = { status: "none" };
+    d.accounts = [];
+    d.connectAttempts = {};
+    d.session = { ...d.session, name: input.name, identifier: input.identifier, role: "owner" };
+    return undefined;
+  });
 }
 
 export async function logIn(input: {

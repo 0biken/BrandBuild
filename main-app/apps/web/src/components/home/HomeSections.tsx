@@ -268,14 +268,14 @@ export function NeedsAttention({
   posts?: PostItem[];
   platforms?: PlatformConfig[];
 }) {
-  const broken = accounts?.filter((a) => a.status !== "connected") ?? [];
+  const broken = accounts?.filter((a) => a.status === "needs_attention") ?? [];
   if (broken.length === 0) return null;
   return (
     <>
       {broken.map((a) => {
         const name = platforms?.find((p) => p.id === a.platform)?.name ?? a.handle;
         const held =
-          posts?.filter((p) => p.state !== "published" && p.platforms.includes(a.platform)).length ?? 0;
+          posts?.filter((p) => p.state !== "published" && (p.platforms as string[]).includes(a.platform)).length ?? 0;
         return (
           <section
             key={a.id}
@@ -310,5 +310,27 @@ export function LoadError({ onRetry }: { onRetry: () => void }) {
       body="Check your connection and try again."
       action={<Button variant="outline" onClick={onRetry}>Try again</Button>}
     />
+  );
+}
+
+// ---------- Finish setting up ----------
+
+export function FinishSetup({ remaining, href }: { remaining: number; href: string }) {
+  return (
+    <section
+      aria-labelledby="setup-h"
+      className="flex flex-wrap items-center gap-4 rounded-[20px] border border-[#BFE3CC] bg-primary-soft p-[18px]"
+    >
+      <div className="flex min-w-0 flex-[1_1_280px] flex-col gap-1">
+        <h2 id="setup-h" className="m-0 text-[15px] font-semibold text-primary-ink">
+          Finish setting up
+        </h2>
+        <p className="m-0 text-sm text-primary-ink">
+          {remaining} step{remaining === 1 ? "" : "s"} left. Connected accounts and your brand voice make every caption
+          better.
+        </p>
+      </div>
+      <ButtonLink href={href}>Continue setup</ButtonLink>
+    </section>
   );
 }

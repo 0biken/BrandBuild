@@ -9,6 +9,12 @@ import { CodeInput } from "@/components/ui/CodeInput";
 import { MailIcon } from "@/components/ui/icons";
 import { HOME_HREF, requestCode, verifyCode } from "@/lib/api/auth";
 import { usePendingIdentifier } from "@/lib/pending";
+import { getOnboarding, nextStepPath } from "@/lib/api/onboarding";
+
+async function onboardingNext(): Promise<string> {
+  const res = await getOnboarding();
+  return (res.ok && nextStepPath(res.data)) || HOME_HREF;
+}
 
 const RESEND_SECONDS = 30;
 
@@ -34,7 +40,8 @@ export function CodeForm() {
     setNote("");
     const res = await verifyCode(value);
     if (res.ok) {
-      router.push(HOME_HREF);
+      // A new account continues into onboarding; anyone already set up goes Home.
+      router.push(await onboardingNext());
       return;
     }
     setStatus(res.error === "expired" ? "expired" : "invalid");
