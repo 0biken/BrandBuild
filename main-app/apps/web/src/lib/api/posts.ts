@@ -22,6 +22,12 @@ export interface PostInput {
 const enc = encodeURIComponent;
 const DOT = { green: "#12A150", grey: "#9AA39C", blue: "#2E6FB5" };
 
+/** Who sent a post for approval, and when. */
+const requested = (d: MockDb): Pick<PostItem, "requestedBy" | "requestedAt"> => ({
+  requestedBy: { name: d.session.name, initial: d.session.name.charAt(0).toUpperCase() },
+  requestedAt: new Date().toISOString(),
+});
+
 /** States whose time can still change. */
 const MOVABLE: PostState[] = ["scheduled", "approval", "paused"];
 
@@ -65,6 +71,7 @@ export async function createPost(input: PostInput | NewPost): Promise<ApiResult<
         aspectRatio: input.aspectRatio ?? "1 / 1",
         state,
         ...scheduleFields(when, state),
+        ...(state === "approval" ? requested(d) : {}),
         activityLog: [
           { text: logLine(state, when), time: formatShort(new Date()), dot: DOT.green },
           { text: "Written by Brandbuild from your idea", time: formatShort(new Date()), dot: DOT.grey },
@@ -87,6 +94,7 @@ export async function updatePost(id: string, input: PostInput): Promise<ApiResul
     if (post.state === "published" || post.state === "checking") return "conflict";
     const when = input.scheduledAt ? new Date(input.scheduledAt) : new Date();
     const state = stateFor(input.intent);
+    if (state === "approval" && post.state !== "approval") Object.assign(post, requested(d));
     Object.assign(post, {
       title: input.title,
       caption: input.caption,
@@ -160,7 +168,8 @@ export async function retryPost(id: string): Promise<ApiResult<PostItem>> {
   });
 }
 
-function draftFrom(d: MockDb, post: PostItem, title: string): DraftItem {
+/** Copy a post into Drafts (mock only; the caller decides what happens to the post). */
+export function draftFrom(d: MockDb, post: PostItem, title: string): DraftItem {
   const pfs = post.platforms
     .map((pid) => d.platforms.find((p) => p.id === pid))
     .filter((p) => !!p)

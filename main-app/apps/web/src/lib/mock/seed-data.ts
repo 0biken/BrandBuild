@@ -296,6 +296,8 @@ export const SEED_POSTS: PostItem[] = [
       initial: "M",
       note: "Tobi submitted this shout-out draft. Awaiting review.",
     },
+    requestedBy: { name: "Tobi", initial: "T" },
+    requestedAt: "2026-10-31T15:40:00",
   },
   {
     id: "post-4",
@@ -402,6 +404,46 @@ export const SEED_POSTS: PostItem[] = [
       message:
         "[REASON, e.g. a payment problem or a request from the account owner]. This post is held and will go out when publishing resumes, unless its time has passed.",
     },
+  },
+  // More posts waiting for approval (Approvals design).
+  {
+    id: "post-9",
+    title: "Weekend gloss giveaway",
+    caption:
+      "Three shades, three moods. Which one are you wearing this weekend? Tell us in the comments and we'll pick one winner for a free gloss.",
+    hashtags: ["#giveaway", "#lipgloss", "#smallbusiness"],
+    aspectRatio: "1 / 1",
+    time: "6:00 PM",
+    dateStr: "Sat, 7 Nov 2026",
+    scheduledFor: "Goes out Sat 7 Nov at 6:00 PM once approved",
+    state: "approval",
+    platforms: ["ig", "tt"],
+    activityLog: [
+      { text: "Sent for approval by Tobi", time: "Mon 10:05 AM", dot: "#2E6FB5" },
+      { text: "Written by Brandbuild from Tobi’s idea", time: "Mon 9:58 AM", dot: "#9AA39C" },
+    ],
+    reviewer: { name: "Mary", initial: "M", note: "Tobi sent this giveaway for approval." },
+    requestedBy: { name: "Tobi", initial: "T" },
+    requestedAt: "2026-11-02T10:05:00",
+  },
+  {
+    id: "post-10",
+    title: "The two people who pack your order",
+    caption: "Meet the two people who wrap, seal and write the note on every box. Say hi to Tobi and Ada.",
+    hashtags: ["#meettheteam", "#smallbusiness"],
+    aspectRatio: "4 / 5",
+    time: "12:30 PM",
+    dateStr: "Mon, 9 Nov 2026",
+    scheduledFor: "Goes out Mon 9 Nov at 12:30 PM once approved",
+    state: "approval",
+    platforms: ["ig", "li"],
+    activityLog: [
+      { text: "Sent for approval by Tobi", time: "Mon 8:20 AM", dot: "#2E6FB5" },
+      { text: "Written by Brandbuild from Tobi’s idea", time: "Mon 8:11 AM", dot: "#9AA39C" },
+    ],
+    reviewer: { name: "Mary", initial: "M", note: "Tobi sent this team post for approval." },
+    requestedBy: { name: "Tobi", initial: "T" },
+    requestedAt: "2026-11-02T08:20:00",
   },
   // Published history for the calendar (titles from the Calendar design).
   ...([

@@ -7,6 +7,7 @@ export const ROUTES = {
   calendar: `${APP_HOME}/calendar`,
   drafts: `${APP_HOME}/drafts`,
   approvals: `${APP_HOME}/approvals`,
+  approval: (id: string) => `${APP_HOME}/approvals?post=${encodeURIComponent(id)}`,
   analytics: `${APP_HOME}/analytics`,
   brand: `${APP_HOME}/brand`,
   settings: `${APP_HOME}/settings`,
@@ -23,7 +24,6 @@ export const ROUTES = {
  * the navigation works throughout the build. Remove entries as they land.
  */
 export const UPCOMING: Record<string, { title: string; phase: string }> = {
-  approvals: { title: "Approvals", phase: "Phase 3" },
   analytics: { title: "Analytics", phase: "Phase 3" },
   brand: { title: "Brand profile", phase: "Phase 3" },
   settings: { title: "Settings", phase: "Phase 3" },
