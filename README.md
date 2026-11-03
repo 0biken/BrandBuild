@@ -1,20 +1,20 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-## Getting Started
+## Development
 
-First, run the development server:
+Run the marketing website from the repository root:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Run the product app in `main-app/apps/web`:
+
+```bash
+npm run dev:product
+```
+
+Both apps use port 3000 by default, so stop one before starting the other.
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
