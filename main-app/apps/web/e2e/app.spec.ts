@@ -46,6 +46,27 @@ test("search with no match offers a way back", async ({ page }) => {
   await expect(page.getByRole("article")).toHaveCount(6);
 });
 
+test("brand profile edits are saved, and Home picks up the new name", async ({ page }) => {
+  await page.goto("/app/brand");
+  const save = page.getByRole("button", { name: "Save changes" });
+  await expect(page.getByLabel("Brand name")).toHaveValue("Nova Studio");
+  await expect(save).toBeDisabled();
+  await page.getByLabel("Brand name").fill("Nova Studio Co");
+  await expect(save).toBeEnabled();
+  await save.click();
+  await expect(page.getByText("Brand profile saved.")).toBeVisible();
+  await expect(save).toBeDisabled();
+  await page.goto("/app");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Nova Studio Co");
+});
+
+test("discarding brand profile changes restores the saved values", async ({ page }) => {
+  await page.goto("/app/brand");
+  await page.getByLabel("Brand name").fill("Something else");
+  await page.getByRole("button", { name: "Discard changes" }).click();
+  await expect(page.getByLabel("Brand name")).toHaveValue("Nova Studio");
+});
+
 test("planned screens say they're coming, unknown ones 404", async ({ page }) => {
   await page.goto("/app/settings");
   await expect(page.getByText("This screen is on its way")).toBeVisible();
