@@ -5,6 +5,7 @@ import type {
   PostItem,
   ConnectedAccount,
   Brand,
+  NotificationPrefs,
   OnboardingState,
   Session,
   StudentCheck,
@@ -495,4 +496,10 @@ export const SEED_SESSION: Session = {
   name: "Mary",
   identifier: "mary@novastudio.co",
   role: "owner",
+};
+
+export const SEED_NOTIFICATIONS: NotificationPrefs = {
+  postReminders: true,
+  scheduledAlerts: true,
+  weeklyInsights: true,
 };

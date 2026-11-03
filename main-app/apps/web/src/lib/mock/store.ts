@@ -4,6 +4,7 @@ import type {
   Brand,
   ConnectedAccount,
   DraftItem,
+  NotificationPrefs,
   OnboardingState,
   PlatformConfig,
   PostItem,
@@ -15,6 +16,7 @@ import {
   SEED_ACCOUNTS,
   SEED_BRAND,
   SEED_DRAFTS,
+  SEED_NOTIFICATIONS,
   SEED_ONBOARDING,
   SEED_PLATFORMS,
   SEED_POSTS,
@@ -39,6 +41,7 @@ export interface MockDb {
   session: Session;
   onboarding: OnboardingState;
   studentCheck: StudentCheck;
+  notifications: NotificationPrefs;
   /** Connect attempts per platform (mock OAuth decides outcomes from this). */
   connectAttempts: Record<string, number>;
 }
@@ -56,6 +59,7 @@ const seed = (): MockDb =>
     session: SEED_SESSION,
     onboarding: SEED_ONBOARDING,
     studentCheck: SEED_STUDENT_CHECK,
+    notifications: SEED_NOTIFICATIONS,
     connectAttempts: {},
   });
 
