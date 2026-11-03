@@ -28,5 +28,4 @@ export const UPCOMING: Record<string, { title: string; phase: string }> = {
   brand: { title: "Brand profile", phase: "Phase 3" },
   settings: { title: "Settings", phase: "Phase 3" },
   billing: { title: "Plan and billing", phase: "Phase 3" },
-  notifications: { title: "Notifications", phase: "Phase 3" },
 };
