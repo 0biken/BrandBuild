@@ -75,9 +75,11 @@ export function HowItWorks() {
                   </span>
 
                   <span className="flex flex-col gap-3">
+                    {/* Collapsed panels are narrow, so the title wraps
+                        horizontally instead of being cut off. */}
                     <span
-                      className={`font-sans text-[clamp(1.4rem,2.2vw,2rem)] leading-tight font-semibold tracking-[-0.03em] transition-opacity duration-300 md:whitespace-nowrap ${
-                        open ? "" : "md:[writing-mode:vertical-rl] md:rotate-180 md:text-forest-text"
+                      className={`font-sans text-[clamp(1.4rem,2.2vw,2rem)] leading-tight font-semibold tracking-[-0.03em] text-balance ${
+                        open ? "" : "md:text-forest-text"
                       }`}
                     >
                       {s.title}
