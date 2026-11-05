@@ -173,6 +173,14 @@ export interface Brand {
 
 export type BrandProfile = Omit<Brand, "id" | "plan" | "planEndsLabel" | "voice">;
 
+// ---------- Settings ----------
+
+export interface NotificationPrefs {
+  postReminders: boolean;
+  scheduledAlerts: boolean;
+  weeklyInsights: boolean;
+}
+
 // ---------- Onboarding ----------
 
 export type StepStatus = "todo" | "done" | "skipped";
