@@ -1,4 +1,5 @@
 import type {
+  AppNotification,
   PlatformConfig,
   DraftItem,
   StatItem,
@@ -498,8 +499,66 @@ export const SEED_SESSION: Session = {
   role: "owner",
 };
 
-export const SEED_NOTIFICATIONS: NotificationPrefs = {
+export const SEED_NOTIFICATION_PREFS: NotificationPrefs = {
   postReminders: true,
   scheduledAlerts: true,
   weeklyInsights: true,
 };
+
+/** Newest first. Each points at the screen that resolves it. */
+export const SEED_NOTIFICATIONS: AppNotification[] = [
+  {
+    id: "note-1",
+    kind: "approval",
+    title: "Weekend gloss giveaway needs your approval",
+    body: "Sent by Tobi. Goes out Sat 7 Nov at 6:00 PM once approved.",
+    at: "2026-11-02T10:05:00",
+    read: false,
+    href: "/app/approvals?post=post-9",
+  },
+  {
+    id: "note-2",
+    kind: "approval",
+    title: "The two people who pack your order needs your approval",
+    body: "Sent by Tobi. Goes out Mon 9 Nov at 12:30 PM once approved.",
+    at: "2026-11-02T08:20:00",
+    read: false,
+    href: "/app/approvals?post=post-10",
+  },
+  {
+    id: "note-3",
+    kind: "reconnect",
+    title: "TikTok needs reconnecting",
+    body: "Posts to TikTok are on hold until you sign in again.",
+    at: "2026-11-01T18:30:00",
+    read: false,
+    href: "/app/onboarding/connect",
+  },
+  {
+    id: "note-4",
+    kind: "insights",
+    title: "Your weekly summary is ready",
+    body: "Reach was up on last week. See which posts did best.",
+    at: "2026-11-01T09:00:00",
+    read: true,
+    href: "/app/analytics",
+  },
+  {
+    id: "note-5",
+    kind: "failed",
+    title: "Gloss close-ups didn't post to Instagram",
+    body: "It went out on LinkedIn. Open the post to retry Instagram.",
+    at: "2026-10-27T19:02:00",
+    read: true,
+    href: "/app/posts/post-6",
+  },
+  {
+    id: "note-6",
+    kind: "published",
+    title: "Behind the counter is live",
+    body: "Posted to Instagram.",
+    at: "2026-10-02T19:00:00",
+    read: true,
+    href: "/app/posts/post-5",
+  },
+];

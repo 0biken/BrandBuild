@@ -1,6 +1,7 @@
 import type {
   ApiError,
   ApiResult,
+  AppNotification,
   Brand,
   ConnectedAccount,
   DraftItem,
@@ -16,6 +17,7 @@ import {
   SEED_ACCOUNTS,
   SEED_BRAND,
   SEED_DRAFTS,
+  SEED_NOTIFICATION_PREFS,
   SEED_NOTIFICATIONS,
   SEED_ONBOARDING,
   SEED_PLATFORMS,
@@ -41,7 +43,8 @@ export interface MockDb {
   session: Session;
   onboarding: OnboardingState;
   studentCheck: StudentCheck;
-  notifications: NotificationPrefs;
+  notificationPrefs: NotificationPrefs;
+  notifications: AppNotification[];
   /** Connect attempts per platform (mock OAuth decides outcomes from this). */
   connectAttempts: Record<string, number>;
 }
@@ -59,6 +62,7 @@ const seed = (): MockDb =>
     session: SEED_SESSION,
     onboarding: SEED_ONBOARDING,
     studentCheck: SEED_STUDENT_CHECK,
+    notificationPrefs: SEED_NOTIFICATION_PREFS,
     notifications: SEED_NOTIFICATIONS,
     connectAttempts: {},
   });

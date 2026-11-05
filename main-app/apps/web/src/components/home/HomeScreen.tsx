@@ -6,6 +6,7 @@ import { listAccounts, listPlatforms } from "@/lib/api/accounts";
 import { getHomeStats } from "@/lib/api/analytics";
 import { getBrand } from "@/lib/api/brand";
 import { invalidate, useQuery } from "@/lib/api/hooks";
+import { listNotifications } from "@/lib/api/notifications";
 import { listPosts } from "@/lib/api/posts";
 import { ROUTES } from "@/lib/routes";
 import { greeting, useNow } from "@/lib/useNow";
@@ -20,6 +21,8 @@ export function HomeScreen() {
   const accounts = useQuery("accounts", listAccounts);
   const platforms = useQuery("platforms", listPlatforms);
   const onboarding = useQuery("onboarding", getOnboarding);
+  const notes = useQuery("notifications", listNotifications);
+  const unread = notes.data?.filter((n) => !n.read).length ?? 0;
   const setupNext = onboarding.data ? nextStepPath(onboarding.data) : null;
   const setupLeft = onboarding.data ? Object.values(onboarding.data).filter((s) => s === "todo").length : 0;
 
@@ -41,10 +44,16 @@ export function HomeScreen() {
         </div>
         <Link
           href={ROUTES.notifications}
-          aria-label="Notifications"
-          className="press inline-flex size-11 shrink-0 items-center justify-center rounded-xl border border-line bg-surface-2 text-ink no-underline fine:bg-page-hover"
+          aria-label={unread ? `Notifications, ${unread} unread` : "Notifications"}
+          className="press relative inline-flex size-11 shrink-0 items-center justify-center rounded-xl border border-line bg-surface-2 text-ink no-underline fine:bg-page-hover"
         >
           <BellIcon size={20} />
+          {unread > 0 && (
+            <span
+              aria-hidden="true"
+              className="absolute top-2 right-2 size-2.5 rounded-full bg-primary shadow-[0_0_0_2px_var(--color-surface-2)]"
+            />
+          )}
         </Link>
       </header>
 

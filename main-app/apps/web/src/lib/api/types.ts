@@ -181,6 +181,22 @@ export interface NotificationPrefs {
   weeklyInsights: boolean;
 }
 
+// ---------- Notifications ----------
+
+export type NotificationKind = "approval" | "failed" | "reconnect" | "published" | "insights";
+
+export interface AppNotification {
+  id: string;
+  kind: NotificationKind;
+  title: string;
+  body: string;
+  /** When it happened (ISO). */
+  at: string;
+  read: boolean;
+  /** In-app path the notification opens. */
+  href: string;
+}
+
 // ---------- Onboarding ----------
 
 export type StepStatus = "todo" | "done" | "skipped";
