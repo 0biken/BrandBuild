@@ -25,7 +25,6 @@ export const ROUTES = {
  */
 export const UPCOMING: Record<string, { title: string; phase: string }> = {
   analytics: { title: "Analytics", phase: "Phase 3" },
-  brand: { title: "Brand profile", phase: "Phase 3" },
   billing: { title: "Plan and billing", phase: "Phase 3" },
   notifications: { title: "Notifications", phase: "Phase 3" },
 };
