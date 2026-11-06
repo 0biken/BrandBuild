@@ -4,6 +4,6 @@ import { apiFetch } from "./http";
 import type { ApiResult, StatItem } from "./types";
 
 export async function getHomeStats(): Promise<ApiResult<StatItem[]>> {
-  if (API_MODE === "http") return apiFetch<StatItem[]>("/v1/analytics/home");
+  if (API_MODE === "http") return apiFetch<StatItem[]>("/v1/analytics");
   return read((d) => d.stats);
 }

@@ -51,7 +51,7 @@ function waiting(d: MockDb, id: string) {
 
 /** Approve: the post is scheduled for its time, or a minute from now if that has passed. */
 export async function approvePost(id: string): Promise<ApiResult<DecisionReceipt>> {
-  if (API_MODE === "http") return apiFetch<DecisionReceipt>(`/v1/posts/${enc(id)}/approve`, { method: "POST" });
+  if (API_MODE === "http") return apiFetch<DecisionReceipt>(`/v1/posts/${enc(id)}/approve`, { method: "POST", body: { decision: "approved" } });
   return write((d) => {
     const w = waiting(d, id);
     if (typeof w === "string") return w;
@@ -70,7 +70,7 @@ export async function approvePost(id: string): Promise<ApiResult<DecisionReceipt
 /** Send it back with a note. The post moves to Drafts, carrying the note. */
 export async function requestChanges(id: string, note: string): Promise<ApiResult<DecisionReceipt>> {
   if (API_MODE === "http") {
-    return apiFetch<DecisionReceipt>(`/v1/posts/${enc(id)}/request-changes`, { method: "POST", body: { note } });
+    return apiFetch<DecisionReceipt>(`/v1/posts/${enc(id)}/request-changes`, { method: "POST", body: { notes: note } });
   }
   return write((d) => {
     if (!note.trim()) return "invalid";

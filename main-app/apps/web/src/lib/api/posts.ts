@@ -113,7 +113,7 @@ export async function reschedulePost(id: string, when: Date): Promise<ApiResult<
   if (API_MODE === "http") {
     return apiFetch<PostItem>(`/v1/posts/${enc(id)}/schedule`, {
       method: "POST",
-      body: { scheduledAt: when.toISOString() },
+      body: { scheduled_for: when.toISOString() },
     });
   }
   return write((d) => {

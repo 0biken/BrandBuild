@@ -4,7 +4,7 @@ import { apiFetch } from "./http";
 import type { AccountPlatform, ApiResult, ConnectedAccount, PlatformConfig } from "./types";
 
 export async function listAccounts(): Promise<ApiResult<ConnectedAccount[]>> {
-  if (API_MODE === "http") return apiFetch<ConnectedAccount[]>("/v1/accounts");
+  if (API_MODE === "http") return apiFetch<ConnectedAccount[]>("/v1/channels");
   return read((d) => d.accounts);
 }
 
@@ -50,7 +50,7 @@ function upsert(d: { accounts: ConnectedAccount[] }, platform: AccountPlatform, 
 export async function startConnect(platform: AccountPlatform): Promise<ApiResult<ConnectedAccount>> {
   if (API_MODE === "http") {
     // eslint-disable-next-line @next/next/no-location-assign-relative-destination -- external API origin
-    window.location.assign(`${API_URL}/v1/accounts/oauth/${platform}`);
+    window.location.assign(`${API_URL}/v1/channels/${platform}/oauth/start`);
     return { ok: false, error: "network" };
   }
   return write((d) => upsert(d, platform, { status: "connecting" }));

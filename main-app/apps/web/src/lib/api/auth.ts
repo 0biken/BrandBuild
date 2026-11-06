@@ -1,6 +1,6 @@
 import { read, write } from "@/lib/mock/store";
 import { API_MODE, API_URL } from "./config";
-import { apiFetch } from "./http";
+import { apiFetch, setAuthToken } from "./http";
 import {
   APP_HOME,
   clearMockSessionCookie,
@@ -33,12 +33,24 @@ export const HOME_HREF = APP_HOME;
 const ok: ApiResult = { ok: true, data: undefined };
 const wait = (ms = 600) => new Promise<void>((r) => setTimeout(r, ms));
 
+let lastIdentifier = "";
+
 export async function signUp(input: {
   name: string;
   identifier: string;
   password: string;
 }): Promise<ApiResult> {
-  if (API_MODE === "http") return apiFetch("/v1/auth/signup", { method: "POST", body: input });
+  lastIdentifier = input.identifier;
+  if (API_MODE === "http") {
+    const res = await apiFetch<{ access_token?: string }>("/auth/signup", {
+      method: "POST",
+      body: { name: input.name, identifier: input.identifier, password: input.password },
+    });
+    if (res.ok && res.data?.access_token) {
+      setAuthToken(res.data.access_token);
+    }
+    return res.ok ? ok : res;
+  }
   // A new account starts onboarding from scratch.
   return write((d) => {
     d.onboarding = { verify: "todo", connect: "todo", brand: "todo" };
@@ -54,7 +66,18 @@ export async function logIn(input: {
   identifier: string;
   password: string;
 }): Promise<ApiResult> {
-  if (API_MODE === "http") return apiFetch("/v1/auth/login", { method: "POST", body: input });
+  lastIdentifier = input.identifier;
+  if (API_MODE === "http") {
+    const res = await apiFetch<{ access_token: string }>("/auth/login", {
+      method: "POST",
+      body: { identifier: input.identifier, password: input.password },
+    });
+    if (res.ok && res.data?.access_token) {
+      setAuthToken(res.data.access_token);
+      setMockSessionCookie();
+    }
+    return res.ok ? ok : res;
+  }
   await wait();
   const match =
     input.identifier.trim().toLowerCase() === MOCK_ACCOUNT.identifier &&
@@ -65,13 +88,17 @@ export async function logIn(input: {
 }
 
 export async function logOut(): Promise<ApiResult> {
-  if (API_MODE === "http") return apiFetch("/v1/auth/logout", { method: "POST" });
+  if (API_MODE === "http") {
+    setAuthToken(null);
+    clearMockSessionCookie();
+    return ok;
+  }
   clearMockSessionCookie();
   return ok;
 }
 
 export async function getSession(): Promise<ApiResult<Session>> {
-  if (API_MODE === "http") return apiFetch<Session>("/v1/auth/session");
+  if (API_MODE === "http") return apiFetch<Session>("/v1/tenant/config");
   return read((d) => d.session);
 }
 
@@ -80,7 +107,7 @@ export async function signInWithProvider(provider: Provider): Promise<ApiResult>
     // OAuth is a full-page redirect owned by the API.
     // External API origin, not a Next route, so the router can't do this.
     // eslint-disable-next-line @next/next/no-location-assign-relative-destination
-    window.location.assign(`${API_URL}/v1/auth/oauth/${provider}`);
+    window.location.assign(`${API_URL}/v1/channels/${provider}/oauth/start`);
     return ok;
   }
   await wait(300);
@@ -88,13 +115,29 @@ export async function signInWithProvider(provider: Provider): Promise<ApiResult>
 }
 
 export async function requestCode(identifier: string): Promise<ApiResult> {
-  if (API_MODE === "http") return apiFetch("/v1/auth/code", { method: "POST", body: { identifier } });
+  lastIdentifier = identifier;
+  if (API_MODE === "http") {
+    return apiFetch("/auth/code/request", {
+      method: "POST",
+      body: { identifier },
+    });
+  }
   await wait();
   return ok;
 }
 
-export async function verifyCode(code: string): Promise<ApiResult> {
-  if (API_MODE === "http") return apiFetch("/v1/auth/code/verify", { method: "POST", body: { code } });
+export async function verifyCode(code: string, identifier?: string): Promise<ApiResult> {
+  const id = identifier || lastIdentifier;
+  if (API_MODE === "http") {
+    const res = await apiFetch<{ reset_token?: string; verified?: boolean }>("/auth/code/verify", {
+      method: "POST",
+      body: { identifier: id, code },
+    });
+    if (res.ok && res.data?.reset_token) {
+      setAuthToken(res.data.reset_token);
+    }
+    return res.ok ? ok : res;
+  }
   await wait();
   if (code === MOCK_CODE) {
     setMockSessionCookie();
@@ -105,7 +148,16 @@ export async function verifyCode(code: string): Promise<ApiResult> {
 }
 
 export async function resetPassword(password: string): Promise<ApiResult> {
-  if (API_MODE === "http") return apiFetch("/v1/auth/password", { method: "POST", body: { password } });
+  if (API_MODE === "http") {
+    const res = await apiFetch<{ access_token?: string }>("/auth/password/reset", {
+      method: "POST",
+      body: { reset_token: typeof window !== "undefined" ? localStorage.getItem("brandbuild_access_token") ?? "" : "", password },
+    });
+    if (res.ok && res.data?.access_token) {
+      setAuthToken(res.data.access_token);
+    }
+    return res.ok ? ok : res;
+  }
   await wait();
   return ok;
 }
