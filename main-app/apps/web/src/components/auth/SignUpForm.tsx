@@ -53,7 +53,7 @@ export function SignUpForm() {
   return (
     <form onSubmit={onSubmit} noValidate className="flex flex-col gap-5">
       <div className="flex flex-col gap-1.5">
-        <h1 className="m-0 font-display text-[32px] font-bold tracking-[-0.03em]">
+        <h1 className="m-0 font-display text-[32px] font-bold tracking-[-0.03em] max-md:text-[26px]">
           Create your account
         </h1>
         <p className="m-0 text-[15px] text-ink-2">

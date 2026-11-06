@@ -61,7 +61,7 @@ export function Hero() {
   return (
     <section
       ref={root}
-      className="relative isolate overflow-hidden px-6 pt-40 pb-24 md:px-12 md:pt-48 md:pb-40"
+      className="relative isolate overflow-hidden px-5 pt-28 pb-16 md:px-12 md:pt-48 md:pb-40"
     >
       {/* Ambient wash: deep radial blurs, no flat fill */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
@@ -71,15 +71,15 @@ export function Hero() {
       </div>
 
       <div className="mx-auto max-w-[1280px]">
-        <h1 className="m-0 max-w-6xl font-sans text-[clamp(2.4rem,6.2vw,5.75rem)] leading-[0.98] font-semibold tracking-[-0.045em] text-ink">
+        <h1 className="m-0 max-w-6xl font-sans text-[clamp(2.25rem,6.2vw,5.75rem)] leading-[0.98] font-semibold tracking-[-0.045em] text-ink">
           <Word i={0}>Posts</Word> <Word i={1}>that</Word> <Word i={2}>sound</Word>{" "}
           <Pill seed="studio-hands" /> <Word i={3}>like</Word> <Word i={4}>you.</Word>{" "}
           <Word i={5}>Written</Word> <Word i={6}>in</Word> <Word i={7}>seconds.</Word>
         </h1>
 
-        <div className="mt-10 grid gap-14 md:mt-14 md:grid-cols-12">
+        <div className="mt-8 grid gap-10 md:mt-14 md:gap-14 md:grid-cols-12">
           <div className="flex flex-col gap-8 md:col-span-6">
-            <p className="hero-fade m-0 max-w-xl text-[19px] leading-relaxed text-ink-2" style={order(0)}>
+            <p className="hero-fade m-0 max-w-xl text-[17px] leading-relaxed md:text-[19px] text-ink-2" style={order(0)}>
               Type an idea. Brandbuild writes the caption in your voice, picks the
               hashtags and the best time, and schedules it to every account
               you&apos;ve connected.
@@ -101,7 +101,7 @@ export function Hero() {
           {/* Photo sits below the headline, never over it. The status card
               hangs off its top-left corner, clear of the caption card. */}
           <div className="relative md:col-span-6">
-            <div className="hero-photo relative ml-auto aspect-[4/5] w-full max-w-[520px] overflow-hidden rounded-[36px] bg-forest shadow-[0_50px_90px_-40px_rgba(15,42,27,0.65)]">
+            <div className="hero-photo relative ml-auto aspect-[4/5] w-full max-w-[520px] overflow-hidden rounded-[28px] bg-forest md:rounded-[36px] shadow-[0_50px_90px_-40px_rgba(15,42,27,0.65)]">
               <div
                 className="hero-photo-inner absolute -inset-x-0 -top-[8%] h-[116%] bg-cover bg-center opacity-90 contrast-125 grayscale-[35%]"
                 style={{ backgroundImage: `url(${photo("small-brand-studio", 1000, 1250)})` }}
@@ -123,10 +123,10 @@ export function Hero() {
 
             <div
               aria-hidden="true"
-              className="hero-card absolute top-10 left-0 w-[260px] rounded-[22px] bg-forest p-5 text-forest-text shadow-[0_30px_60px_-30px_rgba(15,42,27,0.8)] max-md:left-3 md:-left-6"
+              className="hero-card absolute top-5 left-0 w-[220px] rounded-[20px] bg-forest p-4 md:top-10 md:w-[260px] md:rounded-[22px] md:p-5 text-forest-text shadow-[0_30px_60px_-30px_rgba(15,42,27,0.8)] max-md:left-3 md:-left-6"
             >
               <div className="mb-3 flex items-baseline justify-between">
-                <span className="font-display text-[18px] font-bold text-white">Building your post</span>
+                <span className="font-display text-[16px] font-bold text-white md:text-[18px]">Building your post</span>
                 <span className="font-mono text-xs text-forest-ink">4 of 4</span>
               </div>
               <ul className="m-0 flex list-none flex-col gap-2 p-0 text-sm">

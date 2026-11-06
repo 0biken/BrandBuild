@@ -28,9 +28,9 @@ export function HowItWorks() {
   const [active, setActive] = useState(0);
 
   return (
-    <section id="how" className="scroll-mt-24 px-6 py-32 md:px-12 md:py-48">
+    <section id="how" className="scroll-mt-24 px-5 py-20 md:px-12 md:py-48">
       <div className="mx-auto max-w-[1280px]">
-        <h2 className="m-0 max-w-5xl font-sans text-[clamp(2.5rem,5vw,4.5rem)] leading-[1] font-semibold tracking-[-0.04em]">
+        <h2 className="m-0 max-w-5xl font-sans text-[clamp(2rem,5vw,4.5rem)] leading-[1] font-semibold tracking-[-0.04em]">
           Three steps from
           <span
             aria-hidden="true"
@@ -70,7 +70,7 @@ export function HowItWorks() {
                   }}
                   className="absolute inset-0 z-10 flex cursor-pointer flex-col justify-between border-0 bg-transparent p-7 text-left text-white md:p-8"
                 >
-                  <span className="font-display text-[44px] leading-none font-bold tracking-[-0.04em] text-lime md:text-[56px]">
+                  <span className="font-display text-[34px] leading-none font-bold tracking-[-0.04em] text-lime md:text-[56px]">
                     {s.n}
                   </span>
 
@@ -78,7 +78,7 @@ export function HowItWorks() {
                     {/* Collapsed panels are narrow, so the title wraps
                         horizontally instead of being cut off. */}
                     <span
-                      className={`font-sans text-[clamp(1.4rem,2.2vw,2rem)] leading-tight font-semibold tracking-[-0.03em] text-balance ${
+                      className={`font-sans text-[clamp(1.2rem,2.2vw,2rem)] leading-tight font-semibold tracking-[-0.03em] text-balance ${
                         open ? "" : "md:text-forest-text"
                       }`}
                     >

@@ -2,7 +2,7 @@ import { newId, read, write, type MockDb } from "@/lib/mock/store";
 import { formatShort, scheduleFields } from "@/lib/postDates";
 import { API_MODE } from "./config";
 import { apiFetch } from "./http";
-import type { ApiResult, DraftItem, PlatformId, PostItem, PostState } from "./types";
+import type { ApiResult, DraftItem, MediaRef, PlatformId, PostItem, PostState } from "./types";
 
 export type NewPost = Omit<PostItem, "id" | "activityLog">;
 
@@ -17,6 +17,8 @@ export interface PostInput {
   /** "approval" when an editor sends for approval. */
   intent: "schedule" | "publish" | "approval";
   aspectRatio?: string;
+  /** Photos and videos, in order. */
+  media?: MediaRef[];
 }
 
 const enc = encodeURIComponent;
@@ -69,6 +71,7 @@ export async function createPost(input: PostInput | NewPost): Promise<ApiResult<
         hashtags: input.hashtags,
         platforms: input.platforms,
         aspectRatio: input.aspectRatio ?? "1 / 1",
+        media: input.media ?? [],
         state,
         ...scheduleFields(when, state),
         ...(state === "approval" ? requested(d) : {}),
@@ -100,6 +103,7 @@ export async function updatePost(id: string, input: PostInput): Promise<ApiResul
       caption: input.caption,
       hashtags: input.hashtags,
       platforms: input.platforms,
+      ...(input.media ? { media: input.media } : {}),
       state,
       ...scheduleFields(when, state),
     });

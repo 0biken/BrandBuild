@@ -82,14 +82,30 @@ export function SettingsScreen() {
               <span className="truncate font-semibold">{session.data.name}</span>
               <span className="truncate text-sm text-muted">{session.data.identifier}</span>
             </div>
-            <ButtonLink href={ROUTES.brand} variant="outline">
-              Brand profile
-            </ButtonLink>
           </>
         ) : (
           <Skeleton className="h-12 w-full" />
         )}
       </div>
+
+      <Section title="Your brand">
+        <ul className="m-0 flex list-none flex-col divide-y divide-line p-0">
+          {[
+            { label: "Brand kit", hint: "Logo, colours and fonts", href: `${ROUTES.brand}#kit` },
+            { label: "Voice and tone", hint: "How your captions sound", href: `${ROUTES.brand}#voice` },
+          ].map((r) => (
+            <li key={r.label}>
+              <Link href={r.href} className="flex min-h-14 items-center gap-3 text-ink no-underline">
+                <span className="flex min-w-0 flex-1 flex-col">
+                  <span className="text-[15px] font-semibold">{r.label}</span>
+                  <span className="text-sm text-muted">{r.hint}</span>
+                </span>
+                <ChevronRightIcon size={18} />
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </Section>
 
       <Section title="Connected accounts">
         {accounts.loading && !accounts.data ? (

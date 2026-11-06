@@ -1,12 +1,12 @@
 import { read, write } from "@/lib/mock/store";
-import { MOCK_CODE, MOCK_EXPIRED_CODE } from "./auth";
+import { mockCodeResult } from "./auth";
 import { API_MODE } from "./config";
 import { apiFetch } from "./http";
 import type { ApiResult, StudentCheck } from "./types";
 
 /**
  * Student check (Verify screen). Mock behaviour mirrors auth codes:
- * MOCK_CODE verifies, MOCK_EXPIRED_CODE is "expired", anything else "invalid".
+ * any 6 digits verify, except MOCK_EXPIRED_CODE and MOCK_INVALID_CODE.
  */
 
 const ID_TYPES = ["image/jpeg", "image/png", "application/pdf"];
@@ -32,8 +32,8 @@ export async function verifyStudentCode(code: string): Promise<ApiResult<Student
   }
   return write((d) => {
     if (d.studentCheck.status !== "code_sent") return "conflict";
-    if (code === MOCK_EXPIRED_CODE) return "expired";
-    if (code !== MOCK_CODE) return "invalid";
+    const result = mockCodeResult(code);
+    if (result !== "ok") return result;
     d.studentCheck = { ...d.studentCheck, status: "verified" };
     d.brand.plan = "student";
     return d.studentCheck;

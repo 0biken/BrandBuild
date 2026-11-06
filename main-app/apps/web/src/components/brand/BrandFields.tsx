@@ -18,9 +18,12 @@ export const BRAND_COLORS = ["#0F2A1B", "#D62976", "#F4C7B8"];
 export function BrandFields({
   form,
   onChange,
+  showColors = true,
 }: {
   form: BrandProfile;
   onChange: (next: BrandProfile) => void;
+  /** Off where the brand kit edits colours instead. */
+  showColors?: boolean;
 }) {
   const [toneNote, setToneNote] = useState("");
 
@@ -105,40 +108,42 @@ export function BrandFields({
         <ChipInput label="Words you avoid" tone="neutral" values={form.wordsAvoid} onChange={(v) => set("wordsAvoid", v)} />
       </div>
 
-      <fieldset className="m-0 border-0 p-0">
-        <legend className="mb-2.5 text-sm font-semibold">
-          Brand colours <span className="font-normal text-muted">used in graphics Brandbuild makes</span>
-        </legend>
-        <div role="radiogroup" aria-label="Brand colour" className="flex flex-wrap items-center gap-3">
-          {[...new Set([...BRAND_COLORS, form.color])].map((c) => (
-            <label
-              key={c}
-              className={`relative inline-flex size-11 cursor-pointer rounded-full has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-4 has-[:focus-visible]:outline-primary ${
-                form.color === c ? "shadow-[0_0_0_2px_var(--color-page),0_0_0_4px_var(--color-primary)]" : "shadow-[inset_0_0_0_1px_rgba(15,26,19,0.12)]"
-              }`}
-              style={{ background: c }}
-            >
+      {showColors && (
+        <fieldset className="m-0 border-0 p-0">
+          <legend className="mb-2.5 text-sm font-semibold">
+            Brand colours <span className="font-normal text-muted">used in graphics Brandbuild makes</span>
+          </legend>
+          <div role="radiogroup" aria-label="Brand colour" className="flex flex-wrap items-center gap-3">
+            {[...new Set([...BRAND_COLORS, form.color])].map((c) => (
+              <label
+                key={c}
+                className={`relative inline-flex size-11 cursor-pointer rounded-full has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-4 has-[:focus-visible]:outline-primary ${
+                  form.color === c ? "shadow-[0_0_0_2px_var(--color-page),0_0_0_4px_var(--color-primary)]" : "shadow-[inset_0_0_0_1px_rgba(15,26,19,0.12)]"
+                }`}
+                style={{ background: c }}
+              >
+                <input
+                  type="radio"
+                  name="brand-color"
+                  checked={form.color === c}
+                  onChange={() => set("color", c)}
+                  aria-label={`Colour ${c}`}
+                  className="sr-only"
+                />
+              </label>
+            ))}
+            <label className="inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-full px-3 text-sm font-semibold text-ink-2 shadow-[inset_0_0_0_1px_#C7CCC1] has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-primary">
+              + Add colour
               <input
-                type="radio"
-                name="brand-color"
-                checked={form.color === c}
-                onChange={() => set("color", c)}
-                aria-label={`Colour ${c}`}
+                type="color"
+                value={form.color}
+                onChange={(e) => set("color", e.target.value.toUpperCase())}
                 className="sr-only"
               />
             </label>
-          ))}
-          <label className="inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-full px-3 text-sm font-semibold text-ink-2 shadow-[inset_0_0_0_1px_#C7CCC1] has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-primary">
-            + Add colour
-            <input
-              type="color"
-              value={form.color}
-              onChange={(e) => set("color", e.target.value.toUpperCase())}
-              className="sr-only"
-            />
-          </label>
-        </div>
-      </fieldset>
+          </div>
+        </fieldset>
+      )}
 
       <Textarea
         id="brand-samples"

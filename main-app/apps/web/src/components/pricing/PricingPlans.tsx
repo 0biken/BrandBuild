@@ -126,7 +126,7 @@ export function PricingPlans() {
                 )}
               </div>
               <p
-                className={`m-0 font-sans text-[clamp(2.5rem,4vw,3.5rem)] leading-none font-semibold tracking-[-0.045em] ${
+                className={`m-0 font-sans text-[clamp(2.1rem,4vw,3.5rem)] leading-none font-semibold tracking-[-0.045em] ${
                   p.featured ? "text-white" : ""
                 }`}
               >

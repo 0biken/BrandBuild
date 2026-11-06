@@ -51,7 +51,7 @@ export function ExpertGallery() {
     <section id="creators" ref={sectionRef} className="bg-wavy-pattern py-20 lg:py-[100px] overflow-hidden text-center">
       <div className="max-w-[1440px] mx-auto px-6 lg:px-20">
         
-        <h2 className="font-display font-black text-[32px] sm:text-[40px] lg:text-[48px] text-brand-black mb-16">
+        <h2 className="font-display font-black text-[28px] sm:text-[40px] lg:text-[48px] text-brand-black mb-10 sm:mb-16">
           Meet Our Experts!
         </h2>
 

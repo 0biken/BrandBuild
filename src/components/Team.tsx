@@ -48,7 +48,7 @@ export function Team() {
     <section ref={sectionRef} className="bg-wavy-pattern py-20 lg:py-[100px] border-y-2 border-brand-black">
       <div className="max-w-[1440px] mx-auto px-6 lg:px-20 text-center">
         
-        <h2 className="font-display font-black text-[32px] sm:text-[48px] text-brand-black mb-4">
+        <h2 className="font-display font-black text-[28px] sm:text-[48px] text-brand-black mb-4">
           Meet the Team
         </h2>
         <p className="font-body text-[18px] text-brand-black/70 mb-16 max-w-[600px] mx-auto">

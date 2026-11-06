@@ -54,7 +54,7 @@ export function Hero() {
         
         {/* Copy Column */}
         <div className="flex-1 w-full flex flex-col items-center text-center lg:items-start lg:text-left max-w-[600px]">
-          <h1 className="font-display font-black text-[40px] sm:text-[56px] lg:text-[64px] leading-[1.05] tracking-tight text-brand-black mb-6">
+          <h1 className="font-display font-black text-[34px] sm:text-[56px] lg:text-[64px] leading-[1.05] tracking-tight text-brand-black mb-6">
             Your brand, everywhere. <br/>
             <span className="text-brand-green">Without the burnout.</span>
           </h1>

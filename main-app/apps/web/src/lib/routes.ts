@@ -24,6 +24,5 @@ export const ROUTES = {
  * the navigation works throughout the build. Remove entries as they land.
  */
 export const UPCOMING: Record<string, { title: string; phase: string }> = {
-  analytics: { title: "Analytics", phase: "Phase 3" },
   billing: { title: "Plan and billing", phase: "Phase 3" },
 };

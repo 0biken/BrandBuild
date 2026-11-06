@@ -21,9 +21,9 @@ const QUESTIONS = [
 
 export function Faq() {
   return (
-    <section id="faq" className="scroll-mt-24 px-6 py-32 md:px-12 md:py-48">
+    <section id="faq" className="scroll-mt-24 px-5 py-20 md:px-12 md:py-48">
       <div className="mx-auto grid max-w-[1280px] gap-14 md:grid-cols-12">
-        <h2 className="m-0 font-sans text-[clamp(2.5rem,5vw,4.5rem)] leading-[1] font-semibold tracking-[-0.045em] md:col-span-5">
+        <h2 className="m-0 font-sans text-[clamp(2rem,5vw,4.5rem)] leading-[1] font-semibold tracking-[-0.045em] md:col-span-5">
           Questions
         </h2>
         <div className="flex flex-col md:col-span-7">

@@ -54,7 +54,7 @@ test("brand profile edits are saved, and Home picks up the new name", async ({ p
   await page.getByLabel("Brand name").fill("Nova Studio Co");
   await expect(save).toBeEnabled();
   await save.click();
-  await expect(page.getByText("Brand profile saved.")).toBeVisible();
+  await expect(page.getByText("Brand kit saved.")).toBeVisible();
   await expect(save).toBeDisabled();
   await page.goto("/app");
   await expect(page.getByRole("heading", { level: 1 })).toContainText("Nova Studio Co");
@@ -78,6 +78,9 @@ test("opening a notification marks it read and goes to the post", async ({ page 
   await page.goto("/app/notifications");
   await page.getByRole("link", { name: /Weekend gloss giveaway needs your approval/ }).click();
   await expect(page).toHaveURL(/\/app\/approvals\?post=post-9$/);
+  // The mock store saves after a short delay; wait for Approvals' data
+  // (fetched after the save started) before reloading.
+  await expect(page.getByRole("main").getByText("Weekend gloss giveaway").filter({ visible: true }).first()).toBeVisible();
   await page.goto("/app/notifications");
   await expect(page.getByText("2 unread")).toBeVisible();
 });

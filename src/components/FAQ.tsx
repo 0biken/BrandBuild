@@ -32,7 +32,7 @@ export function FAQ() {
   return (
     <section id="faq" className="bg-wavy-pattern py-20 lg:py-[100px]">
       <div className="max-w-[800px] mx-auto px-6 lg:px-20">
-        <h2 className="font-display font-black text-[32px] sm:text-[48px] text-brand-black mb-12 text-center">
+        <h2 className="font-display font-black text-[28px] sm:text-[48px] text-brand-black mb-8 sm:mb-12 text-center">
           Got questions?
         </h2>
         

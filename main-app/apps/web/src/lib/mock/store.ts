@@ -5,6 +5,7 @@ import type {
   Brand,
   ConnectedAccount,
   DraftItem,
+  MediaRef,
   NotificationPrefs,
   OnboardingState,
   PlatformConfig,
@@ -45,6 +46,8 @@ export interface MockDb {
   studentCheck: StudentCheck;
   notificationPrefs: NotificationPrefs;
   notifications: AppNotification[];
+  /** Media library: metadata only; files live in lib/media/store. */
+  media: MediaRef[];
   /** Connect attempts per platform (mock OAuth decides outcomes from this). */
   connectAttempts: Record<string, number>;
 }
@@ -64,6 +67,7 @@ const seed = (): MockDb =>
     studentCheck: SEED_STUDENT_CHECK,
     notificationPrefs: SEED_NOTIFICATION_PREFS,
     notifications: SEED_NOTIFICATIONS,
+    media: [],
     connectAttempts: {},
   });
 

@@ -1,5 +1,6 @@
 "use client";
 
+import { MediaView } from "@/components/media/MediaView";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type ReactNode } from "react";
@@ -249,14 +250,32 @@ export function PostDetailScreen({ id }: { id: string }) {
               <span className="text-xs text-muted">{first?.name}</span>
             </span>
           </div>
-          <div
-            role="img"
-            aria-label="Post image placeholder"
-            className="flex items-center justify-center bg-[#DCE6DE] text-[13px] text-ink-2"
-            style={{ aspectRatio: p.aspectRatio }}
-          >
-            [PHOTO]
-          </div>
+          {p.media && p.media.length > 0 ? (
+            <ul
+              aria-label={`${p.media.length} attached ${p.media.length === 1 ? "item" : "items"}`}
+              className="m-0 flex snap-x snap-mandatory list-none overflow-x-auto p-0"
+            >
+              {p.media.map((m, i) => (
+                <li key={m.id} className="relative w-full shrink-0 snap-center" style={{ aspectRatio: p.aspectRatio }}>
+                  <MediaView media={m} className="size-full" controls={m.kind === "video"} />
+                  {p.media!.length > 1 && (
+                    <span className="absolute top-2.5 right-2.5 rounded-full bg-ink/70 px-2 py-0.5 text-[11px] font-semibold text-white">
+                      {i + 1}/{p.media!.length}
+                    </span>
+                  )}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div
+              role="img"
+              aria-label="No photo or video attached"
+              className="flex items-center justify-center bg-[#DCE6DE] text-[13px] text-ink-2"
+              style={{ aspectRatio: p.aspectRatio }}
+            >
+              No photo or video yet
+            </div>
+          )}
           <p className="m-0 p-3.5 text-sm leading-relaxed whitespace-pre-line">
             <strong className="font-semibold">{handle}</strong> {p.caption}
             {p.hashtags.length > 0 && (

@@ -1,7 +1,8 @@
 "use client";
 
 import { Tabs } from "@/components/ui/Tabs";
-import type { PlatformConfig, PlatformId } from "@/lib/api/types";
+import { MediaView } from "@/components/media/MediaView";
+import type { MediaRef, PlatformConfig, PlatformId } from "@/lib/api/types";
 
 /** Live per-platform preview. Each platform gets its own crop and limit. */
 export function ComposerPreview({
@@ -9,21 +10,25 @@ export function ComposerPreview({
   tab,
   onTab,
   brandName,
+  brandLogo,
+  brandColor,
   caption,
   hashtags,
   generating,
   whenLabel,
-  mediaUrl,
+  media,
 }: {
   platforms: PlatformConfig[];
   tab: PlatformId | null;
   onTab: (id: PlatformId) => void;
   brandName: string;
+  brandLogo?: string;
+  brandColor?: string;
   caption: string;
   hashtags: string[];
   generating: boolean;
   whenLabel: string;
-  mediaUrl: string | null;
+  media: MediaRef[];
 }) {
   const current = platforms.find((p) => p.id === tab) ?? platforms[0];
   const aspect = current?.id === "li" ? "1.91 / 1" : "1 / 1";
@@ -52,12 +57,22 @@ export function ComposerPreview({
           className="overflow-hidden rounded-[22px] border border-line bg-surface"
         >
           <div className="flex items-center gap-2.5 p-3.5">
-            <span
-              aria-hidden="true"
-              className="inline-flex size-9 items-center justify-center rounded-full bg-forest font-display font-bold text-lime"
-            >
-              {brandName.charAt(0)}
-            </span>
+            {brandLogo ? (
+              // eslint-disable-next-line @next/next/no-img-element -- data URL, not optimisable
+              <img
+                src={brandLogo}
+                alt=""
+                className="size-9 rounded-full bg-white object-contain shadow-[inset_0_0_0_1px_var(--color-line)]"
+              />
+            ) : (
+              <span
+                aria-hidden="true"
+                className="inline-flex size-9 items-center justify-center rounded-full bg-forest font-display font-bold text-lime"
+                style={brandColor ? { background: brandColor, color: "#fff" } : undefined}
+              >
+                {brandName.charAt(0)}
+              </span>
+            )}
             <span className="flex flex-col">
               <span className="text-sm font-semibold">{handle}</span>
               <span className="text-xs text-muted">
@@ -65,14 +80,32 @@ export function ComposerPreview({
               </span>
             </span>
           </div>
-          <div
-            className="flex items-center justify-center bg-[#DCE6DE] bg-cover bg-center text-[13px] text-ink-2"
-            style={{ aspectRatio: aspect, backgroundImage: mediaUrl ? `url(${mediaUrl})` : undefined }}
-            role="img"
-            aria-label={mediaUrl ? "Attached media" : "No media attached yet"}
-          >
-            {!mediaUrl && "Add a photo or video"}
-          </div>
+          {media[0] ? (
+            <div className="relative" style={{ aspectRatio: aspect }}>
+              <MediaView key={media[0].id} media={media[0]} className="size-full" controls={media[0].kind === "video"} />
+              {media.length > 1 && (
+                <>
+                  <span className="absolute top-2.5 right-2.5 rounded-full bg-ink/70 px-2 py-0.5 text-[11px] font-semibold text-white">
+                    1/{media.length}
+                  </span>
+                  <span aria-hidden="true" className="absolute inset-x-0 bottom-2.5 flex justify-center gap-1">
+                    {media.map((m, i) => (
+                      <span key={m.id} className={`size-1.5 rounded-full ${i === 0 ? "bg-white" : "bg-white/50"}`} />
+                    ))}
+                  </span>
+                </>
+              )}
+            </div>
+          ) : (
+            <div
+              className="flex items-center justify-center bg-[#DCE6DE] text-[13px] text-ink-2"
+              style={{ aspectRatio: aspect }}
+              role="img"
+              aria-label="No media attached yet"
+            >
+              Add a photo or video
+            </div>
+          )}
           <div className="p-3.5">
             {generating ? (
               <div className="flex flex-col gap-2" aria-hidden="true">
