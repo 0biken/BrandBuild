@@ -1,9 +1,12 @@
 import type {
   ApiError,
   ApiResult,
+  AppNotification,
   Brand,
   ConnectedAccount,
   DraftItem,
+  MediaRef,
+  NotificationPrefs,
   OnboardingState,
   PlatformConfig,
   PostItem,
@@ -15,6 +18,8 @@ import {
   SEED_ACCOUNTS,
   SEED_BRAND,
   SEED_DRAFTS,
+  SEED_NOTIFICATION_PREFS,
+  SEED_NOTIFICATIONS,
   SEED_ONBOARDING,
   SEED_PLATFORMS,
   SEED_POSTS,
@@ -39,6 +44,10 @@ export interface MockDb {
   session: Session;
   onboarding: OnboardingState;
   studentCheck: StudentCheck;
+  notificationPrefs: NotificationPrefs;
+  notifications: AppNotification[];
+  /** Media library: metadata only; files live in lib/media/store. */
+  media: MediaRef[];
   /** Connect attempts per platform (mock OAuth decides outcomes from this). */
   connectAttempts: Record<string, number>;
 }
@@ -56,6 +65,9 @@ const seed = (): MockDb =>
     session: SEED_SESSION,
     onboarding: SEED_ONBOARDING,
     studentCheck: SEED_STUDENT_CHECK,
+    notificationPrefs: SEED_NOTIFICATION_PREFS,
+    notifications: SEED_NOTIFICATIONS,
+    media: [],
     connectAttempts: {},
   });
 

@@ -76,6 +76,23 @@ export interface ActivityItem {
   dot: string;
 }
 
+// ---------- Media ----------
+
+export interface MediaRef {
+  id: string;
+  name: string;
+  kind: "image" | "video";
+  /** MIME type. */
+  type: string;
+  size: number;
+  /** Seconds, for videos. */
+  duration?: number;
+  /** ISO time it was added. */
+  addedAt: string;
+  /** Hosted file URL (http mode). Mock files resolve from the browser store. */
+  url?: string;
+}
+
 export interface PostItem {
   id: string;
   title: string;
@@ -96,6 +113,8 @@ export interface PostItem {
     note?: string;
   };
   activityLog: ActivityItem[];
+  /** Photos and videos, in the order they appear. */
+  media?: MediaRef[];
   reviewer?: {
     name: string;
     initial: string;
@@ -133,6 +152,8 @@ export interface DraftItem {
   action: string;
   /** The reviewer's note when they asked for changes. */
   feedback?: string;
+  /** Photos and videos attached so far. */
+  media?: MediaRef[];
 }
 
 // ---------- Analytics ----------
@@ -145,6 +166,52 @@ export interface StatItem {
   isUp: boolean;
   spark: string;
   sparkColor: string;
+}
+
+export type AnalyticsRange = "7d" | "30d" | "90d";
+export type PostFormat = "Reel" | "Carousel" | "Photo" | "Video";
+
+/** One published post's results. */
+export interface PostPerformance {
+  id: string;
+  title: string;
+  format: PostFormat;
+  platforms: PlatformId[];
+  /** ISO time it went out. */
+  postedAt: string;
+  reach: number;
+  /** Likes + comments + shares + saves. */
+  engagements: number;
+  saves: number;
+  hashtags: number;
+  captionLength: number;
+}
+
+export interface AnalyticsTotals {
+  reach: number;
+  engagements: number;
+  followers: number;
+  posts: number;
+}
+
+export interface AnalyticsReport {
+  range: AnalyticsRange;
+  /** ISO day the range starts and ends (inclusive). */
+  from: string;
+  to: string;
+  totals: AnalyticsTotals;
+  previous: AnalyticsTotals;
+  /** One point per day, oldest first; `previous` is the same day of the prior period. */
+  daily: { date: string; engagements: number; previous: number }[];
+  platforms: { id: PlatformId; name: string; k: string; bg: string; engagements: number }[];
+  /**
+   * When followers are active: 7 weekdays (0 = Monday) x 6 slots of 3 hours
+   * from 6 AM. Scores are 0-1.
+   */
+  heatmap: number[][];
+  /** Posts published in the range, newest first. */
+  posts: PostPerformance[];
+  accounts: { platform: string; handle: string; status: ConnectedAccount["status"] }[];
 }
 
 // ---------- Brand ----------
@@ -165,13 +232,43 @@ export interface Brand {
   tones: Tone[];
   wordsUse: string[];
   wordsAvoid: string[];
-  /** Hex colour used in graphics Brandbuild makes. */
+  /** Hex colour used in graphics Brandbuild makes (the primary brand colour). */
   color: string;
+  /** Up to three supporting colours (hex), after the primary. */
+  palette?: string[];
+  /** Logo as a data URL (PNG, JPG, WebP or SVG). */
+  logo?: string;
+  /** Font names from BRAND_FONTS in lib/brandKit.ts. */
+  fonts?: { heading: string; body: string };
   /** Captions the owner wrote and liked, for voice matching. */
   samples: string;
 }
 
 export type BrandProfile = Omit<Brand, "id" | "plan" | "planEndsLabel" | "voice">;
+
+// ---------- Settings ----------
+
+export interface NotificationPrefs {
+  postReminders: boolean;
+  scheduledAlerts: boolean;
+  weeklyInsights: boolean;
+}
+
+// ---------- Notifications ----------
+
+export type NotificationKind = "approval" | "failed" | "reconnect" | "published" | "insights";
+
+export interface AppNotification {
+  id: string;
+  kind: NotificationKind;
+  title: string;
+  body: string;
+  /** When it happened (ISO). */
+  at: string;
+  read: boolean;
+  /** In-app path the notification opens. */
+  href: string;
+}
 
 // ---------- Onboarding ----------
 

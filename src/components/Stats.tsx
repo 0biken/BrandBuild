@@ -66,7 +66,7 @@ export function Stats() {
     <section ref={sectionRef} className="bg-wavy-pattern py-20 lg:py-[100px]">
       <div className="max-w-[1440px] mx-auto px-6 lg:px-20 text-center">
         
-        <h2 className="font-display font-black text-[32px] sm:text-[40px] text-brand-black mb-16">
+        <h2 className="font-display font-black text-[28px] sm:text-[40px] text-brand-black mb-10 sm:mb-16">
           Numbers don’t lie!
         </h2>
 
@@ -86,7 +86,7 @@ export function Stats() {
                   <Image src={stat.icon} alt="" width={32} height={32} className="object-contain" />
                 </div>
                 
-                <div className="font-display font-black text-[40px] text-white leading-none mb-2 mt-auto">
+                <div className="font-display font-black text-[32px] sm:text-[40px] text-white leading-none mb-2 mt-auto">
                   <span className="stat-value tabular-nums" data-value={stat.value} data-decimals={stat.decimals ?? 0}>
                     {stat.decimals ? stat.value.toFixed(stat.decimals) : stat.value}
                   </span>

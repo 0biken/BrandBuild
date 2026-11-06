@@ -12,8 +12,9 @@ import type { ApiResult, Provider, Session } from "./types";
  * Auth API. In mock mode every call resolves after a short delay, with
  * behaviour chosen so each designed state is reachable:
  *  - logIn:      succeeds only for MOCK_ACCOUNT; anything else is "invalid".
- *  - verifyCode: MOCK_CODE succeeds, MOCK_EXPIRED_CODE is "expired",
- *                any other 6 digits is "invalid".
+ *  - verifyCode: no email is sent in demo mode, so any 6 digits succeed,
+ *                except MOCK_EXPIRED_CODE ("expired") and MOCK_INVALID_CODE
+ *                ("invalid"), which keep those designed states reachable.
  *  - signInWithProvider: always "network" (not wired up yet).
  *  - signUp / requestCode / resetPassword: always succeed.
  */
@@ -26,6 +27,18 @@ export const MOCK_ACCOUNT = {
 } as const;
 export const MOCK_CODE = "123456";
 export const MOCK_EXPIRED_CODE = "000000";
+export const MOCK_INVALID_CODE = "111111";
+
+/** True when no real codes are sent, so the UI should say so. */
+export const DEMO_CODES = API_MODE !== "http";
+
+/** Demo-mode rule shared by every code screen. */
+export function mockCodeResult(code: string): "ok" | "expired" | "invalid" {
+  if (!/^\d{6}$/.test(code)) return "invalid";
+  if (code === MOCK_EXPIRED_CODE) return "expired";
+  if (code === MOCK_INVALID_CODE) return "invalid";
+  return "ok";
+}
 
 /** Where a signed-in user lands. */
 export const HOME_HREF = APP_HOME;
@@ -96,12 +109,10 @@ export async function requestCode(identifier: string): Promise<ApiResult> {
 export async function verifyCode(code: string): Promise<ApiResult> {
   if (API_MODE === "http") return apiFetch("/v1/auth/code/verify", { method: "POST", body: { code } });
   await wait();
-  if (code === MOCK_CODE) {
-    setMockSessionCookie();
-    return ok;
-  }
-  if (code === MOCK_EXPIRED_CODE) return { ok: false, error: "expired" };
-  return { ok: false, error: "invalid" };
+  const result = mockCodeResult(code);
+  if (result !== "ok") return { ok: false, error: result };
+  setMockSessionCookie();
+  return ok;
 }
 
 export async function resetPassword(password: string): Promise<ApiResult> {

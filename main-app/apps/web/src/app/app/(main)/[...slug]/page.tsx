@@ -22,7 +22,7 @@ export default async function UpcomingScreen({ params }: Props) {
   if (!screen) notFound();
   return (
     <div className="mx-auto flex max-w-xl flex-col gap-6 pt-10">
-      <h1 className="m-0 font-display text-[34px] font-bold tracking-[-0.03em]">{screen.title}</h1>
+      <h1 className="m-0 font-display text-[34px] font-bold tracking-[-0.03em] max-md:text-[28px]">{screen.title}</h1>
       <EmptyState
         icon={ClockIcon}
         title="This screen is on its way"

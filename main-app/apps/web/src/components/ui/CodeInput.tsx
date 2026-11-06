@@ -39,13 +39,27 @@ export function CodeInput({
   }
 
   function onInput(i: number, raw: string) {
-    const typed = raw.replace(/\D/g, "");
+    let typed = raw.replace(/\D/g, "");
     if (!typed) {
       commit(value.slice(0, i) + value.slice(i + 1), i);
       return;
     }
-    const next = (value.slice(0, i) + typed + value.slice(i + 1)).slice(0, LENGTH);
-    commit(next, i + typed.length);
+    // Typing into a box that already holds a digit: some mobile browsers
+    // drop the select-on-focus, so the field reads "old+new". Keep the new.
+    const old = digits[i];
+    if (old && typed.length === 2 && typed.includes(old)) {
+      typed = typed[0] === old ? typed[1] : typed[0];
+    }
+    if (typed.length > 1) {
+      // A whole code (autofill or IME): fill from this box onwards.
+      const next = (value.slice(0, i) + typed).slice(0, LENGTH);
+      commit(next, i + typed.length);
+      return;
+    }
+    // Replace this box's digit rather than inserting and shifting the rest.
+    const padded = value.padEnd(i, " ");
+    const next = (padded.slice(0, i) + typed + padded.slice(i + 1)).replace(/ /g, "").slice(0, LENGTH);
+    commit(next, i + 1);
   }
 
   function onKeyDown(i: number, e: KeyboardEvent<HTMLInputElement>) {

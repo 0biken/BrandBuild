@@ -9,12 +9,12 @@ import { Field } from "@/components/ui/Field";
 import { CheckIcon } from "@/components/ui/icons";
 import { PasswordChecklist } from "@/components/ui/PasswordChecklist";
 import { PasswordField } from "@/components/ui/PasswordField";
-import { HOME_HREF, requestCode, resetPassword, verifyCode } from "@/lib/api/auth";
+import { DEMO_CODES, HOME_HREF, requestCode, resetPassword, verifyCode } from "@/lib/api/auth";
 import { passwordValid } from "@/lib/password";
 
 const STEPS = ["Request a code", "Enter the code", "New password"] as const;
 
-const H1 = "m-0 font-display text-[32px] font-bold tracking-[-0.03em] outline-none";
+const H1 = "m-0 font-display text-[32px] font-bold tracking-[-0.03em] outline-none max-md:text-[26px]";
 
 export function ResetFlow() {
   const [step, setStep] = useState(0);
@@ -140,6 +140,9 @@ export function ResetFlow() {
               Sent to <strong className="font-semibold text-ink">{identifier}</strong>.
             </p>
           </div>
+          {DEMO_CODES && (
+            <Alert tone="info">Demo mode: no email is sent yet. Enter any 6 digits to continue.</Alert>
+          )}
           <CodeInput
             value={code}
             onChange={(v) => {

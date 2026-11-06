@@ -106,7 +106,7 @@ export function Stats({ stats, accountCount }: { stats?: StatItem[]; accountCoun
           ? stats.map((s) => (
               <li key={s.label} className={`${card} flex flex-col gap-2 p-[18px] max-md:p-3.5`}>
                 <span className="text-xs font-semibold text-muted">{s.label}</span>
-                <span className="font-display text-[38px] leading-none font-bold tracking-[-0.03em] max-md:text-[30px]">
+                <span className="font-display text-[38px] leading-none font-bold tracking-[-0.03em] max-md:text-[26px]">
                   {s.value}
                 </span>
                 <div className="flex items-center justify-between gap-2">

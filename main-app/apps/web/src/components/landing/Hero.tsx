@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, type CSSProperties } from "react";
 import { ButtonLink } from "@/components/ui/Button";
 import { ArrowRightIcon, CheckIcon } from "@/components/ui/icons";
 import { MOTION_OK, gsap, useGSAP } from "@/lib/gsap";
@@ -13,6 +13,9 @@ const STEPS = [
   "Best time: Fri 7 PM",
 ];
 
+/** Stagger index for the CSS intro animations in globals.css. */
+const order = (i: number) => ({ "--i": i }) as CSSProperties;
+
 function Pill({ seed }: { seed: string }) {
   return (
     <span
@@ -23,25 +26,23 @@ function Pill({ seed }: { seed: string }) {
   );
 }
 
-const Word = ({ children }: { children: string }) => (
+const Word = ({ children, i }: { children: string; i: number }) => (
   <span className="-mb-[0.16em] inline-block overflow-hidden pb-[0.16em] align-bottom">
-    <span className="hero-word inline-block will-change-transform">{children}</span>
+    <span className="hero-word inline-block will-change-transform" style={order(i)}>
+      {children}
+    </span>
   </span>
 );
 
 export function Hero() {
   const root = useRef<HTMLElement>(null);
 
+  // The intro runs in CSS (first paint, no hydration wait). GSAP only drives
+  // the scroll-linked parallax on the photo.
   useGSAP(
     () => {
       const mm = gsap.matchMedia();
       mm.add(MOTION_OK, () => {
-        const tl = gsap.timeline({ defaults: { ease: "power4.out" } });
-        tl.from(".hero-word", { yPercent: 110, duration: 1, stagger: 0.06 })
-          .from(".hero-fade", { y: 18, opacity: 0, duration: 0.8, stagger: 0.1 }, "-=0.6")
-          .from(".hero-photo", { y: 60, opacity: 0, scale: 0.94, duration: 1.2 }, "-=0.9")
-          .from(".hero-card", { y: 40, opacity: 0, duration: 0.9 }, "-=0.7");
-
         gsap.to(".hero-photo-inner", {
           yPercent: -8,
           ease: "none",
@@ -60,7 +61,7 @@ export function Hero() {
   return (
     <section
       ref={root}
-      className="relative isolate overflow-hidden px-6 pt-40 pb-24 md:px-12 md:pt-48 md:pb-40"
+      className="relative isolate overflow-hidden px-5 pt-28 pb-16 md:px-12 md:pt-48 md:pb-40"
     >
       {/* Ambient wash: deep radial blurs, no flat fill */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
@@ -70,20 +71,20 @@ export function Hero() {
       </div>
 
       <div className="mx-auto max-w-[1280px]">
-        <h1 className="m-0 max-w-6xl font-sans text-[clamp(2.4rem,6.2vw,5.75rem)] leading-[0.98] font-semibold tracking-[-0.045em] text-ink">
-          <Word>Posts</Word> <Word>that</Word> <Word>sound</Word> <Pill seed="studio-hands" />{" "}
-          <Word>like</Word> <Word>you.</Word> <Word>Written</Word> <Word>in</Word>{" "}
-          <Word>seconds.</Word>
+        <h1 className="m-0 max-w-6xl font-sans text-[clamp(2.25rem,6.2vw,5.75rem)] leading-[0.98] font-semibold tracking-[-0.045em] text-ink">
+          <Word i={0}>Posts</Word> <Word i={1}>that</Word> <Word i={2}>sound</Word>{" "}
+          <Pill seed="studio-hands" /> <Word i={3}>like</Word> <Word i={4}>you.</Word>{" "}
+          <Word i={5}>Written</Word> <Word i={6}>in</Word> <Word i={7}>seconds.</Word>
         </h1>
 
-        <div className="mt-10 grid gap-14 md:mt-0 md:grid-cols-12">
-          <div className="flex flex-col gap-8 md:col-span-6 md:pt-14">
-            <p className="hero-fade m-0 max-w-xl text-[19px] leading-relaxed text-ink-2">
+        <div className="mt-8 grid gap-10 md:mt-14 md:gap-14 md:grid-cols-12">
+          <div className="flex flex-col gap-8 md:col-span-6">
+            <p className="hero-fade m-0 max-w-xl text-[17px] leading-relaxed md:text-[19px] text-ink-2" style={order(0)}>
               Type an idea. Brandbuild writes the caption in your voice, picks the
               hashtags and the best time, and schedules it to every account
               you&apos;ve connected.
             </p>
-            <div className="hero-fade flex flex-wrap gap-3">
+            <div className="hero-fade flex flex-wrap gap-3" style={order(1)}>
               <ButtonLink href="/signup" variant="primary" size="lg" className="rounded-full pr-5">
                 Write my post
                 <ArrowRightIcon size={18} />
@@ -92,14 +93,15 @@ export function Hero() {
                 See how it works
               </ButtonLink>
             </div>
-            <p className="hero-fade m-0 text-sm text-muted">
+            <p className="hero-fade m-0 text-sm text-muted" style={order(2)}>
               Free for students with a school email. No card needed.
             </p>
           </div>
 
-          {/* Artistic asymmetry: image floats up over the headline's last line */}
-          <div className="relative md:col-span-6 md:-mt-24">
-            <div className="hero-photo relative ml-auto aspect-[4/5] w-full max-w-[520px] overflow-hidden rounded-[36px] bg-forest shadow-[0_50px_90px_-40px_rgba(15,42,27,0.65)]">
+          {/* Photo sits below the headline, never over it. The status card
+              hangs off its top-left corner, clear of the caption card. */}
+          <div className="relative md:col-span-6">
+            <div className="hero-photo relative ml-auto aspect-[4/5] w-full max-w-[520px] overflow-hidden rounded-[28px] bg-forest md:rounded-[36px] shadow-[0_50px_90px_-40px_rgba(15,42,27,0.65)]">
               <div
                 className="hero-photo-inner absolute -inset-x-0 -top-[8%] h-[116%] bg-cover bg-center opacity-90 contrast-125 grayscale-[35%]"
                 style={{ backgroundImage: `url(${photo("small-brand-studio", 1000, 1250)})` }}
@@ -121,10 +123,10 @@ export function Hero() {
 
             <div
               aria-hidden="true"
-              className="hero-card absolute -bottom-10 left-0 w-[260px] rounded-[22px] bg-forest p-5 text-forest-text shadow-[0_30px_60px_-30px_rgba(15,42,27,0.8)] max-md:left-3 md:-left-6"
+              className="hero-card absolute top-5 left-0 w-[220px] rounded-[20px] bg-forest p-4 md:top-10 md:w-[260px] md:rounded-[22px] md:p-5 text-forest-text shadow-[0_30px_60px_-30px_rgba(15,42,27,0.8)] max-md:left-3 md:-left-6"
             >
               <div className="mb-3 flex items-baseline justify-between">
-                <span className="font-display text-[18px] font-bold text-white">Building your post</span>
+                <span className="font-display text-[16px] font-bold text-white md:text-[18px]">Building your post</span>
                 <span className="font-mono text-xs text-forest-ink">4 of 4</span>
               </div>
               <ul className="m-0 flex list-none flex-col gap-2 p-0 text-sm">

@@ -7,7 +7,7 @@ export function Programs() {
     <section id="how-it-works" className="bg-brand-green py-20 lg:py-[100px] relative z-10 -mt-1 pt-[80px]">
       <div className="max-w-[1440px] mx-auto px-6 lg:px-20 text-center flex flex-col items-center">
         
-        <h2 className="font-display font-black text-[28px] sm:text-[40px] lg:text-[56px] text-white mb-2">
+        <h2 className="font-display font-black text-[28px] sm:text-[32px] sm:text-[40px] lg:text-[56px] text-white mb-2">
           Less busywork. More growth.
         </h2>
         <p className="font-body text-[16px] sm:text-[18px] text-white/90 mb-8 sm:mb-12">
@@ -34,7 +34,7 @@ export function Programs() {
             
             {/* Left Copy Area */}
             <div className="flex-1 flex flex-col justify-center">
-              <h3 className="font-display font-black text-[24px] sm:text-[32px] text-brand-black mb-4">
+              <h3 className="font-display font-black text-[24px] sm:text-[26px] sm:text-[32px] text-brand-black mb-4">
                 How It Works
               </h3>
               <p className="font-body text-[16px] text-brand-black/70 mb-8 max-w-[400px]">

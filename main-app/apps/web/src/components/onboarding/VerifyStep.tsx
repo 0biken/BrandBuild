@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { CodeInput } from "@/components/ui/CodeInput";
 import { Field } from "@/components/ui/Field";
 import { CheckIcon, MailIcon, ShieldIcon } from "@/components/ui/icons";
+import { DEMO_CODES } from "@/lib/api/auth";
 import { sendStudentCode, skipStudentCheck, studentIdProblem, submitStudentId, verifyStudentCode } from "@/lib/api/verify";
 import { OnboardingShell, StepActions } from "./OnboardingShell";
 import { useOnboardingNav } from "./useOnboardingNav";
@@ -178,6 +179,9 @@ export function VerifyStep() {
             <p className="m-0 text-[15px] text-ink-2">
               Enter the code we sent to <strong className="text-ink">{sentTo}</strong>.
             </p>
+            {DEMO_CODES && (
+              <Alert tone="info">Demo mode: no email is sent yet. Enter any 6 digits to continue.</Alert>
+            )}
             <CodeInput
               value={code}
               onChange={(v) => {

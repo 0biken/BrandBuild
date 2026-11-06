@@ -10,7 +10,7 @@ export function DualAudience() {
     <section className="bg-[#fcfcfc] py-20 lg:py-[100px] relative z-10 border-y-2 border-brand-black">
       <div className="max-w-[1000px] mx-auto px-5 sm:px-6 lg:px-20 flex flex-col items-center">
         
-        <h2 className="font-display font-black text-[32px] sm:text-[48px] text-brand-black mb-8 text-center">
+        <h2 className="font-display font-black text-[28px] sm:text-[48px] text-brand-black mb-8 text-center">
           Built for you. <br className="sm:hidden" />
           <span className="text-brand-green">However you grow.</span>
         </h2>

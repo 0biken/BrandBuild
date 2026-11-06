@@ -7,7 +7,7 @@ import { Alert } from "@/components/ui/Alert";
 import { Button } from "@/components/ui/Button";
 import { CodeInput } from "@/components/ui/CodeInput";
 import { MailIcon } from "@/components/ui/icons";
-import { HOME_HREF, requestCode, verifyCode } from "@/lib/api/auth";
+import { DEMO_CODES, HOME_HREF, requestCode, verifyCode } from "@/lib/api/auth";
 import { usePendingIdentifier } from "@/lib/pending";
 import { getOnboarding, nextStepPath } from "@/lib/api/onboarding";
 
@@ -18,7 +18,7 @@ async function onboardingNext(): Promise<string> {
 
 const RESEND_SECONDS = 30;
 
-type Status = "idle" | "checking" | "invalid" | "expired";
+type Status = "idle" | "checking" | "invalid" | "expired" | "network";
 
 export function CodeForm() {
   const router = useRouter();
@@ -41,7 +41,15 @@ export function CodeForm() {
     const res = await verifyCode(value);
     if (res.ok) {
       // A new account continues into onboarding; anyone already set up goes Home.
-      router.push(await onboardingNext());
+      try {
+        router.push(await onboardingNext());
+      } catch {
+        setStatus("network");
+      }
+      return;
+    }
+    if (res.error === "network") {
+      setStatus("network");
       return;
     }
     setStatus(res.error === "expired" ? "expired" : "invalid");
@@ -49,7 +57,9 @@ export function CodeForm() {
   }
 
   async function resend(channel: "email" | "sms") {
-    if (channel === "sms") {
+    if (DEMO_CODES) {
+      setNote("Demo mode: no email is sent. Enter any 6 digits to continue.");
+    } else if (channel === "sms") {
       setNote("SMS codes aren't available yet. We'll resend by email.");
     } else {
       setNote("We sent a new code.");
@@ -69,7 +79,7 @@ export function CodeForm() {
         <MailIcon size={24} />
       </span>
       <div className="flex flex-col gap-1.5">
-        <h1 className="m-0 font-display text-[32px] font-bold tracking-[-0.03em]">
+        <h1 className="m-0 font-display text-[32px] font-bold tracking-[-0.03em] max-md:text-[26px]">
           Check your {identifier.includes("@") || !identifier ? "email" : "phone"}
         </h1>
         <p className="m-0 text-[15px] text-ink-2">
@@ -80,6 +90,12 @@ export function CodeForm() {
           . <Link href="/signup" className="font-semibold">Change</Link>
         </p>
       </div>
+
+      {DEMO_CODES && (
+        <Alert tone="info">
+          Demo mode: no email is sent yet. Enter any 6 digits (for example 123456) to continue.
+        </Alert>
+      )}
 
       <div key={shakes} className={status === "invalid" ? "shake" : ""}>
         <CodeInput
@@ -100,6 +116,11 @@ export function CodeForm() {
         {status === "checking" && (
           <p role="status" className="m-0 text-sm text-muted">Checking your code...</p>
         )}
+        {status === "network" && (
+          <Alert tone="error">
+            We couldn&apos;t reach Brandbuild. Check your connection and press Verify again.
+          </Alert>
+        )}
         {status === "invalid" && (
           <Alert tone="error">
             That code isn&apos;t right. Check the latest email, or send a new code.
@@ -119,6 +140,15 @@ export function CodeForm() {
         )}
         {note && <Alert tone="info">{note}</Alert>}
       </div>
+
+      <Button
+        block
+        size="lg"
+        disabled={code.length < 6 || status === "checking"}
+        onClick={() => submit(code)}
+      >
+        {status === "checking" ? "Checking..." : "Verify"}
+      </Button>
 
       <p className="m-0 text-sm text-muted">
         Tip: paste the whole code into any box. It fills itself in and submits.
@@ -148,7 +178,7 @@ export function CodeForm() {
       </div>
 
       <p className="m-0 text-sm text-muted">
-        Not in your inbox? Check spam or promotions. Codes expire after [N] minutes.
+        Not in your inbox? Check spam or promotions. Codes expire after 10 minutes.
       </p>
     </div>
   );

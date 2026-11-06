@@ -21,10 +21,10 @@ const ROWS: [string, string, string, string][] = [
 
 export default function PricingPage() {
   return (
-    <div className="px-6 pt-40 pb-32 md:px-12 md:pt-52 md:pb-48">
+    <div className="px-5 pt-28 pb-20 md:px-12 md:pt-52 md:pb-48">
       <div className="mx-auto flex max-w-[1280px] flex-col gap-16 md:gap-24">
         <header className="flex flex-col gap-6">
-          <h1 className="m-0 max-w-5xl font-sans text-[clamp(2.4rem,6.2vw,5.75rem)] leading-[0.98] font-semibold tracking-[-0.045em]">
+          <h1 className="m-0 max-w-5xl font-sans text-[clamp(2.1rem,6.2vw,5.75rem)] leading-[0.98] font-semibold tracking-[-0.045em]">
             Simple plans. Free for students.
           </h1>
           <p className="m-0 max-w-xl text-[19px] leading-relaxed text-ink-2">
