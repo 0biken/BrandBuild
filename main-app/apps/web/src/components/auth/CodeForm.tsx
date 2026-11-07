@@ -38,7 +38,7 @@ export function CodeForm() {
   async function submit(value: string) {
     setStatus("checking");
     setNote("");
-    const res = await verifyCode(value);
+    const res = await verifyCode(value, identifier);
     if (res.ok) {
       // A new account continues into onboarding; anyone already set up goes Home.
       router.push(await onboardingNext());
