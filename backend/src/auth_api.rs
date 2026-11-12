@@ -2,7 +2,13 @@ use argon2::{
     password_hash::{rand_core::OsRng, PasswordHash, PasswordHasher, PasswordVerifier, SaltString},
     Argon2,
 };
-use axum::{extract::State, http::StatusCode, routing::post, Json, Router};
+use axum::{
+    extract::State,
+    http::{header::SET_COOKIE, HeaderMap, StatusCode},
+    response::{AppendHeaders, IntoResponse, Response},
+    routing::post,
+    Json, Router,
+};
 use chrono::{Duration, Utc};
 use jsonwebtoken::{encode, Algorithm, EncodingKey, Header};
 use lettre::{
@@ -15,11 +21,15 @@ use serde_json::{json, Value};
 use sqlx::{PgPool, Row};
 use uuid::Uuid;
 
-use crate::AppState;
+use crate::{
+    auth::{cookie_value, set_cookie, TenantContext, RESET_COOKIE, SESSION_COOKIE},
+    AppState,
+};
 
 const CODE_TTL_MINUTES: i64 = 10;
 const MAX_CODE_ATTEMPTS: i32 = 5;
 const MAX_RESET_TOKEN_MINUTES: i64 = 15;
+const SESSION_HOURS: i64 = 12;
 
 #[derive(Debug, Serialize, Deserialize)]
 struct Claims {
@@ -52,12 +62,11 @@ pub struct RequestCodeInput {
 }
 #[derive(Debug, Deserialize)]
 pub struct ResetPasswordInput {
-    reset_token: String,
     password: String,
 }
 
 #[derive(Debug, thiserror::Error)]
-enum AuthApiError {
+pub enum AuthApiError {
     #[error("request data is invalid")]
     Invalid,
     #[error("email or password is incorrect")]
@@ -66,6 +75,8 @@ enum AuthApiError {
     Conflict,
     #[error("verification code is invalid or expired")]
     InvalidCode,
+    #[error("verification code has expired")]
+    CodeExpired,
     #[error("authentication is not configured")]
     NotConfigured,
     #[error("internal server error")]
@@ -78,6 +89,7 @@ impl axum::response::IntoResponse for AuthApiError {
             Self::Unauthorized => (StatusCode::UNAUTHORIZED, "invalid_credentials"),
             Self::Conflict => (StatusCode::CONFLICT, "account_exists"),
             Self::InvalidCode => (StatusCode::UNAUTHORIZED, "invalid_code"),
+            Self::CodeExpired => (StatusCode::GONE, "code_expired"),
             Self::NotConfigured => (StatusCode::SERVICE_UNAVAILABLE, "auth_not_configured"),
             Self::Internal => (StatusCode::INTERNAL_SERVER_ERROR, "internal_error"),
         };
@@ -257,10 +269,24 @@ async fn issue_code(
     send_code_email(email, &code, purpose).await
 }
 
+/// 204 carrying any Set-Cookie values.
+fn no_content(cookies: Vec<String>) -> Response {
+    (
+        StatusCode::NO_CONTENT,
+        AppendHeaders(cookies.into_iter().map(|cookie| (SET_COOKIE, cookie))),
+    )
+        .into_response()
+}
+
+fn session_cookie(user_id: Uuid, tenant_id: Uuid) -> Result<String, AuthApiError> {
+    let token = signed_token(user_id, tenant_id, Duration::hours(SESSION_HOURS), None)?;
+    Ok(set_cookie(SESSION_COOKIE, &token, SESSION_HOURS * 3600))
+}
+
 async fn signup(
     State(state): State<AppState>,
     Json(input): Json<SignUpInput>,
-) -> Result<(StatusCode, Json<Value>), AuthApiError> {
+) -> Result<Response, AuthApiError> {
     let email = normalized_email(&input.identifier)?;
     let name = input.name.trim();
     if name.is_empty() || name.len() > 120 {
@@ -310,16 +336,13 @@ async fn signup(
         .map_err(|_| AuthApiError::Internal)?;
     tx.commit().await.map_err(|_| AuthApiError::Internal)?;
     issue_code(&state.pool, user_id, &email, "verify_email").await?;
-    Ok((
-        StatusCode::CREATED,
-        Json(json!({"data":{"user_id":user_id,"email":email,"verification_required":true}})),
-    ))
+    Ok(no_content(vec![]))
 }
 
 async fn login(
     State(state): State<AppState>,
     Json(input): Json<LoginInput>,
-) -> Result<Json<Value>, AuthApiError> {
+) -> Result<Response, AuthApiError> {
     let email = normalized_email(&input.identifier)?;
     let row = sqlx::query(
         "SELECT u.id,u.password_hash,u.email_verified_at,m.tenant_id FROM users u JOIN tenant_memberships m ON m.user_id=u.id WHERE u.email=$1 ORDER BY m.created_at LIMIT 1",
@@ -346,21 +369,13 @@ async fn login(
     {
         return Err(AuthApiError::Unauthorized);
     }
-    let token = signed_token(user_id, tenant_id, Duration::hours(12), None)?;
-    Ok(Json(json!({
-        "data": {
-            "access_token": token,
-            "token_type": "Bearer",
-            "expires_in": 43200,
-            "user": {"id": user_id, "email": email}
-        }
-    })))
+    Ok(no_content(vec![session_cookie(user_id, tenant_id)?]))
 }
 
 async fn request_code(
     State(state): State<AppState>,
     Json(input): Json<RequestCodeInput>,
-) -> Result<Json<Value>, AuthApiError> {
+) -> Result<Response, AuthApiError> {
     let email = normalized_email(&input.identifier)?;
     let row = sqlx::query("SELECT id,email_verified_at FROM users WHERE email=$1")
         .bind(&email)
@@ -380,13 +395,13 @@ async fn request_code(
         issue_code(&state.pool, user_id, &email, purpose).await?;
     }
     // Return the same response whether the account exists or not.
-    Ok(Json(json!({"data":{"accepted":true}})))
+    Ok(no_content(vec![]))
 }
 
 async fn verify_code(
     State(state): State<AppState>,
     Json(input): Json<CodeInput>,
-) -> Result<Json<Value>, AuthApiError> {
+) -> Result<Response, AuthApiError> {
     let email = normalized_email(&input.identifier)?;
     if input.code.len() != 6 || !input.code.bytes().all(|byte| byte.is_ascii_digit()) {
         return Err(AuthApiError::InvalidCode);
@@ -403,8 +418,21 @@ async fn verify_code(
     .bind(MAX_CODE_ATTEMPTS)
     .fetch_optional(&mut *tx)
     .await
-    .map_err(|_| AuthApiError::Internal)?
-    .ok_or(AuthApiError::InvalidCode)?;
+    .map_err(|_| AuthApiError::Internal)?;
+    let Some(row) = row else {
+        let expired: bool = sqlx::query_scalar(
+            "SELECT EXISTS(SELECT 1 FROM users u JOIN auth_codes ac ON ac.user_id=u.id WHERE u.email=$1 AND ac.consumed_at IS NULL AND ac.expires_at<=now())",
+        )
+        .bind(&email)
+        .fetch_one(&mut *tx)
+        .await
+        .map_err(|_| AuthApiError::Internal)?;
+        return Err(if expired {
+            AuthApiError::CodeExpired
+        } else {
+            AuthApiError::InvalidCode
+        });
+    };
     let user_id: Uuid = row.try_get("id").map_err(|_| AuthApiError::Internal)?;
     let purpose: String = row.try_get("purpose").map_err(|_| AuthApiError::Internal)?;
     if purpose != "verify_email" && purpose != "reset_password" {
@@ -454,15 +482,7 @@ async fn verify_code(
     }
     tx.commit().await.map_err(|_| AuthApiError::Internal)?;
     if purpose == "verify_email" {
-        let token = signed_token(user_id, tenant_id, Duration::hours(12), None)?;
-        Ok(Json(json!({
-            "data": {
-                "verified": true,
-                "access_token": token,
-                "token_type": "Bearer",
-                "expires_in": 43200
-            }
-        })))
+        Ok(no_content(vec![session_cookie(user_id, tenant_id)?]))
     } else {
         let reset_token = signed_token(
             user_id,
@@ -470,21 +490,25 @@ async fn verify_code(
             Duration::minutes(MAX_RESET_TOKEN_MINUTES),
             Some("reset_password"),
         )?;
-        Ok(Json(
-            json!({"data":{"verified":true,"reset_token":reset_token}}),
-        ))
+        Ok(no_content(vec![set_cookie(
+            RESET_COOKIE,
+            &reset_token,
+            MAX_RESET_TOKEN_MINUTES * 60,
+        )]))
     }
 }
 
 async fn reset_password(
     State(state): State<AppState>,
+    headers: HeaderMap,
     Json(input): Json<ResetPasswordInput>,
-) -> Result<Json<Value>, AuthApiError> {
+) -> Result<Response, AuthApiError> {
     validate_password(&input.password)?;
+    let reset_token = cookie_value(&headers, RESET_COOKIE).ok_or(AuthApiError::Unauthorized)?;
     let mut validation = jsonwebtoken::Validation::new(Algorithm::HS256);
     validation.validate_exp = true;
     let claims = jsonwebtoken::decode::<Claims>(
-        &input.reset_token,
+        &reset_token,
         &jsonwebtoken::DecodingKey::from_secret(&jwt_secret()?),
         &validation,
     )
@@ -513,24 +537,58 @@ async fn reset_password(
         .execute(&state.pool)
         .await
         .map_err(|_| AuthApiError::Internal)?;
-    let access_token = signed_token(user_id, tenant_id, Duration::hours(12), None)?;
-    Ok(Json(json!({
-        "data": {
-            "password_changed": true,
-            "access_token": access_token,
-            "token_type": "Bearer",
-            "expires_in": 43200
-        }
-    })))
+    Ok(no_content(vec![
+        session_cookie(user_id, tenant_id)?,
+        set_cookie(RESET_COOKIE, "", 0),
+    ]))
+}
+
+async fn logout() -> Response {
+    no_content(vec![set_cookie(SESSION_COOKIE, "", 0)])
+}
+
+fn public_role(role: &str) -> &'static str {
+    match role {
+        "owner" => "owner",
+        "reviewer" => "reviewer",
+        _ => "editor",
+    }
+}
+
+/// The signed-in user. Lives behind the auth middleware, unlike the routes in `router`.
+pub async fn session(
+    State(state): State<AppState>,
+    ctx: TenantContext,
+) -> Result<Json<Value>, AuthApiError> {
+    let row = sqlx::query(
+        "SELECT u.email,u.display_name,m.role FROM users u JOIN tenant_memberships m ON m.user_id=u.id WHERE u.id=$1 AND m.tenant_id=$2",
+    )
+    .bind(ctx.actor_id)
+    .bind(ctx.tenant_id)
+    .fetch_one(&state.pool)
+    .await
+    .map_err(|_| AuthApiError::Internal)?;
+    let email: String = row.try_get("email").map_err(|_| AuthApiError::Internal)?;
+    let name: Option<String> = row
+        .try_get("display_name")
+        .map_err(|_| AuthApiError::Internal)?;
+    let role: String = row.try_get("role").map_err(|_| AuthApiError::Internal)?;
+    Ok(Json(json!({"data":{
+        "userId": ctx.actor_id,
+        "name": name.unwrap_or_default(),
+        "identifier": email,
+        "role": public_role(&role),
+    }})))
 }
 
 pub fn router() -> Router<AppState> {
     Router::new()
         .route("/signup", post(signup))
         .route("/login", post(login))
-        .route("/code/request", post(request_code))
+        .route("/logout", post(logout))
+        .route("/code", post(request_code))
         .route("/code/verify", post(verify_code))
-        .route("/password/reset", post(reset_password))
+        .route("/password", post(reset_password))
 }
 
 #[cfg(test)]

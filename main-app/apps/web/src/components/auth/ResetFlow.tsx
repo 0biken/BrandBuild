@@ -45,7 +45,7 @@ export function ResetFlow() {
     if (busy || value.length !== 6) return;
     setBusy(true);
     setError("");
-    const res = await verifyCode(value);
+    const res = await verifyCode(value, identifier.trim());
     setBusy(false);
     if (res.ok) {
       setStep(2);

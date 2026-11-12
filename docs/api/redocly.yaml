@@ -1,0 +1,7 @@
+extends:
+  - recommended
+rules:
+  # Failures share one `default` error response.
+  operation-4xx-response: off
+  # /v1/accounts/oauth/{platform} and /v1/accounts/{platform}/cancel can't collide: "cancel" is a fixed last segment.
+  no-ambiguous-paths: off

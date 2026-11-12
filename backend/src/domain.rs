@@ -35,7 +35,10 @@ pub enum PostAction {
 #[derive(Debug, Error)]
 pub enum TransitionError {
     #[error("action {action:?} is not valid from state {state:?}")]
-    Invalid { state: PostState, action: PostAction },
+    Invalid {
+        state: PostState,
+        action: PostAction,
+    },
 }
 
 impl PostState {
@@ -53,7 +56,12 @@ impl PostState {
             (Publishing | Reconciling, PublishFailed) => Failed,
             (Draft | InReview | ChangesRequested | Approved | Scheduled, Cancel) => Canceled,
             (Scheduled, Expire) => Expired,
-            _ => return Err(TransitionError::Invalid { state: self, action }),
+            _ => {
+                return Err(TransitionError::Invalid {
+                    state: self,
+                    action,
+                })
+            }
         };
         Ok(next)
     }
@@ -69,7 +77,12 @@ mod tests {
     use super::*;
     #[test]
     fn publishing_can_enter_reconciliation() {
-        assert_eq!(PostState::Publishing.transition(PostAction::Reconcile).unwrap(), PostState::Reconciling);
+        assert_eq!(
+            PostState::Publishing
+                .transition(PostAction::Reconcile)
+                .unwrap(),
+            PostState::Reconciling
+        );
     }
     #[test]
     fn published_is_terminal() {

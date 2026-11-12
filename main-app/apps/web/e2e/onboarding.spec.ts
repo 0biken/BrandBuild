@@ -1,5 +1,5 @@
 import AxeBuilder from "@axe-core/playwright";
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Page } from "./fixtures";
 
 const heading = (page: Page) => page.locator("#app-main h1");
 const alert = (page: Page, text: string) => page.getByRole("alert").filter({ hasText: text });

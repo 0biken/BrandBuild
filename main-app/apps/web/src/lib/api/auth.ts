@@ -106,8 +106,8 @@ export async function requestCode(identifier: string): Promise<ApiResult> {
   return ok;
 }
 
-export async function verifyCode(code: string): Promise<ApiResult> {
-  if (API_MODE === "http") return apiFetch("/v1/auth/code/verify", { method: "POST", body: { code } });
+export async function verifyCode(code: string, identifier = ""): Promise<ApiResult> {
+  if (API_MODE === "http") return apiFetch("/v1/auth/code/verify", { method: "POST", body: { identifier, code } });
   await wait();
   const result = mockCodeResult(code);
   if (result !== "ok") return { ok: false, error: result };

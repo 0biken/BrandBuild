@@ -1,7 +1,7 @@
 import { read, write } from "@/lib/mock/store";
 import { mockCodeResult } from "./auth";
 import { API_MODE } from "./config";
-import { apiFetch } from "./http";
+import { apiFetch, apiUpload } from "./http";
 import type { ApiResult, StudentCheck } from "./types";
 
 /**
@@ -50,16 +50,7 @@ export function studentIdProblem(file: Pick<File, "type" | "size">): string | nu
 export async function submitStudentId(file: File): Promise<ApiResult<StudentCheck>> {
   if (studentIdProblem(file)) return { ok: false, error: "invalid" };
   if (API_MODE === "http") {
-    // Multipart upload goes straight to the API; apiFetch is JSON-only.
-    const body = new FormData();
-    body.append("file", file);
-    try {
-      const { API_URL } = await import("./config");
-      const res = await fetch(`${API_URL}/v1/student-check/id`, { method: "POST", body, credentials: "include" });
-      return res.ok ? { ok: true, data: (await res.json()) as StudentCheck } : { ok: false, error: "invalid" };
-    } catch {
-      return { ok: false, error: "network" };
-    }
+    return apiUpload<StudentCheck>("/v1/student-check/id", file);
   }
   return write((d) => {
     d.studentCheck = { status: "pending_review", method: "id" };

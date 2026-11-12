@@ -1,5 +1,5 @@
 import AxeBuilder from "@axe-core/playwright";
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Page } from "./fixtures";
 
 /** Next's route announcer is also role="alert", so match by text. */
 const alert = (page: Page, text: string) => page.getByRole("alert").filter({ hasText: text });

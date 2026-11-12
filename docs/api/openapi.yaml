@@ -1,0 +1,1434 @@
+# The BrandBuild HTTP API contract. Both apps are held to this file:
+# the web client in main-app/apps/web and the Rust API in backend/.
+# x-status: matches (backend already conforms), adapt (route exists, shape differs), new (not built).
+# x-phase: the roadmap phase that closes the gap.
+openapi: 3.1.0
+info:
+  title: BrandBuild API
+  version: 1.0.0
+  license:
+    name: Proprietary
+    url: https://brandbuild.app/terms
+  description: |
+    ## Conventions
+    - JSON field names are camelCase. Timestamps are ISO 8601 UTC. IDs are opaque strings.
+    - Success bodies are `{ "data": ... }`. Calls with nothing to return answer 204.
+    - Every error body is `{ "error": { "code", "message" } }`.
+    - The API returns data, not presentation. Colours, badges and formatted dates belong to the client.
+    - Auth is the HttpOnly, SameSite=Lax `bb_session` cookie. The browser reaches the API through the
+      same-origin Next rewrite at `/api/*`. A password-reset code sets a short-lived `bb_reset` cookie.
+
+    ## Post states
+    | Database state | Public state | Served by |
+    |---|---|---|
+    | draft | (draft) | /v1/drafts |
+    | changes_requested | (draft, with feedback) | /v1/drafts |
+    | in_review | approval | /v1/posts, /v1/approvals |
+    | approved, scheduled | scheduled | /v1/posts |
+    | publishing, reconciling | checking | /v1/posts |
+    | published | published | /v1/posts |
+    | failed, expired | failed | /v1/posts |
+    | canceled | not returned | none |
+
+    `paused` has no database state yet. Phase 7 adds it for posts held by a disconnected account.
+servers:
+  - url: /api
+    description: Same-origin rewrite in the web app
+tags:
+  - {name: auth, description: Accounts and sessions}
+  - {name: onboarding, description: Student check and setup steps}
+  - {name: content, description: Drafts and posts}
+  - {name: approvals, description: Review decisions}
+  - {name: accounts, description: Connected social accounts}
+  - {name: brand, description: Brand kit}
+  - {name: ai, description: Post generation}
+  - {name: media, description: Photo and video library}
+  - {name: analytics, description: Performance reporting}
+  - {name: notifications, description: Inbox and preferences}
+security:
+  - cookieAuth: []
+paths:
+  /v1/auth/signup:
+    post:
+      operationId: signUp
+      tags: [auth]
+      summary: signUp
+      x-status: matches
+      x-phase: 2
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/SignUpInput'}
+      responses:
+        '204': {description: Done}
+        default: {$ref: '#/components/responses/Error'}
+  /v1/auth/login:
+    post:
+      operationId: logIn
+      tags: [auth]
+      summary: logIn
+      x-status: matches
+      x-phase: 2
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/LogInInput'}
+      responses:
+        '204': {description: Done}
+        default: {$ref: '#/components/responses/Error'}
+  /v1/auth/logout:
+    post:
+      operationId: logOut
+      tags: [auth]
+      summary: logOut
+      x-status: matches
+      x-phase: 2
+      security: []
+      responses:
+        '204': {description: Done}
+        default: {$ref: '#/components/responses/Error'}
+  /v1/auth/session:
+    get:
+      operationId: getSession
+      tags: [auth]
+      summary: getSession
+      x-status: matches
+      x-phase: 2
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: {$ref: '#/components/schemas/Session'}
+        default: {$ref: '#/components/responses/Error'}
+  /v1/auth/oauth/{provider}:
+    get:
+      operationId: signInWithProvider
+      tags: [auth]
+      summary: signInWithProvider
+      x-status: new
+      x-phase: 3
+      security: []
+      parameters:
+        - {name: provider, in: path, required: true, schema: {type: string}}
+      responses:
+        '302': {description: Redirects to the provider}
+        default: {$ref: '#/components/responses/Error'}
+  /v1/auth/code:
+    post:
+      operationId: requestCode
+      tags: [auth]
+      summary: requestCode
+      x-status: matches
+      x-phase: 2
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/RequestCodeInput'}
+      responses:
+        '204': {description: Done}
+        default: {$ref: '#/components/responses/Error'}
+  /v1/auth/code/verify:
+    post:
+      operationId: verifyCode
+      tags: [auth]
+      summary: verifyCode
+      x-status: matches
+      x-phase: 2
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/VerifyCodeInput'}
+      responses:
+        '204': {description: Done}
+        default: {$ref: '#/components/responses/Error'}
+  /v1/auth/password:
+    post:
+      operationId: resetPassword
+      tags: [auth]
+      summary: resetPassword
+      x-status: matches
+      x-phase: 2
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ResetPasswordInput'}
+      responses:
+        '204': {description: Done}
+        default: {$ref: '#/components/responses/Error'}
+  /v1/student-check:
+    get:
+      operationId: getStudentCheck
+      tags: [onboarding]
+      summary: getStudentCheck
+      x-status: new
+      x-phase: 3
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: {$ref: '#/components/schemas/StudentCheck'}
+        default: {$ref: '#/components/responses/Error'}
+  /v1/student-check/code:
+    post:
+      operationId: sendStudentCode
+      tags: [onboarding]
+      summary: sendStudentCode
+      x-status: new
+      x-phase: 3
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/StudentEmailInput'}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: {$ref: '#/components/schemas/StudentCheck'}
+        default: {$ref: '#/components/responses/Error'}
+  /v1/student-check/code/verify:
+    post:
+      operationId: verifyStudentCode
+      tags: [onboarding]
+      summary: verifyStudentCode
+      x-status: new
+      x-phase: 3
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/CodeOnlyInput'}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: {$ref: '#/components/schemas/StudentCheck'}
+        default: {$ref: '#/components/responses/Error'}
+  /v1/student-check/id:
+    post:
+      operationId: submitStudentId
+      tags: [onboarding]
+      summary: submitStudentId
+      x-status: new
+      x-phase: 3
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file: {type: string, format: binary}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: {$ref: '#/components/schemas/StudentCheck'}
+        default: {$ref: '#/components/responses/Error'}
+  /v1/student-check/skip:
+    post:
+      operationId: skipStudentCheck
+      tags: [onboarding]
+      summary: skipStudentCheck
+      x-status: new
+      x-phase: 3
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: {$ref: '#/components/schemas/StudentCheck'}
+        default: {$ref: '#/components/responses/Error'}
+  /v1/onboarding:
+    get:
+      operationId: getOnboarding
+      tags: [onboarding]
+      summary: getOnboarding
+      x-status: new
+      x-phase: 3
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: {$ref: '#/components/schemas/OnboardingState'}
+        default: {$ref: '#/components/responses/Error'}
+  /v1/onboarding/{step}:
+    post:
+      operationId: completeStep
+      tags: [onboarding]
+      summary: completeStep
+      x-status: new
+      x-phase: 3
+      parameters:
+        - {name: step, in: path, required: true, schema: {type: string}}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/StepInput'}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: {$ref: '#/components/schemas/OnboardingState'}
+        default: {$ref: '#/components/responses/Error'}
+  /v1/drafts:
+    get:
+      operationId: listDrafts
+      tags: [content]
+      summary: listDrafts
+      x-status: new
+      x-phase: 4
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: {type: array, items: {$ref: '#/components/schemas/Draft'}}
+        default: {$ref: '#/components/responses/Error'}
+    post:
+      operationId: createDraft
+      tags: [content]
+      summary: createDraft
+      x-status: new
+      x-phase: 4
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/DraftInput'}
+      responses:
+        '201':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: {$ref: '#/components/schemas/Draft'}
+        default: {$ref: '#/components/responses/Error'}
+  /v1/drafts/{id}:
+    get:
+      operationId: getDraft
+      tags: [content]
+      summary: getDraft
+      x-status: new
+      x-phase: 4
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: string}}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: {$ref: '#/components/schemas/Draft'}
+        default: {$ref: '#/components/responses/Error'}
+    patch:
+      operationId: updateDraft
+      tags: [content]
+      summary: updateDraft
+      x-status: new
+      x-phase: 4
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: string}}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/DraftInput'}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: {$ref: '#/components/schemas/Draft'}
+        default: {$ref: '#/components/responses/Error'}
+    delete:
+      operationId: deleteDraft
+      tags: [content]
+      summary: deleteDraft
+      x-status: new
+      x-phase: 4
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: string}}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: {$ref: '#/components/schemas/DeletedDraft'}
+        default: {$ref: '#/components/responses/Error'}
+  /v1/drafts/{id}/restore:
+    post:
+      operationId: restoreDraft
+      tags: [content]
+      summary: restoreDraft
+      x-status: new
+      x-phase: 4
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: string}}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: {$ref: '#/components/schemas/Draft'}
+        default: {$ref: '#/components/responses/Error'}
+  /v1/posts:
+    get:
+      operationId: listPosts
+      tags: [content]
+      summary: listPosts
+      x-status: adapt
+      x-phase: 4
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: {type: array, items: {$ref: '#/components/schemas/Post'}}
+        default: {$ref: '#/components/responses/Error'}
+    post:
+      operationId: createPost
+      tags: [content]
+      summary: createPost
+      x-status: adapt
+      x-phase: 4
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/PostInput'}
+      responses:
+        '201':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: {$ref: '#/components/schemas/Post'}
+        default: {$ref: '#/components/responses/Error'}
+  /v1/posts/{id}:
+    get:
+      operationId: getPost
+      tags: [content]
+      summary: getPost
+      x-status: adapt
+      x-phase: 4
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: string}}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: {$ref: '#/components/schemas/Post'}
+        default: {$ref: '#/components/responses/Error'}
+    put:
+      operationId: updatePost
+      tags: [content]
+      summary: updatePost
+      x-status: adapt
+      x-phase: 4
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: string}}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/PostInput'}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: {$ref: '#/components/schemas/Post'}
+        default: {$ref: '#/components/responses/Error'}
+    delete:
+      operationId: deletePost
+      tags: [content]
+      summary: deletePost
+      x-status: adapt
+      x-phase: 4
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: string}}
+      responses:
+        '204': {description: Done}
+        default: {$ref: '#/components/responses/Error'}
+  /v1/posts/{id}/schedule:
+    post:
+      operationId: reschedulePost
+      tags: [content]
+      summary: reschedulePost
+      x-status: adapt
+      x-phase: 4
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: string}}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ScheduleInput'}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: {$ref: '#/components/schemas/Post'}
+        default: {$ref: '#/components/responses/Error'}
+  /v1/posts/{id}/state:
+    post:
+      operationId: setPostState
+      tags: [content]
+      summary: setPostState
+      x-status: new
+      x-phase: 7
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: string}}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/PostStateInput'}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: {$ref: '#/components/schemas/Post'}
+        default: {$ref: '#/components/responses/Error'}
+  /v1/posts/{id}/retry:
+    post:
+      operationId: retryPost
+      tags: [content]
+      summary: retryPost
+      x-status: new
+      x-phase: 7
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: string}}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: {$ref: '#/components/schemas/Post'}
+        default: {$ref: '#/components/responses/Error'}
+  /v1/posts/{id}/duplicate:
+    post:
+      operationId: duplicateToDraft
+      tags: [content]
+      summary: duplicateToDraft
+      x-status: new
+      x-phase: 4
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: string}}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: {$ref: '#/components/schemas/Draft'}
+        default: {$ref: '#/components/responses/Error'}
+  /v1/posts/{id}/withdraw:
+    post:
+      operationId: withdrawApproval
+      tags: [approvals]
+      summary: withdrawApproval
+      x-status: new
+      x-phase: 7
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: string}}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: {$ref: '#/components/schemas/Draft'}
+        default: {$ref: '#/components/responses/Error'}
+  /v1/approvals:
+    get:
+      operationId: listApprovals
+      tags: [approvals]
+      summary: listApprovals
+      x-status: new
+      x-phase: 7
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: {type: array, items: {$ref: '#/components/schemas/Post'}}
+        default: {$ref: '#/components/responses/Error'}
+  /v1/posts/{id}/approve:
+    post:
+      operationId: approvePost
+      tags: [approvals]
+      summary: approvePost
+      x-status: adapt
+      x-phase: 7
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: string}}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: {$ref: '#/components/schemas/DecisionReceipt'}
+        default: {$ref: '#/components/responses/Error'}
+  /v1/posts/{id}/request-changes:
+    post:
+      operationId: requestChanges
+      tags: [approvals]
+      summary: requestChanges
+      x-status: adapt
+      x-phase: 7
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: string}}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ChangesInput'}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: {$ref: '#/components/schemas/DecisionReceipt'}
+        default: {$ref: '#/components/responses/Error'}
+  /v1/posts/{id}/reject:
+    post:
+      operationId: rejectPost
+      tags: [approvals]
+      summary: rejectPost
+      x-status: new
+      x-phase: 7
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: string}}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: {$ref: '#/components/schemas/DecisionReceipt'}
+        default: {$ref: '#/components/responses/Error'}
+  /v1/posts/{id}/undo-decision:
+    post:
+      operationId: undoDecision
+      tags: [approvals]
+      summary: undoDecision
+      x-status: new
+      x-phase: 7
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: string}}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: {$ref: '#/components/schemas/Post'}
+        default: {$ref: '#/components/responses/Error'}
+  /v1/accounts:
+    get:
+      operationId: listAccounts
+      tags: [accounts]
+      summary: listAccounts
+      x-status: new
+      x-phase: 6
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: {type: array, items: {$ref: '#/components/schemas/ConnectedAccount'}}
+        default: {$ref: '#/components/responses/Error'}
+  /v1/platforms:
+    get:
+      operationId: listPlatforms
+      tags: [accounts]
+      summary: listPlatforms
+      x-status: new
+      x-phase: 6
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: {type: array, items: {$ref: '#/components/schemas/Platform'}}
+        default: {$ref: '#/components/responses/Error'}
+  /v1/accounts/oauth/{platform}:
+    get:
+      operationId: startConnect
+      tags: [accounts]
+      summary: startConnect
+      x-status: new
+      x-phase: 6
+      parameters:
+        - {name: platform, in: path, required: true, schema: {type: string}}
+      responses:
+        '302': {description: Redirects to the provider}
+        default: {$ref: '#/components/responses/Error'}
+  /v1/accounts/{platform}/cancel:
+    post:
+      operationId: cancelConnect
+      tags: [accounts]
+      summary: cancelConnect
+      x-status: new
+      x-phase: 6
+      parameters:
+        - {name: platform, in: path, required: true, schema: {type: string}}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: {$ref: '#/components/schemas/ConnectedAccount'}
+        default: {$ref: '#/components/responses/Error'}
+  /v1/accounts/{platform}:
+    delete:
+      operationId: disconnectAccount
+      tags: [accounts]
+      summary: disconnectAccount
+      x-status: new
+      x-phase: 6
+      parameters:
+        - {name: platform, in: path, required: true, schema: {type: string}}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: {$ref: '#/components/schemas/ConnectedAccount'}
+        default: {$ref: '#/components/responses/Error'}
+  /v1/brand:
+    get:
+      operationId: getBrand
+      tags: [brand]
+      summary: getBrand
+      x-status: adapt
+      x-phase: 4
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: {$ref: '#/components/schemas/Brand'}
+        default: {$ref: '#/components/responses/Error'}
+    put:
+      operationId: updateBrand
+      tags: [brand]
+      summary: updateBrand
+      x-status: new
+      x-phase: 4
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/BrandProfile'}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: {$ref: '#/components/schemas/Brand'}
+        default: {$ref: '#/components/responses/Error'}
+  /v1/ai/generate:
+    post:
+      operationId: generatePost
+      tags: [ai]
+      summary: generatePost
+      x-status: new
+      x-phase: 5
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/GenerateInput'}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: {$ref: '#/components/schemas/Generated'}
+        default: {$ref: '#/components/responses/Error'}
+  /v1/media:
+    get:
+      operationId: listMedia
+      tags: [media]
+      summary: listMedia
+      x-status: new
+      x-phase: 4
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: {type: array, items: {$ref: '#/components/schemas/MediaRef'}}
+        default: {$ref: '#/components/responses/Error'}
+    post:
+      operationId: addMedia
+      tags: [media]
+      summary: addMedia
+      x-status: new
+      x-phase: 4
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file: {type: string, format: binary}
+      responses:
+        '201':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: {$ref: '#/components/schemas/MediaRef'}
+        default: {$ref: '#/components/responses/Error'}
+  /v1/media/{id}:
+    delete:
+      operationId: removeMedia
+      tags: [media]
+      summary: removeMedia
+      x-status: new
+      x-phase: 4
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: string}}
+      responses:
+        '204': {description: Done}
+        default: {$ref: '#/components/responses/Error'}
+  /v1/analytics/home:
+    get:
+      operationId: getHomeStats
+      tags: [analytics]
+      summary: getHomeStats
+      x-status: new
+      x-phase: 7
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: {type: array, items: {$ref: '#/components/schemas/StatItem'}}
+        default: {$ref: '#/components/responses/Error'}
+  /v1/analytics:
+    get:
+      operationId: getAnalytics
+      tags: [analytics]
+      summary: getAnalytics
+      x-status: adapt
+      x-phase: 7
+      parameters:
+        - {name: range, in: query, required: true, schema: {$ref: '#/components/schemas/AnalyticsRange'}}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: {$ref: '#/components/schemas/AnalyticsReport'}
+        default: {$ref: '#/components/responses/Error'}
+  /v1/notifications:
+    get:
+      operationId: listNotifications
+      tags: [notifications]
+      summary: listNotifications
+      x-status: new
+      x-phase: 4
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: {type: array, items: {$ref: '#/components/schemas/AppNotification'}}
+        default: {$ref: '#/components/responses/Error'}
+  /v1/notifications/{id}/read:
+    post:
+      operationId: markNotificationRead
+      tags: [notifications]
+      summary: markNotificationRead
+      x-status: new
+      x-phase: 4
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: string}}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: {$ref: '#/components/schemas/AppNotification'}
+        default: {$ref: '#/components/responses/Error'}
+  /v1/notifications/read-all:
+    post:
+      operationId: markAllNotificationsRead
+      tags: [notifications]
+      summary: markAllNotificationsRead
+      x-status: new
+      x-phase: 4
+      responses:
+        '204': {description: Done}
+        default: {$ref: '#/components/responses/Error'}
+  /v1/settings/notifications:
+    get:
+      operationId: getNotificationPrefs
+      tags: [notifications]
+      summary: getNotificationPrefs
+      x-status: new
+      x-phase: 4
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: {$ref: '#/components/schemas/NotificationPrefs'}
+        default: {$ref: '#/components/responses/Error'}
+    patch:
+      operationId: updateNotificationPrefs
+      tags: [notifications]
+      summary: updateNotificationPrefs
+      x-status: new
+      x-phase: 4
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/NotificationPrefsInput'}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: {$ref: '#/components/schemas/NotificationPrefs'}
+        default: {$ref: '#/components/responses/Error'}
+components:
+  securitySchemes:
+    cookieAuth: {type: apiKey, in: cookie, name: bb_session}
+  responses:
+    Error:
+      description: Any failure
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/ErrorBody'}
+  schemas:
+    ErrorBody:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code:
+              type: string
+              description: |
+                invalid_request, invalid_input, invalid_credentials, invalid_code (400, 401, 415, 422);
+                unauthorized (401); forbidden (403); not_found (404); account_exists, conflict (409);
+                code_expired (410); rate_limited (429); auth_not_configured (503); internal_error (500).
+            message: {type: string}
+    SignUpInput:
+      type: object
+      required: [name, identifier, password]
+      properties: {name: {type: string}, identifier: {type: string}, password: {type: string}}
+    LogInInput:
+      type: object
+      required: [identifier, password]
+      properties: {identifier: {type: string}, password: {type: string}}
+    RequestCodeInput:
+      type: object
+      required: [identifier]
+      properties: {identifier: {type: string}}
+    VerifyCodeInput:
+      type: object
+      required: [identifier, code]
+      properties: {identifier: {type: string}, code: {type: string, pattern: '^[0-9]{6}$'}}
+    ResetPasswordInput:
+      type: object
+      required: [password]
+      description: The account comes from the bb_reset cookie.
+      properties: {password: {type: string}}
+    Role: {type: string, enum: [owner, editor, reviewer]}
+    Session:
+      type: object
+      required: [userId, name, identifier, role]
+      properties:
+        userId: {type: string}
+        name: {type: string}
+        identifier: {type: string}
+        role: {$ref: '#/components/schemas/Role'}
+    StudentEmailInput:
+      type: object
+      required: [email]
+      properties: {email: {type: string}}
+    CodeOnlyInput:
+      type: object
+      required: [code]
+      properties: {code: {type: string}}
+    StudentCheck:
+      type: object
+      required: [status]
+      properties:
+        status: {type: string, enum: [none, code_sent, verified, pending_review, not_student]}
+        method: {type: string, enum: [email, id]}
+        email: {type: string}
+    StepStatus: {type: string, enum: [todo, done, skipped]}
+    StepInput:
+      type: object
+      required: [status]
+      properties: {status: {type: string, enum: [done, skipped]}}
+    OnboardingState:
+      type: object
+      required: [verify, connect, brand]
+      properties:
+        verify: {$ref: '#/components/schemas/StepStatus'}
+        connect: {$ref: '#/components/schemas/StepStatus'}
+        brand: {$ref: '#/components/schemas/StepStatus'}
+    PlatformId: {type: string, enum: [ig, li, tt, fb]}
+    AccountPlatform: {type: string, enum: [ig, li, tt, fb, yt]}
+    MediaRef:
+      type: object
+      required: [id, name, kind, type, size, addedAt]
+      properties:
+        id: {type: string}
+        name: {type: string}
+        kind: {type: string, enum: [image, video]}
+        type: {type: string, description: MIME type}
+        size: {type: integer}
+        duration: {type: number, description: "Seconds, for videos"}
+        addedAt: {type: string, format: date-time}
+        url: {type: string}
+    PostState: {type: string, enum: [scheduled, approval, published, failed, checking, paused]}
+    Notice:
+      type: object
+      required: [title, message]
+      description: Why a post is failed, being checked or paused.
+      properties: {title: {type: string}, message: {type: string}}
+    Person:
+      type: object
+      required: [name]
+      properties: {name: {type: string}}
+    Post:
+      type: object
+      required: [id, title, caption, hashtags, aspectRatio, state, platforms, activity]
+      properties:
+        id: {type: string}
+        title: {type: string}
+        caption: {type: string}
+        hashtags: {type: array, items: {type: string}}
+        aspectRatio: {type: string}
+        scheduledAt: {type: string, format: date-time}
+        state: {$ref: '#/components/schemas/PostState'}
+        platforms: {type: array, items: {$ref: '#/components/schemas/PlatformId'}}
+        platformStatuses:
+          type: array
+          items:
+            type: object
+            required: [id, status, live]
+            properties:
+              id: {$ref: '#/components/schemas/PlatformId'}
+              status: {type: string}
+              note: {type: string}
+              live: {type: boolean}
+              liveUrl: {type: string}
+        metrics:
+          type: object
+          required: [reach, likes, comments, saves]
+          properties: {reach: {type: integer}, likes: {type: integer}, comments: {type: integer}, saves: {type: integer}}
+        activity:
+          type: array
+          items:
+            type: object
+            required: [text, at]
+            properties: {text: {type: string}, at: {type: string, format: date-time}}
+        media: {type: array, items: {$ref: '#/components/schemas/MediaRef'}}
+        reviewer:
+          type: object
+          required: [name, note]
+          properties: {name: {type: string}, note: {type: string}}
+        requestedBy: {$ref: '#/components/schemas/Person'}
+        requestedAt: {type: string, format: date-time}
+        notice: {$ref: '#/components/schemas/Notice'}
+    PostInput:
+      type: object
+      required: [title, caption, hashtags, platforms, intent]
+      properties:
+        title: {type: string}
+        caption: {type: string}
+        hashtags: {type: array, items: {type: string}}
+        platforms: {type: array, items: {$ref: '#/components/schemas/PlatformId'}}
+        scheduledAt: {type: string, format: date-time}
+        intent: {type: string, enum: [schedule, publish, approval]}
+        aspectRatio: {type: string}
+        media: {type: array, items: {$ref: '#/components/schemas/MediaRef'}}
+    ScheduleInput:
+      type: object
+      required: [scheduledAt]
+      properties: {scheduledAt: {type: string, format: date-time}}
+    PostStateInput:
+      type: object
+      required: [state]
+      properties: {state: {$ref: '#/components/schemas/PostState'}}
+    ChangesInput:
+      type: object
+      required: [note]
+      properties: {note: {type: string}}
+    DecisionReceipt:
+      type: object
+      required: [decision, postId]
+      properties:
+        decision: {type: string, enum: [approve, changes, reject]}
+        postId: {type: string}
+        post: {$ref: '#/components/schemas/Post'}
+        draftId: {type: string}
+    DraftState: {type: string, enum: [ready, needs_photo, idea]}
+    Draft:
+      type: object
+      required: [id, title, body, state, platforms, updatedAt]
+      properties:
+        id: {type: string}
+        title: {type: string}
+        body: {type: string}
+        state: {$ref: '#/components/schemas/DraftState'}
+        platforms: {type: array, items: {$ref: '#/components/schemas/PlatformId'}}
+        updatedAt: {type: string, format: date-time}
+        feedback: {type: string}
+        media: {type: array, items: {$ref: '#/components/schemas/MediaRef'}}
+    DraftInput:
+      type: object
+      description: On PATCH every field is optional.
+      properties:
+        title: {type: string}
+        body: {type: string}
+        state: {$ref: '#/components/schemas/DraftState'}
+        platforms: {type: array, items: {$ref: '#/components/schemas/PlatformId'}}
+        media: {type: array, items: {$ref: '#/components/schemas/MediaRef'}}
+    DeletedDraft:
+      type: object
+      required: [index]
+      description: The draft's old list position, used by undo.
+      properties: {index: {type: integer}}
+    AccountStatus: {type: string, enum: [connected, needs_attention, disconnected, connecting, declined]}
+    ConnectedAccount:
+      type: object
+      required: [id, platform, handle, status]
+      properties:
+        id: {type: string}
+        platform: {$ref: '#/components/schemas/AccountPlatform'}
+        handle: {type: string}
+        followers: {type: integer}
+        status: {$ref: '#/components/schemas/AccountStatus'}
+    Platform:
+      type: object
+      required: [id, name, limit]
+      properties:
+        id: {$ref: '#/components/schemas/PlatformId'}
+        name: {type: string}
+        limit: {type: integer, description: Caption character limit}
+        enabled: {type: boolean}
+    Tone: {type: string, enum: [Warm, Playful, Professional, Bold]}
+    BrandProfile:
+      type: object
+      required: [name, sells, audience, tones, wordsUse, wordsAvoid, color, samples]
+      properties:
+        name: {type: string}
+        sells: {type: string}
+        audience: {type: array, items: {type: string}}
+        tones: {type: array, items: {$ref: '#/components/schemas/Tone'}, maxItems: 2}
+        wordsUse: {type: array, items: {type: string}}
+        wordsAvoid: {type: array, items: {type: string}}
+        color: {type: string, description: Hex}
+        palette: {type: array, items: {type: string}, maxItems: 3}
+        logo: {type: string, description: Data URL until Phase 4 moves it to a media URL}
+        fonts:
+          type: object
+          required: [heading, body]
+          properties: {heading: {type: string}, body: {type: string}}
+        samples: {type: string}
+    Brand:
+      allOf:
+        - {$ref: '#/components/schemas/BrandProfile'}
+        - type: object
+          required: [id, voice, plan]
+          properties:
+            id: {type: string}
+            voice: {type: string}
+            plan: {type: string, enum: [student, creator, business]}
+            planEndsAt: {type: string, format: date-time}
+    GenerateInput:
+      type: object
+      required: [idea, tone, platforms]
+      properties:
+        idea: {type: string}
+        tone: {type: string}
+        platforms: {type: array, items: {$ref: '#/components/schemas/PlatformId'}}
+        tweak: {type: string}
+        caption: {type: string}
+    Generated:
+      type: object
+      required: [caption, hashtags, bestTime]
+      properties:
+        caption: {type: string}
+        hashtags: {type: array, items: {type: string}}
+        bestTime: {type: string, format: date-time}
+    StatItem:
+      type: object
+      required: [key, value, previous, spark]
+      properties:
+        key: {type: string}
+        value: {type: number}
+        previous: {type: number}
+        spark: {type: array, items: {type: number}}
+    AnalyticsRange: {type: string, enum: [7d, 30d, 90d]}
+    AnalyticsTotals:
+      type: object
+      required: [reach, engagements, followers, posts]
+      properties: {reach: {type: integer}, engagements: {type: integer}, followers: {type: integer}, posts: {type: integer}}
+    PostPerformance:
+      type: object
+      required: [id, title, format, platforms, postedAt, reach, engagements, saves, hashtags, captionLength]
+      properties:
+        id: {type: string}
+        title: {type: string}
+        format: {type: string, enum: [Reel, Carousel, Photo, Video]}
+        platforms: {type: array, items: {$ref: '#/components/schemas/PlatformId'}}
+        postedAt: {type: string, format: date-time}
+        reach: {type: integer}
+        engagements: {type: integer}
+        saves: {type: integer}
+        hashtags: {type: integer}
+        captionLength: {type: integer}
+    AnalyticsReport:
+      type: object
+      required: [range, from, to, totals, previous, daily, platforms, heatmap, posts, accounts]
+      properties:
+        range: {$ref: '#/components/schemas/AnalyticsRange'}
+        from: {type: string, format: date}
+        to: {type: string, format: date}
+        totals: {$ref: '#/components/schemas/AnalyticsTotals'}
+        previous: {$ref: '#/components/schemas/AnalyticsTotals'}
+        daily:
+          type: array
+          items:
+            type: object
+            required: [date, engagements, previous]
+            properties: {date: {type: string, format: date}, engagements: {type: integer}, previous: {type: integer}}
+        platforms:
+          type: array
+          items:
+            type: object
+            required: [id, name, engagements]
+            properties: {id: {$ref: '#/components/schemas/PlatformId'}, name: {type: string}, engagements: {type: integer}}
+        heatmap:
+          type: array
+          description: 7 weekdays (0 is Monday) by 6 three-hour slots from 6 AM, scored 0 to 1.
+          items: {type: array, items: {type: number}}
+        posts: {type: array, items: {$ref: '#/components/schemas/PostPerformance'}}
+        accounts:
+          type: array
+          items:
+            type: object
+            required: [platform, handle, status]
+            properties: {platform: {type: string}, handle: {type: string}, status: {$ref: '#/components/schemas/AccountStatus'}}
+    AppNotification:
+      type: object
+      required: [id, kind, title, body, at, read, href]
+      properties:
+        id: {type: string}
+        kind: {type: string, enum: [approval, failed, reconnect, published, insights]}
+        title: {type: string}
+        body: {type: string}
+        at: {type: string, format: date-time}
+        read: {type: boolean}
+        href: {type: string}
+    NotificationPrefs:
+      type: object
+      required: [postReminders, scheduledAlerts, weeklyInsights]
+      properties: {postReminders: {type: boolean}, scheduledAlerts: {type: boolean}, weeklyInsights: {type: boolean}}
+    NotificationPrefsInput:
+      type: object
+      properties: {postReminders: {type: boolean}, scheduledAlerts: {type: boolean}, weeklyInsights: {type: boolean}}

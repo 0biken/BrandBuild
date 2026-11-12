@@ -4,8 +4,8 @@ Rust / Axum / Tokio API scaffold for BrandBuild. The project uses one binary cra
 
 ## Layout
 
-- `src/api.rs`: `/health`, `/v1` compatibility placeholders, and typed `/v2` resource handlers for brands, channels, calendars, posts, analytics, and audit. V2 currently uses a process-local in-memory store and returns structured JSON errors; data resets on restart and tenant authentication/authorization must be applied before production use.
-- `src/auth.rs`: tenant context extraction and a deliberately unimplemented session/JWT resolver. Tenant identity must be resolved from validated server-side auth and membership, never request input.
+- `src/api.rs`: `/health` and the Postgres-backed `/v1` and `/v2` resource handlers, behind the tenant auth middleware.
+- `src/auth.rs`, `src/auth_api.rs`: JWT session resolution with a membership check on every request, plus signup, login, codes and password reset.
 - `src/domain.rs`: post state machine and deterministic publish idempotency key helper.
 - `src/db.rs`: Postgres pool and sqlx migration runner.
 - `src/outbox.rs`, `src/workers.rs`: transactional enqueue helper, `SKIP LOCKED` claim query, and worker loop stub.
@@ -22,11 +22,11 @@ sqlx migrate run
 cargo run
 ```
 
-The API listens on `http://localhost:3000`; `GET /health` returns a basic health response. Migration execution is intentionally explicit; the binary does not auto-migrate.
+The API listens on `http://localhost:3000`; `GET /health` returns a basic health response. The binary also runs migrations at startup.
 
-## Route scaffold
+## API
 
-`/v1/tenant/config`, `/v1/brand`, `/v1/brand/pillars`, `/v1/channels` and channel OAuth start/callback placeholders, `/v1/calendar-plans` and slots, `/v1/posts` plus approve/request-changes/schedule/cancel actions, `/v1/analytics`, and `/v1/audit` remain compatibility placeholders. V2 exposes `GET/POST /v2/brands`, `GET/PUT/DELETE /v2/brands/:id`, the same CRUD shape for `/v2/channels`, `/v2/calendars`, and `/v2/posts`, plus `GET /v2/analytics` and `GET /v2/audit`. V2 writes and audit entries are held in process memory, so they reset on restart and are not shared across instances. Authentication/authorization middleware is not wired yet; protect the routes before exposing tenant data.
+The contract is [`docs/api/openapi.yaml`](../docs/api/openapi.yaml). Each operation's `x-status` says whether this server already matches it, and `x-phase` says which roadmap phase closes the gap. Auth lives under `/v1/auth` and uses the HttpOnly `bb_session` cookie (Bearer also works). Set `COOKIE_SECURE=false` for local HTTP, and `PORT` to change the default 3000. `/v2`, calendar plans, pillars, slots, tenant config and audit are outside the contract.
 
 ## Decisions and next steps
 

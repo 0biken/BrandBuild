@@ -1,5 +1,5 @@
 import AxeBuilder from "@axe-core/playwright";
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./fixtures";
 
 // Signed in via the mock session cookie the proxy checks.
 test.beforeEach(async ({ context, baseURL }) => {
