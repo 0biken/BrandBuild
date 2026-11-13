@@ -13,7 +13,8 @@ use sqlx::{PgPool, Row};
 use uuid::Uuid;
 
 use crate::{
-    auth::{self, TenantContext},
+    auth::{self, AuthError, TenantContext, DECIDERS, OWNERS},
+    db::tenant_tx,
     outbox, AppState,
 };
 
@@ -144,8 +145,28 @@ pub enum ApiError {
     NotFound,
     #[error("request data is invalid")]
     InvalidInput,
+    #[error("you don't have permission to do that")]
+    Forbidden,
+    #[error("that conflicts with the current state")]
+    Conflict,
+    #[error("verification code is invalid")]
+    InvalidCode,
+    #[error("verification code has expired")]
+    CodeExpired,
+    #[error("that isn't available yet")]
+    NotAvailable,
+    #[error("we couldn't send the email; try again in a moment")]
+    EmailUnavailable,
     #[error("internal server error")]
     Internal,
+}
+impl From<AuthError> for ApiError {
+    fn from(err: AuthError) -> Self {
+        match err {
+            AuthError::Forbidden => Self::Forbidden,
+            _ => Self::Internal,
+        }
+    }
 }
 impl From<sqlx::Error> for ApiError {
     fn from(err: sqlx::Error) -> Self {
@@ -159,6 +180,12 @@ impl IntoResponse for ApiError {
         let (status, code) = match self {
             Self::NotFound => (StatusCode::NOT_FOUND, "not_found"),
             Self::InvalidInput => (StatusCode::UNPROCESSABLE_ENTITY, "invalid_input"),
+            Self::Forbidden => (StatusCode::FORBIDDEN, "forbidden"),
+            Self::Conflict => (StatusCode::CONFLICT, "conflict"),
+            Self::InvalidCode => (StatusCode::UNAUTHORIZED, "invalid_code"),
+            Self::CodeExpired => (StatusCode::GONE, "code_expired"),
+            Self::NotAvailable => (StatusCode::NOT_IMPLEMENTED, "not_available"),
+            Self::EmailUnavailable => (StatusCode::SERVICE_UNAVAILABLE, "email_unavailable"),
             Self::Internal => (StatusCode::INTERNAL_SERVER_ERROR, "internal_error"),
         };
         (
@@ -278,11 +305,7 @@ async fn query_resource(
     id: Option<Uuid>,
     limit: Option<usize>,
 ) -> Result<Vec<Resource>, ApiError> {
-    let mut tx = pool.begin().await?;
-    sqlx::query("SELECT set_config('app.tenant_id',$1,true)")
-        .bind(ctx.tenant_id.to_string())
-        .execute(&mut *tx)
-        .await?;
+    let mut tx = tenant_tx(pool, ctx.tenant_id).await?;
     let rows = match (id, limit) {
         (Some(id), Some(n)) => {
             sqlx::query(&format!("{} LIMIT $3", select_sql(kind, true)))
@@ -329,11 +352,7 @@ async fn create_resource(
     if !data.is_object() {
         return Err(ApiError::InvalidInput);
     }
-    let mut tx = pool.begin().await?;
-    sqlx::query("SELECT set_config('app.tenant_id',$1,true)")
-        .bind(ctx.tenant_id.to_string())
-        .execute(&mut *tx)
-        .await?;
+    let mut tx = tenant_tx(pool, ctx.tenant_id).await?;
     let id = Uuid::new_v4();
     match kind {
         ResourceKind::Brand => {
@@ -374,6 +393,9 @@ async fn create_kind(
     Json(data): Json<Value>,
     kind: ResourceKind,
 ) -> Result<(StatusCode, Json<ResourceResponse>), ApiError> {
+    if matches!(kind, ResourceKind::Channel) {
+        ctx.require(OWNERS)?;
+    }
     let r = create_resource(&state.pool, &ctx, kind, data).await?;
     Ok((StatusCode::CREATED, Json(ResourceResponse { data: r })))
 }
@@ -407,14 +429,13 @@ async fn update_kind(
     Json(data): Json<Value>,
     kind: ResourceKind,
 ) -> Result<Json<ResourceResponse>, ApiError> {
+    if matches!(kind, ResourceKind::Channel) {
+        ctx.require(OWNERS)?;
+    }
     if !data.is_object() {
         return Err(ApiError::InvalidInput);
     }
-    let mut tx = state.pool.begin().await?;
-    sqlx::query("SELECT set_config('app.tenant_id',$1,true)")
-        .bind(ctx.tenant_id.to_string())
-        .execute(&mut *tx)
-        .await?;
+    let mut tx = tenant_tx(&state.pool, ctx.tenant_id).await?;
     let changed=match kind {
  ResourceKind::Brand=>sqlx::query("UPDATE brand_profiles SET name=$3,website_url=$4,voice=$5,audience=$6,guidelines=$7,updated_at=now() WHERE tenant_id=$1 AND id=$2").bind(ctx.tenant_id).bind(id).bind(data["name"].as_str().ok_or(ApiError::InvalidInput)?).bind(data["website_url"].as_str()).bind(data.get("voice").cloned().unwrap_or(json!({}))).bind(data.get("audience").cloned().unwrap_or(json!({}))).bind(data["guidelines"].as_str()).execute(&mut *tx).await?.rows_affected(),
  ResourceKind::Channel=>sqlx::query("UPDATE channels SET provider=$3,display_name=$4,external_account_id=$5,metadata=$6,updated_at=now() WHERE tenant_id=$1 AND id=$2").bind(ctx.tenant_id).bind(id).bind(data["provider"].as_str().ok_or(ApiError::InvalidInput)?).bind(data["display_name"].as_str()).bind(data["external_account_id"].as_str()).bind(data.get("metadata").cloned().unwrap_or(json!({}))).execute(&mut *tx).await?.rows_affected(),
@@ -438,16 +459,21 @@ async fn delete_kind(
     Path(id): Path<Uuid>,
     kind: ResourceKind,
 ) -> Result<StatusCode, ApiError> {
+    if matches!(kind, ResourceKind::Channel) {
+        ctx.require(OWNERS)?;
+    }
     let sql = format!("DELETE FROM {} WHERE tenant_id=$1 AND id=$2", kind.table());
+    let mut tx = tenant_tx(&state.pool, ctx.tenant_id).await?;
     let n = sqlx::query(&sql)
         .bind(ctx.tenant_id)
         .bind(id)
-        .execute(&state.pool)
+        .execute(&mut *tx)
         .await?
         .rows_affected();
     if n == 0 {
         return Err(ApiError::NotFound);
     }
+    tx.commit().await?;
     Ok(StatusCode::NO_CONTENT)
 }
 
@@ -455,11 +481,7 @@ async fn analytics(
     State(s): State<AppState>,
     ctx: TenantContext,
 ) -> Result<Json<AnalyticsResponse>, ApiError> {
-    let mut tx = s.pool.begin().await?;
-    sqlx::query("SELECT set_config('app.tenant_id',$1,true)")
-        .bind(ctx.tenant_id.to_string())
-        .execute(&mut *tx)
-        .await?;
+    let mut tx = tenant_tx(&s.pool, ctx.tenant_id).await?;
     let row=sqlx::query("SELECT (SELECT count(*) FROM brand_profiles WHERE tenant_id=$1) brands,(SELECT count(*) FROM channels WHERE tenant_id=$1) channels,(SELECT count(*) FROM calendar_plans WHERE tenant_id=$1) calendars,(SELECT count(*) FROM posts WHERE tenant_id=$1) posts,(SELECT count(*) FROM posts WHERE tenant_id=$1 AND state='published') published,(SELECT count(*) FROM posts WHERE tenant_id=$1 AND state='scheduled') scheduled,(SELECT count(*) FROM posts WHERE tenant_id=$1 AND state='in_review') in_review,(SELECT count(*) FROM posts WHERE tenant_id=$1 AND state='failed') failed,(SELECT count(*) FROM publish_attempts WHERE tenant_id=$1) attempts,(SELECT count(*) FROM publish_attempts WHERE tenant_id=$1 AND state='succeeded') succeeded,(SELECT count(*) FROM metric_snapshots WHERE tenant_id=$1) snapshots,(SELECT COALESCE(sum(COALESCE((metrics->>'likes')::bigint,0)+COALESCE((metrics->>'comments')::bigint,0)+COALESCE((metrics->>'shares')::bigint,0)+COALESCE((metrics->>'clicks')::bigint,0)),0) FROM metric_snapshots WHERE tenant_id=$1) engagement").bind(ctx.tenant_id).fetch_one(&mut *tx).await?;
     let attempts: i64 = row.try_get("attempts")?;
     let succeeded: i64 = row.try_get("succeeded")?;
@@ -489,7 +511,8 @@ async fn audit(
     ctx: TenantContext,
     Query(q): Query<ListQuery>,
 ) -> Result<Json<AuditResponse>, ApiError> {
-    let rows=sqlx::query("SELECT id,action,resource_type,resource_id,created_at FROM audit_log WHERE tenant_id=$1 ORDER BY created_at DESC LIMIT $2").bind(ctx.tenant_id).bind(q.limit.unwrap_or(100).clamp(1,500) as i64).fetch_all(&s.pool).await?;
+    let mut tx = tenant_tx(&s.pool, ctx.tenant_id).await?;
+    let rows=sqlx::query("SELECT id,action,resource_type,resource_id,created_at FROM audit_log WHERE tenant_id=$1 ORDER BY created_at DESC LIMIT $2").bind(ctx.tenant_id).bind(q.limit.unwrap_or(100).clamp(1,500) as i64).fetch_all(&mut *tx).await?;
     let data = rows
         .iter()
         .map(|r| {
@@ -502,6 +525,7 @@ async fn audit(
             })
         })
         .collect::<Result<Vec<_>, sqlx::Error>>()?;
+    tx.commit().await?;
     Ok(Json(AuditResponse { data }))
 }
 #[derive(Deserialize)]
@@ -515,15 +539,12 @@ async fn approve(
     Path(id): Path<Uuid>,
     input: Option<Json<ApprovalInput>>,
 ) -> Result<Json<Value>, ApiError> {
+    ctx.require(DECIDERS)?;
     let input = input.map(|Json(i)| i).unwrap_or(ApprovalInput {
         decision: None,
         comment: None,
     });
-    let mut tx = s.pool.begin().await?;
-    sqlx::query("SELECT set_config('app.tenant_id',$1,true)")
-        .bind(ctx.tenant_id.to_string())
-        .execute(&mut *tx)
-        .await?;
+    let mut tx = tenant_tx(&s.pool, ctx.tenant_id).await?;
     let post=sqlx::query("SELECT current_version,state::text AS state FROM posts WHERE tenant_id=$1 AND id=$2 FOR UPDATE").bind(ctx.tenant_id).bind(id).fetch_optional(&mut *tx).await?.ok_or(ApiError::NotFound)?;
     let version: i32 = post.try_get("current_version")?;
     if post.try_get::<String, _>("state")? != "in_review" {
@@ -566,11 +587,8 @@ async fn publish(
     ctx: TenantContext,
     Path(id): Path<Uuid>,
 ) -> Result<Json<Value>, ApiError> {
-    let mut tx = s.pool.begin().await?;
-    sqlx::query("SELECT set_config('app.tenant_id',$1,true)")
-        .bind(ctx.tenant_id.to_string())
-        .execute(&mut *tx)
-        .await?;
+    ctx.require(DECIDERS)?;
+    let mut tx = tenant_tx(&s.pool, ctx.tenant_id).await?;
     let p=sqlx::query("SELECT current_version,channel_id,state::text AS state FROM posts WHERE tenant_id=$1 AND id=$2 FOR UPDATE").bind(ctx.tenant_id).bind(id).fetch_optional(&mut *tx).await?.ok_or(ApiError::NotFound)?;
     let post_state = p.try_get::<String, _>("state")?;
     if post_state != "approved" && post_state != "publishing" {
@@ -635,6 +653,7 @@ async fn tenant_config_put(
     ctx: TenantContext,
     Json(mut config): Json<Value>,
 ) -> Result<Json<Value>, ApiError> {
+    ctx.require(OWNERS)?;
     if !config.is_object() {
         return Err(ApiError::InvalidInput);
     }
@@ -656,8 +675,10 @@ async fn pillars_list(
     State(s): State<AppState>,
     ctx: TenantContext,
 ) -> Result<Json<Value>, ApiError> {
-    let rows=sqlx::query("SELECT id,brand_profile_id,name,description,weight,created_at,updated_at FROM content_pillars WHERE tenant_id=$1 ORDER BY created_at").bind(ctx.tenant_id).fetch_all(&s.pool).await?;
+    let mut tx = tenant_tx(&s.pool, ctx.tenant_id).await?;
+    let rows=sqlx::query("SELECT id,brand_profile_id,name,description,weight,created_at,updated_at FROM content_pillars WHERE tenant_id=$1 ORDER BY created_at").bind(ctx.tenant_id).fetch_all(&mut *tx).await?;
     let data=rows.iter().map(|r|Ok(json!({"id":r.try_get::<Uuid,_>("id")?,"brandProfileId":r.try_get::<Uuid,_>("brand_profile_id")?,"name":r.try_get::<String,_>("name")?,"description":r.try_get::<Option<String>,_>("description")?,"weight":r.try_get::<i16,_>("weight")?}))).collect::<Result<Vec<_>,sqlx::Error>>()?;
+    tx.commit().await?;
     Ok(Json(json!({"data":data})))
 }
 #[derive(Deserialize)]
@@ -673,12 +694,14 @@ async fn pillar_create(
     ctx: TenantContext,
     Json(i): Json<PillarInput>,
 ) -> Result<(StatusCode, Json<Value>), ApiError> {
+    let mut tx = tenant_tx(&s.pool, ctx.tenant_id).await?;
     let id = Uuid::new_v4();
     let weight = i.weight.unwrap_or(1);
     if weight < 1 {
         return Err(ApiError::InvalidInput);
     }
-    sqlx::query("INSERT INTO content_pillars(id,tenant_id,brand_profile_id,name,description,weight) VALUES($1,$2,$3,$4,$5,$6)").bind(id).bind(ctx.tenant_id).bind(i.brand_profile_id).bind(i.name).bind(i.description).bind(weight).execute(&s.pool).await?;
+    sqlx::query("INSERT INTO content_pillars(id,tenant_id,brand_profile_id,name,description,weight) VALUES($1,$2,$3,$4,$5,$6)").bind(id).bind(ctx.tenant_id).bind(i.brand_profile_id).bind(i.name).bind(i.description).bind(weight).execute(&mut *tx).await?;
+    tx.commit().await?;
     Ok((StatusCode::CREATED, Json(json!({"data":{"id":id}}))))
 }
 #[derive(Deserialize)]
@@ -694,8 +717,10 @@ async fn slots_list(
     State(s): State<AppState>,
     ctx: TenantContext,
 ) -> Result<Json<Value>, ApiError> {
-    let rows=sqlx::query("SELECT id,plan_id,channel_id,pillar_id,scheduled_for,status,notes FROM calendar_slots WHERE tenant_id=$1 ORDER BY scheduled_for").bind(ctx.tenant_id).fetch_all(&s.pool).await?;
+    let mut tx = tenant_tx(&s.pool, ctx.tenant_id).await?;
+    let rows=sqlx::query("SELECT id,plan_id,channel_id,pillar_id,scheduled_for,status,notes FROM calendar_slots WHERE tenant_id=$1 ORDER BY scheduled_for").bind(ctx.tenant_id).fetch_all(&mut *tx).await?;
     let data=rows.iter().map(|r|Ok(json!({"id":r.try_get::<Uuid,_>("id")?,"planId":r.try_get::<Uuid,_>("plan_id")?,"channelId":r.try_get::<Option<Uuid>,_>("channel_id")?,"pillarId":r.try_get::<Option<Uuid>,_>("pillar_id")?,"scheduledFor":r.try_get::<DateTime<Utc>,_>("scheduled_for")?,"status":r.try_get::<String,_>("status")?,"notes":r.try_get::<Option<String>,_>("notes")?}))).collect::<Result<Vec<_>,sqlx::Error>>()?;
+    tx.commit().await?;
     Ok(Json(json!({"data":data})))
 }
 async fn slot_create(
@@ -703,8 +728,10 @@ async fn slot_create(
     ctx: TenantContext,
     Json(i): Json<SlotInput>,
 ) -> Result<(StatusCode, Json<Value>), ApiError> {
+    let mut tx = tenant_tx(&s.pool, ctx.tenant_id).await?;
     let id = Uuid::new_v4();
-    sqlx::query("INSERT INTO calendar_slots(id,tenant_id,plan_id,channel_id,pillar_id,scheduled_for,notes) VALUES($1,$2,$3,$4,$5,$6,$7)").bind(id).bind(ctx.tenant_id).bind(i.plan_id).bind(i.channel_id).bind(i.pillar_id).bind(i.scheduled_for).bind(i.notes).execute(&s.pool).await?;
+    sqlx::query("INSERT INTO calendar_slots(id,tenant_id,plan_id,channel_id,pillar_id,scheduled_for,notes) VALUES($1,$2,$3,$4,$5,$6,$7)").bind(id).bind(ctx.tenant_id).bind(i.plan_id).bind(i.channel_id).bind(i.pillar_id).bind(i.scheduled_for).bind(i.notes).execute(&mut *tx).await?;
+    tx.commit().await?;
     Ok((
         StatusCode::CREATED,
         Json(json!({"data":{"id":id,"status":"open"}})),
@@ -720,11 +747,8 @@ async fn request_changes(
     Path(id): Path<Uuid>,
     Json(input): Json<ChangeInput>,
 ) -> Result<Json<Value>, ApiError> {
-    let mut tx = s.pool.begin().await?;
-    sqlx::query("SELECT set_config('app.tenant_id',$1,true)")
-        .bind(ctx.tenant_id.to_string())
-        .execute(&mut *tx)
-        .await?;
+    ctx.require(DECIDERS)?;
+    let mut tx = tenant_tx(&s.pool, ctx.tenant_id).await?;
     let p=sqlx::query("SELECT current_version,state::text state FROM posts WHERE tenant_id=$1 AND id=$2 FOR UPDATE").bind(ctx.tenant_id).bind(id).fetch_optional(&mut *tx).await?.ok_or(ApiError::NotFound)?;
     if p.try_get::<String, _>("state")? != "in_review" {
         return Err(ApiError::InvalidInput);
@@ -767,14 +791,11 @@ async fn schedule(
     Path(id): Path<Uuid>,
     Json(input): Json<ScheduleInput>,
 ) -> Result<Json<Value>, ApiError> {
+    ctx.require(DECIDERS)?;
     if input.scheduled_for <= Utc::now() {
         return Err(ApiError::InvalidInput);
     }
-    let mut tx = s.pool.begin().await?;
-    sqlx::query("SELECT set_config('app.tenant_id',$1,true)")
-        .bind(ctx.tenant_id.to_string())
-        .execute(&mut *tx)
-        .await?;
+    let mut tx = tenant_tx(&s.pool, ctx.tenant_id).await?;
     let n=sqlx::query("UPDATE posts SET state='scheduled',scheduled_for=$3,updated_at=now() WHERE tenant_id=$1 AND id=$2 AND state='approved'").bind(ctx.tenant_id).bind(id).bind(input.scheduled_for).execute(&mut *tx).await?.rows_affected();
     if n == 0 {
         return Err(ApiError::InvalidInput);
@@ -796,11 +817,8 @@ async fn cancel_post(
     ctx: TenantContext,
     Path(id): Path<Uuid>,
 ) -> Result<Json<Value>, ApiError> {
-    let mut tx = s.pool.begin().await?;
-    sqlx::query("SELECT set_config('app.tenant_id',$1,true)")
-        .bind(ctx.tenant_id.to_string())
-        .execute(&mut *tx)
-        .await?;
+    ctx.require(DECIDERS)?;
+    let mut tx = tenant_tx(&s.pool, ctx.tenant_id).await?;
     let n=sqlx::query("UPDATE posts SET state='canceled',updated_at=now() WHERE tenant_id=$1 AND id=$2 AND state IN ('draft','in_review','changes_requested','approved','scheduled')").bind(ctx.tenant_id).bind(id).execute(&mut *tx).await?.rows_affected();
     if n == 0 {
         return Err(ApiError::InvalidInput);
@@ -820,16 +838,18 @@ async fn oauth_start(
     ctx: TenantContext,
     Path(channel_id): Path<Uuid>,
 ) -> Result<Json<Value>, ApiError> {
+    let mut tx = tenant_tx(&s.pool, ctx.tenant_id).await?;
     let provider = sqlx::query("SELECT provider FROM channels WHERE tenant_id=$1 AND id=$2")
         .bind(ctx.tenant_id)
         .bind(channel_id)
-        .fetch_optional(&s.pool)
+        .fetch_optional(&mut *tx)
         .await?
         .ok_or(ApiError::NotFound)?
         .try_get::<String, _>("provider")?;
     let state = Uuid::new_v4().to_string();
     let hash = format!("oauth-state:{}", state);
-    sqlx::query("INSERT INTO oauth_states(tenant_id,provider,state_hash,expires_at) VALUES($1,$2,$3,now()+interval '10 minutes')").bind(ctx.tenant_id).bind(&provider).bind(hash).execute(&s.pool).await?;
+    sqlx::query("INSERT INTO oauth_states(tenant_id,provider,state_hash,expires_at) VALUES($1,$2,$3,now()+interval '10 minutes')").bind(ctx.tenant_id).bind(&provider).bind(hash).execute(&mut *tx).await?;
+    tx.commit().await?;
     Ok(Json(
         json!({"data":{"provider":provider,"state":state,"status":"authorizing","adapter":"no_op_scaffold","authorizationUrl":null,"note":"OAuth provider credentials and callback exchange are not configured"}}),
     ))
@@ -870,6 +890,7 @@ pub fn router(state: AppState) -> Router {
         .route("/analytics", get(analytics))
         .route("/audit", get(audit))
         .route("/auth/session", get(crate::auth_api::session))
+        .merge(crate::onboarding::routes())
         .layer(middleware::from_fn_with_state(
             state.clone(),
             auth_middleware,

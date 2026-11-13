@@ -1,5 +1,5 @@
 import { read, write } from "@/lib/mock/store";
-import { API_MODE, API_URL } from "./config";
+import { API_MODE } from "./config";
 import { apiFetch } from "./http";
 import {
   APP_HOME,
@@ -15,7 +15,7 @@ import type { ApiResult, Provider, Session } from "./types";
  *  - verifyCode: no email is sent in demo mode, so any 6 digits succeed,
  *                except MOCK_EXPIRED_CODE ("expired") and MOCK_INVALID_CODE
  *                ("invalid"), which keep those designed states reachable.
- *  - signInWithProvider: always "network" (not wired up yet).
+ *  - signInWithProvider: always "network" in both modes (deferred).
  *  - signUp / requestCode / resetPassword: always succeed.
  */
 
@@ -88,14 +88,13 @@ export async function getSession(): Promise<ApiResult<Session>> {
   return read((d) => d.session);
 }
 
+/**
+ * Google and Apple sign-in are deferred (x-status: deferred in the contract), so
+ * this never calls the API. When they ship, http mode becomes a full-page redirect
+ * to `{API_URL}/v1/auth/oauth/{provider}`.
+ */
 export async function signInWithProvider(provider: Provider): Promise<ApiResult> {
-  if (API_MODE === "http") {
-    // OAuth is a full-page redirect owned by the API.
-    // External API origin, not a Next route, so the router can't do this.
-    // eslint-disable-next-line @next/next/no-location-assign-relative-destination
-    window.location.assign(`${API_URL}/v1/auth/oauth/${provider}`);
-    return ok;
-  }
+  void provider;
   await wait(300);
   return { ok: false, error: "network" };
 }

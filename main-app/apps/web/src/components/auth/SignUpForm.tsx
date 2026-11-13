@@ -43,7 +43,11 @@ export function SignUpForm() {
     const res = await signUp({ name: name.trim(), identifier: identifier.trim(), password });
     if (!res.ok) {
       setBusy(false);
-      setError("We couldn't create your account. Check your connection and try again.");
+      setError(
+        res.error === "conflict"
+          ? "An account with that email already exists. Log in instead, or reset your password."
+          : "We couldn't create your account. Check your connection and try again.",
+      );
       return;
     }
     setPendingIdentifier(identifier.trim());

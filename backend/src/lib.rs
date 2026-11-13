@@ -3,6 +3,7 @@ pub mod auth;
 pub mod auth_api;
 pub mod db;
 pub mod domain;
+pub mod onboarding;
 pub mod outbox;
 pub mod workers;
 

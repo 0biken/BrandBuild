@@ -20,10 +20,13 @@ const CODE_TO_ERROR: Record<string, ApiError> = {
   unauthorized: "invalid",
   code_expired: "expired",
   forbidden: "forbidden",
+  email_not_verified: "forbidden",
   not_found: "not_found",
   account_exists: "conflict",
   conflict: "conflict",
   auth_not_configured: "network",
+  email_unavailable: "network",
+  not_available: "network",
   rate_limited: "network",
   internal_error: "network",
 };

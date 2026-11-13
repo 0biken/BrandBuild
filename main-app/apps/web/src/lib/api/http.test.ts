@@ -24,6 +24,17 @@ describe("apiFetch", () => {
     expect(await apiFetch("/v1/x")).toEqual({ ok: false, error: "expired" });
   });
 
+  it("maps the auth and onboarding error codes", async () => {
+    respond(403, { error: { code: "email_not_verified", message: "Verify first" } });
+    expect(await apiFetch("/v1/x")).toEqual({ ok: false, error: "forbidden" });
+    vi.restoreAllMocks();
+    respond(503, { error: { code: "email_unavailable", message: "Try later" } });
+    expect(await apiFetch("/v1/x")).toEqual({ ok: false, error: "network" });
+    vi.restoreAllMocks();
+    respond(501, { error: { code: "not_available", message: "Not yet" } });
+    expect(await apiFetch("/v1/x")).toEqual({ ok: false, error: "network" });
+  });
+
   it("falls back to the status when the body isn't JSON", async () => {
     vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("nope", { status: 404 }));
     expect(await apiFetch("/v1/x")).toEqual({ ok: false, error: "not_found" });

@@ -11,8 +11,13 @@ async fn main() -> anyhow::Result<()> {
         )
         .init();
     let database_url = std::env::var("DATABASE_URL").context("DATABASE_URL must be set")?;
+    // Migrations run as the schema owner; the API itself connects as brandbuild_app,
+    // which row-level security applies to. Without MIGRATION_DATABASE_URL both use DATABASE_URL.
+    match std::env::var("MIGRATION_DATABASE_URL") {
+        Ok(owner_url) => db::migrate(&db::connect(&owner_url).await?).await?,
+        Err(_) => db::migrate(&db::connect(&database_url).await?).await?,
+    }
     let pool = db::connect(&database_url).await?;
-    db::migrate(&pool).await?;
     let state = AppState { pool };
     tokio::spawn(workers::run(state.clone()));
     let app = api::router(state);

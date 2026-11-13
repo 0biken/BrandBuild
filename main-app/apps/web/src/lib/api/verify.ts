@@ -7,7 +7,22 @@ import type { ApiResult, StudentCheck } from "./types";
 /**
  * Student check (Verify screen). Mock behaviour mirrors auth codes:
  * any 6 digits verify, except MOCK_EXPIRED_CODE and MOCK_INVALID_CODE.
+ * Only school addresses qualify, by the same rule as the API (backend/src/onboarding.rs).
  */
+
+/** `.edu`, `.edu.<country>` or `.ac.<country>`. STUDENT_EMAIL_DOMAINS on the API adds more. */
+export function isAcademicEmail(email: string): boolean {
+  const match = /^[^\s@]+@([^\s@]+)$/.exec(email.trim().toLowerCase());
+  if (!match) return false;
+  const labels = match[1].split(".");
+  if (labels.length < 2 || labels.some((l) => l === "")) return false;
+  const last = labels[labels.length - 1];
+  const second = labels[labels.length - 2];
+  return last === "edu" || (labels.length >= 3 && (second === "edu" || second === "ac") && /^[a-z]{2}$/.test(last));
+}
+
+/** Student ID review isn't built yet; the Verify screen shows it as "Coming soon". */
+export const STUDENT_ID_AVAILABLE = false;
 
 const ID_TYPES = ["image/jpeg", "image/png", "application/pdf"];
 const ID_MAX_BYTES = 10 * 1024 * 1024;
@@ -19,7 +34,7 @@ export async function getStudentCheck(): Promise<ApiResult<StudentCheck>> {
 
 export async function sendStudentCode(email: string): Promise<ApiResult<StudentCheck>> {
   if (API_MODE === "http") return apiFetch<StudentCheck>("/v1/student-check/code", { method: "POST", body: { email } });
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) return { ok: false, error: "invalid" };
+  if (!isAcademicEmail(email)) return { ok: false, error: "invalid" };
   return write((d) => {
     d.studentCheck = { status: "code_sent", method: "email", email: email.trim() };
     return d.studentCheck;
@@ -52,6 +67,8 @@ export async function submitStudentId(file: File): Promise<ApiResult<StudentChec
   if (API_MODE === "http") {
     return apiUpload<StudentCheck>("/v1/student-check/id", file);
   }
+  // Matches the API, which answers 501 not_available until review exists.
+  if (!STUDENT_ID_AVAILABLE) return { ok: false, error: "network" };
   return write((d) => {
     d.studentCheck = { status: "pending_review", method: "id" };
     return d.studentCheck;

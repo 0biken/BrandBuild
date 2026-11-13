@@ -1,6 +1,7 @@
 # The BrandBuild HTTP API contract. Both apps are held to this file:
 # the web client in main-app/apps/web and the Rust API in backend/.
-# x-status: matches (backend already conforms), adapt (route exists, shape differs), new (not built).
+# x-status: matches (backend already conforms), adapt (route exists, shape differs), new (not built),
+#   deferred (postponed; no phase until it is scheduled).
 # x-phase: the roadmap phase that closes the gap.
 openapi: 3.1.0
 info:
@@ -31,6 +32,22 @@ info:
     | canceled | not returned | none |
 
     `paused` has no database state yet. Phase 7 adds it for posts held by a disconnected account.
+
+    ## Roles
+    Each workspace member has one role. A call outside the member's role answers 403 `forbidden`.
+    | Action | owner | editor | reviewer |
+    |---|---|---|---|
+    | Drafts, posts, brand, media | yes | yes | yes |
+    | Approve, request changes, schedule, publish, cancel | yes | no | yes |
+    | Connected accounts, workspace settings | yes | no | no |
+
+    ## Email and the student check
+    - Signup, login codes and the student check send email. If sending fails the call answers 503
+      `email_unavailable` and saves nothing, so it is safe to retry.
+    - Login with the right password before the email is verified answers 403 `email_not_verified`.
+      The client then requests a fresh code.
+    - A school email ends in `.edu`, `.edu.<country>` or `.ac.<country>`, or is on a domain in the API's
+      `STUDENT_EMAIL_DOMAINS` setting.
 servers:
   - url: /api
     description: Same-origin rewrite in the web app
@@ -114,8 +131,7 @@ paths:
       operationId: signInWithProvider
       tags: [auth]
       summary: signInWithProvider
-      x-status: new
-      x-phase: 3
+      x-status: deferred
       security: []
       parameters:
         - {name: provider, in: path, required: true, schema: {type: string}}
@@ -175,7 +191,7 @@ paths:
       operationId: getStudentCheck
       tags: [onboarding]
       summary: getStudentCheck
-      x-status: new
+      x-status: matches
       x-phase: 3
       responses:
         '200':
@@ -193,7 +209,7 @@ paths:
       operationId: sendStudentCode
       tags: [onboarding]
       summary: sendStudentCode
-      x-status: new
+      x-status: matches
       x-phase: 3
       requestBody:
         required: true
@@ -216,7 +232,7 @@ paths:
       operationId: verifyStudentCode
       tags: [onboarding]
       summary: verifyStudentCode
-      x-status: new
+      x-status: matches
       x-phase: 3
       requestBody:
         required: true
@@ -239,8 +255,7 @@ paths:
       operationId: submitStudentId
       tags: [onboarding]
       summary: submitStudentId
-      x-status: new
-      x-phase: 3
+      x-status: deferred
       requestBody:
         required: true
         content:
@@ -266,7 +281,7 @@ paths:
       operationId: skipStudentCheck
       tags: [onboarding]
       summary: skipStudentCheck
-      x-status: new
+      x-status: matches
       x-phase: 3
       responses:
         '200':
@@ -284,7 +299,7 @@ paths:
       operationId: getOnboarding
       tags: [onboarding]
       summary: getOnboarding
-      x-status: new
+      x-status: matches
       x-phase: 3
       responses:
         '200':
@@ -302,7 +317,7 @@ paths:
       operationId: completeStep
       tags: [onboarding]
       summary: completeStep
-      x-status: new
+      x-status: matches
       x-phase: 3
       parameters:
         - {name: step, in: path, required: true, schema: {type: string}}
@@ -1108,8 +1123,9 @@ components:
               type: string
               description: |
                 invalid_request, invalid_input, invalid_credentials, invalid_code (400, 401, 415, 422);
-                unauthorized (401); forbidden (403); not_found (404); account_exists, conflict (409);
-                code_expired (410); rate_limited (429); auth_not_configured (503); internal_error (500).
+                unauthorized (401); forbidden, email_not_verified (403); not_found (404);
+                account_exists, conflict (409); code_expired (410); rate_limited (429);
+                internal_error (500); not_available (501); auth_not_configured, email_unavailable (503).
             message: {type: string}
     SignUpInput:
       type: object
@@ -1153,7 +1169,10 @@ components:
       type: object
       required: [status]
       properties:
-        status: {type: string, enum: [none, code_sent, verified, pending_review, not_student]}
+        status:
+          type: string
+          enum: [none, code_sent, verified, pending_review, not_student]
+          description: pending_review is reserved for student ID review, which is deferred.
         method: {type: string, enum: [email, id]}
         email: {type: string}
     StepStatus: {type: string, enum: [todo, done, skipped]}

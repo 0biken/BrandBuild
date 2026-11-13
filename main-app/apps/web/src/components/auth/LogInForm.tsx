@@ -7,7 +7,8 @@ import { Alert } from "@/components/ui/Alert";
 import { Button } from "@/components/ui/Button";
 import { Field } from "@/components/ui/Field";
 import { PasswordField } from "@/components/ui/PasswordField";
-import { HOME_HREF, logIn } from "@/lib/api/auth";
+import { HOME_HREF, logIn, requestCode } from "@/lib/api/auth";
+import { setPendingIdentifier } from "@/lib/pending";
 import { Divider } from "./AuthShell";
 import { SocialButtons } from "./SocialButtons";
 
@@ -31,6 +32,13 @@ export function LogInForm() {
     setBusy(true);
     setFailed(false);
     const res = await logIn({ identifier, password });
+    if (!res.ok && res.error === "forbidden") {
+      // Right password, email not verified yet: send a fresh code and finish signup.
+      setPendingIdentifier(identifier.trim());
+      await requestCode(identifier.trim());
+      router.push("/code");
+      return;
+    }
     if (!res.ok) {
       setBusy(false);
       setFailed(true);

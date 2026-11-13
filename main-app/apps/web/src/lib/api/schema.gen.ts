@@ -786,8 +786,9 @@ export interface components {
             error: {
                 /**
                  * @description invalid_request, invalid_input, invalid_credentials, invalid_code (400, 401, 415, 422);
-                 *     unauthorized (401); forbidden (403); not_found (404); account_exists, conflict (409);
-                 *     code_expired (410); rate_limited (429); auth_not_configured (503); internal_error (500).
+                 *     unauthorized (401); forbidden, email_not_verified (403); not_found (404);
+                 *     account_exists, conflict (409); code_expired (410); rate_limited (429);
+                 *     internal_error (500); not_available (501); auth_not_configured, email_unavailable (503).
                  */
                 code: string;
                 message: string;
@@ -828,7 +829,10 @@ export interface components {
             code: string;
         };
         StudentCheck: {
-            /** @enum {string} */
+            /**
+             * @description pending_review is reserved for student ID review, which is deferred.
+             * @enum {string}
+             */
             status: "none" | "code_sent" | "verified" | "pending_review" | "not_student";
             /** @enum {string} */
             method?: "email" | "id";
