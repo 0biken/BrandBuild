@@ -19,6 +19,7 @@ test("in demo mode any 6-digit code gets past the code page", async ({ page }) =
   const verify = page.getByRole("button", { name: "Verify" });
   await expect(verify).toBeDisabled();
   await page.getByLabel("Digit 1").fill("482913");
+  await page.getByRole("dialog", { name: "Account created" }).getByRole("button", { name: "Continue" }).click();
   await expect(page).toHaveURL(/\/app(\/onboarding\/\w+)?$/);
 });
 

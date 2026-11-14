@@ -1,14 +1,15 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Alert } from "@/components/ui/Alert";
-import { Button, ButtonLink } from "@/components/ui/Button";
+import { Button } from "@/components/ui/Button";
 import { CodeInput } from "@/components/ui/CodeInput";
 import { Field } from "@/components/ui/Field";
-import { CheckIcon } from "@/components/ui/icons";
 import { PasswordChecklist } from "@/components/ui/PasswordChecklist";
 import { PasswordField } from "@/components/ui/PasswordField";
+import { SuccessDialog } from "@/components/ui/SuccessDialog";
 import { DEMO_CODES, HOME_HREF, requestCode, resetPassword, verifyCode } from "@/lib/api/auth";
 import { passwordValid } from "@/lib/password";
 
@@ -23,6 +24,8 @@ export function ResetFlow() {
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [done, setDone] = useState(false);
+  const router = useRouter();
   const heading = useRef<HTMLDivElement>(null);
 
   // Move focus to the new step's heading so keyboard and screen reader users
@@ -65,7 +68,7 @@ export function ResetFlow() {
     setError("");
     const res = await resetPassword(password);
     setBusy(false);
-    if (res.ok) setStep(3);
+    if (res.ok) setDone(true);
     else setError("We couldn't save your password. Try again.");
   }
 
@@ -78,22 +81,20 @@ export function ResetFlow() {
 
   return (
     <div className="flex flex-col gap-6">
-      {step < 3 && (
-        <ol aria-label="Steps" className="m-0 flex list-none gap-1.5 p-0">
-          {STEPS.map((label, i) => (
-            <li
-              key={label}
-              aria-current={i === step ? "step" : undefined}
-              className={`h-1 flex-1 rounded-full ${i <= step ? "bg-primary" : "bg-line"}`}
-            >
-              <span className="sr-only">
-                {label}
-                {i < step ? ", done" : i === step ? ", current" : ""}
-              </span>
-            </li>
-          ))}
-        </ol>
-      )}
+      <ol aria-label="Steps" className="m-0 flex list-none gap-1.5 p-0">
+        {STEPS.map((label, i) => (
+          <li
+            key={label}
+            aria-current={i === step ? "step" : undefined}
+            className={`h-1 flex-1 rounded-full ${i <= step ? "bg-primary" : "bg-line"}`}
+          >
+            <span className="sr-only">
+              {label}
+              {i < step ? ", done" : i === step ? ", current" : ""}
+            </span>
+          </li>
+        ))}
+      </ol>
 
       {step === 0 && (
         <form key="s0" onSubmit={sendCode} noValidate className="step-in flex flex-col gap-5">
@@ -200,22 +201,12 @@ export function ResetFlow() {
         </form>
       )}
 
-      {step === 3 && (
-        <div key="s3" className="step-in flex flex-col items-start gap-5">
-          <span className="inline-flex size-12 items-center justify-center rounded-2xl bg-primary text-white">
-            <CheckIcon size={26} />
-          </span>
-          <div ref={heading} className="flex flex-col gap-1.5">
-            <h1 tabIndex={-1} className={H1}>Password changed</h1>
-            <p className="m-0 text-[15px] text-ink-2">
-              You&apos;re logged in. We&apos;ve signed you out everywhere else.
-            </p>
-          </div>
-          <ButtonLink href={HOME_HREF} size="lg" block>
-            Go to Home
-          </ButtonLink>
-        </div>
-      )}
+      <SuccessDialog
+        open={done}
+        title="Password changed"
+        body="Your password has been changed. You're logged in, and we've signed you out everywhere else."
+        onContinue={() => router.push(HOME_HREF)}
+      />
     </div>
   );
 }

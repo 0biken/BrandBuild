@@ -7,6 +7,7 @@ import { Alert } from "@/components/ui/Alert";
 import { Button } from "@/components/ui/Button";
 import { CodeInput } from "@/components/ui/CodeInput";
 import { MailIcon } from "@/components/ui/icons";
+import { SuccessDialog } from "@/components/ui/SuccessDialog";
 import { DEMO_CODES, HOME_HREF, requestCode, verifyCode } from "@/lib/api/auth";
 import { usePendingIdentifier } from "@/lib/pending";
 import { getOnboarding, nextStepPath } from "@/lib/api/onboarding";
@@ -28,6 +29,8 @@ export function CodeForm() {
   const [shakes, setShakes] = useState(0);
   const [seconds, setSeconds] = useState(RESEND_SECONDS);
   const [note, setNote] = useState("");
+  /** Set once the code is accepted; the success pop-up then continues there. */
+  const [nextPath, setNextPath] = useState<string | null>(null);
 
   useEffect(() => {
     if (seconds <= 0) return;
@@ -42,7 +45,7 @@ export function CodeForm() {
     if (res.ok) {
       // A new account continues into onboarding; anyone already set up goes Home.
       try {
-        router.push(await onboardingNext());
+        setNextPath(await onboardingNext());
       } catch {
         setStatus("network");
       }
@@ -180,6 +183,13 @@ export function CodeForm() {
       <p className="m-0 text-sm text-muted">
         Not in your inbox? Check spam or promotions. Codes expire after 10 minutes.
       </p>
+
+      <SuccessDialog
+        open={nextPath !== null}
+        title="Account created"
+        body="You're now logged in."
+        onContinue={() => nextPath && router.push(nextPath)}
+      />
     </div>
   );
 }

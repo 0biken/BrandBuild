@@ -192,6 +192,13 @@ export const ClockIcon = (p: IconProps) => (
   </Base>
 );
 
+export const LogOutIcon = (p: IconProps) => (
+  <Base {...p}>
+    <path d="M10 4H5v16h5" />
+    <path d="M9 12h11M16 8l4 4-4 4" />
+  </Base>
+);
+
 export const WarningTriangleIcon = (p: IconProps) => (
   <Base {...p}>
     <path d="M12 9v4M12 17h.01" />

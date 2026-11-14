@@ -3,15 +3,17 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type ReactNode } from "react";
+import { Alert } from "@/components/ui/Alert";
 import { Avatar } from "@/components/ui/Avatar";
 import { Button, ButtonLink } from "@/components/ui/Button";
+import { Dialog } from "@/components/ui/Dialog";
 import { PlatformBadge } from "@/components/ui/PlatformBadge";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Switch } from "@/components/ui/Switch";
 import { useToast } from "@/components/ui/Toast";
-import { AlertIcon, CheckIcon, ChevronRightIcon } from "@/components/ui/icons";
+import { AlertIcon, CheckIcon, ChevronRightIcon, LogOutIcon } from "@/components/ui/icons";
 import { listAccounts } from "@/lib/api/accounts";
-import { getSession, logOut } from "@/lib/api/auth";
+import { deleteAccount, getSession, logOut } from "@/lib/api/auth";
 import { getBrand } from "@/lib/api/brand";
 import { invalidate, useQuery } from "@/lib/api/hooks";
 import { getNotificationPrefs, updateNotificationPrefs } from "@/lib/api/settings";
@@ -53,6 +55,9 @@ export function SettingsScreen() {
   const accounts = useQuery("accounts", listAccounts);
   const prefs = useQuery("notification-prefs", getNotificationPrefs);
   const [signingOut, setSigningOut] = useState(false);
+  const [confirm, setConfirm] = useState<"signout" | "delete" | null>(null);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteFailed, setDeleteFailed] = useState(false);
 
   async function toggle(key: keyof NotificationPrefs, value: boolean) {
     const res = await updateNotificationPrefs({ [key]: value });
@@ -64,6 +69,24 @@ export function SettingsScreen() {
     setSigningOut(true);
     await logOut();
     router.replace("/login");
+  }
+
+  async function removeAccount() {
+    setDeleting(true);
+    setDeleteFailed(false);
+    const res = await deleteAccount();
+    if (!res.ok) {
+      setDeleting(false);
+      setDeleteFailed(true);
+      return;
+    }
+    router.replace("/login?deleted=1");
+  }
+
+  function closeDelete() {
+    if (deleting) return;
+    setConfirm(null);
+    setDeleteFailed(false);
   }
 
   const listed = (accounts.data ?? []).filter((a) => a.status !== "disconnected");
@@ -184,9 +207,63 @@ export function SettingsScreen() {
         </ul>
       </Section>
 
-      <Button variant="outline" onClick={signOut} disabled={signingOut} block>
-        Sign out
+      <Section title="Data and privacy">
+        <div className="flex flex-col gap-3 py-3">
+          <p className="m-0 text-sm text-muted">
+            Deleting your account removes your brand profile, drafts, posts, media and connected-account
+            access. <Link href="/legal#delete">How deletion works</Link>
+          </p>
+          <Button variant="dangerOutline" onClick={() => setConfirm("delete")} className="self-start">
+            Delete account
+          </Button>
+        </div>
+      </Section>
+
+      <Button variant="outline" onClick={() => setConfirm("signout")} block>
+        Log out
       </Button>
+
+      <Dialog
+        open={confirm === "signout"}
+        onClose={() => !signingOut && setConfirm(null)}
+        icon={<LogOutIcon size={34} />}
+        tone="neutral"
+        title="Log out?"
+        description="You'll need your email and password to log back in."
+        footer={
+          <>
+            <Button variant="danger" onClick={signOut} disabled={signingOut} block>
+              {signingOut ? "Logging out..." : "Log out"}
+            </Button>
+            <Button variant="outline" onClick={() => setConfirm(null)} disabled={signingOut} block>
+              Cancel
+            </Button>
+          </>
+        }
+      />
+
+      <Dialog
+        open={confirm === "delete"}
+        onClose={closeDelete}
+        icon={<AlertIcon size={36} />}
+        tone="danger"
+        title="Delete your account?"
+        description="This can't be undone. Your brand profile, drafts, scheduled posts and connected accounts will be permanently deleted."
+        footer={
+          <>
+            <Button variant="danger" onClick={removeAccount} disabled={deleting} block>
+              {deleting ? "Deleting..." : "Delete account"}
+            </Button>
+            <Button variant="outline" onClick={closeDelete} disabled={deleting} block>
+              Cancel
+            </Button>
+          </>
+        }
+      >
+        {deleteFailed && (
+          <Alert tone="error">We couldn&apos;t delete your account. Check your connection and try again.</Alert>
+        )}
+      </Dialog>
     </div>
   );
 }

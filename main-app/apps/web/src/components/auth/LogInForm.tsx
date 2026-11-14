@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState, type FormEvent } from "react";
+import { useState, useSyncExternalStore, type FormEvent } from "react";
 import { Alert } from "@/components/ui/Alert";
 import { Button } from "@/components/ui/Button";
 import { Field } from "@/components/ui/Field";
 import { PasswordField } from "@/components/ui/PasswordField";
+import { SuccessDialog } from "@/components/ui/SuccessDialog";
 import { HOME_HREF, logIn, requestCode } from "@/lib/api/auth";
 import { setPendingIdentifier } from "@/lib/pending";
 import { Divider } from "./AuthShell";
@@ -19,12 +20,18 @@ function safeNext(next: string | null): string {
     : HOME_HREF;
 }
 
+const noop = () => () => {};
+/** Settings sends people here with ?deleted=1 after deleting their account. */
+const readDeleted = () => new URLSearchParams(window.location.search).has("deleted");
+
 export function LogInForm() {
   const router = useRouter();
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [failed, setFailed] = useState(false);
+  const [done, setDone] = useState(false);
+  const deleted = useSyncExternalStore(noop, readDeleted, () => false);
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
@@ -44,6 +51,10 @@ export function LogInForm() {
       setFailed(true);
       return;
     }
+    setDone(true);
+  }
+
+  function goIn() {
     router.push(safeNext(new URLSearchParams(window.location.search).get("next")));
   }
 
@@ -57,6 +68,10 @@ export function LogInForm() {
           New here? <Link href="/signup" className="font-semibold">Create an account</Link>
         </p>
       </div>
+
+      {deleted && !failed && (
+        <Alert tone="info">Your account has been deleted. Thanks for trying Brandbuild.</Alert>
+      )}
 
       {failed && (
         <Alert tone="error">
@@ -98,6 +113,8 @@ export function LogInForm() {
 
       <Divider>or log in with</Divider>
       <SocialButtons />
+
+      <SuccessDialog open={done} title="Welcome back" body="You're now logged in." onContinue={goIn} />
     </form>
   );
 }

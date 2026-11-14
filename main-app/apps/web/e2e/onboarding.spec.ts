@@ -16,6 +16,7 @@ async function signUp(page: Page) {
   await submit.click();
   await expect(page).toHaveURL(/\/code$/);
   await page.getByLabel("Digit 1").fill("123456");
+  await page.getByRole("dialog", { name: "Account created" }).getByRole("button", { name: "Continue" }).click();
   await expect(page).toHaveURL(/\/app\/onboarding\/verify$/);
 }
 

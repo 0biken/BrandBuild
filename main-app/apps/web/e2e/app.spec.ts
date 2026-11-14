@@ -96,16 +96,49 @@ test("mark all as read empties the Unread tab", async ({ page }) => {
   await expect(page.getByRole("tabpanel").getByRole("listitem")).toHaveCount(6);
 });
 
-test("planned screens say they're coming, unknown ones 404", async ({ page }) => {
+test("billing shows the current plan, unknown app screens 404", async ({ page }) => {
   await page.goto("/app/billing");
-  await expect(page.getByText("This screen is on its way")).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "Plan and billing" })).toBeVisible();
+  await expect(page.getByText("Student", { exact: true })).toBeVisible();
+  await expect(page.getByText("No invoices yet")).toBeVisible();
+  await expect(page.getByRole("link", { name: "Compare plans" })).toHaveAttribute("href", "/pricing");
   const res = await page.goto("/app/not-a-screen");
   expect(res?.status()).toBe(404);
 });
 
+test("log out asks first; Cancel keeps you signed in", async ({ page }) => {
+  await page.goto("/app/settings");
+  await page.getByRole("button", { name: "Log out" }).click();
+  const confirm = page.getByRole("dialog", { name: "Log out?" });
+  await expect(confirm).toBeVisible();
+  await confirm.getByRole("button", { name: "Cancel" }).click();
+  await expect(confirm).toBeHidden();
+  await expect(page).toHaveURL(/\/app\/settings$/);
+
+  await page.getByRole("button", { name: "Log out" }).click();
+  await confirm.getByRole("button", { name: "Log out" }).click();
+  await expect(page).toHaveURL(/\/login$/);
+});
+
+test("deleting the account asks first, then signs out with a notice", async ({ page }) => {
+  await page.goto("/app/settings");
+  await page.getByRole("button", { name: "Delete account" }).click();
+  const confirm = page.getByRole("dialog", { name: "Delete your account?" });
+  await expect(confirm.getByText(/can't be undone/)).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(confirm).toBeHidden();
+
+  await page.getByRole("button", { name: "Delete account" }).click();
+  await confirm.getByRole("button", { name: "Delete account" }).click();
+  await expect(page).toHaveURL(/\/login\?deleted=1$/);
+  await expect(page.getByText("Your account has been deleted.")).toBeVisible();
+  await page.goto("/app");
+  await expect(page).toHaveURL(/\/login\?next=/);
+});
+
 test.describe("accessibility", () => {
   test.use({ reducedMotion: "reduce" });
-  for (const path of ["/app", "/app/drafts", "/app/notifications"]) {
+  for (const path of ["/app", "/app/drafts", "/app/notifications", "/app/billing"]) {
     test(`no serious accessibility violations on ${path}`, async ({ page }) => {
       await page.goto(path);
       await page.getByRole("heading", { level: 1 }).waitFor();

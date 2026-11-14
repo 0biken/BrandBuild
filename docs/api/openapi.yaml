@@ -108,6 +108,19 @@ paths:
       responses:
         '204': {description: Done}
         default: {$ref: '#/components/responses/Error'}
+  /v1/auth/account:
+    delete:
+      operationId: deleteAccount
+      tags: [auth]
+      summary: deleteAccount
+      description: |
+        Permanently deletes the signed-in user and signs them out (clears `bb_session`).
+        If they are the only owner of a workspace, the workspace and its content go too.
+      x-status: new
+      x-phase: 4
+      responses:
+        '204': {description: Done}
+        default: {$ref: '#/components/responses/Error'}
   /v1/auth/session:
     get:
       operationId: getSession

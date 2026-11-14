@@ -1,4 +1,4 @@
-import { read, write } from "@/lib/mock/store";
+import { read, resetMockDb, write } from "@/lib/mock/store";
 import { API_MODE } from "./config";
 import { apiFetch } from "./http";
 import {
@@ -79,6 +79,19 @@ export async function logIn(input: {
 
 export async function logOut(): Promise<ApiResult> {
   if (API_MODE === "http") return apiFetch("/v1/auth/logout", { method: "POST" });
+  clearMockSessionCookie();
+  return ok;
+}
+
+/**
+ * Permanently delete the signed-in user's account and sign them out. In mock
+ * mode the demo data goes back to its seed, so the demo account still works.
+ */
+export async function deleteAccount(): Promise<ApiResult> {
+  if (API_MODE === "http") return apiFetch("/v1/auth/account", { method: "DELETE" });
+  const res = await write(() => undefined);
+  if (!res.ok) return res;
+  resetMockDb();
   clearMockSessionCookie();
   return ok;
 }
