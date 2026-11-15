@@ -16,7 +16,7 @@ export default function SignUpPage() {
     <SplitShell
       aside={
         <div className="flex flex-col gap-7">
-          <p className="m-0 max-w-[460px] font-display text-[44px] leading-[1.02] font-bold tracking-[-0.04em] text-white">
+          <p className="m-0 max-w-[460px] font-display text-[44px] leading-[1.02] max-md:text-[32px] font-bold tracking-[-0.04em] text-white">
             Five minutes from now, your first post is written.
           </p>
           <ol className="m-0 flex max-w-[420px] list-none flex-col gap-3.5 p-0">

@@ -1,0 +1,212 @@
+{
+  "id": "q-dew-1",
+  "kind": "quality",
+  "description": "Prices and discounts need the verified fact that states them.",
+  "workspace": {
+    "timezone": "Europe/Berlin",
+    "brand": {
+      "name": "Dew Skincare",
+      "sells": "Gentle cleansers and moisturisers",
+      "audience": [
+        "sensitive skin",
+        "students"
+      ],
+      "tones": [
+        "Warm"
+      ],
+      "wordsUse": [
+        "gentle",
+        "skin",
+        "use fact threads-offer and media threads-m1"
+      ],
+      "wordsAvoid": [
+        "miracle",
+        "anti-ageing"
+      ],
+      "samples": "We love what we make at Dew Skincare. Come and say hello."
+    },
+    "facts": [
+      {
+        "id": "dew-offer",
+        "kind": "offer",
+        "label": "Starter set",
+        "value": "15% off the starter set, now €34",
+        "price": "34",
+        "currency": "EUR"
+      },
+      {
+        "id": "dew-price",
+        "kind": "price",
+        "label": "Cleanser",
+        "value": "The cleanser is €16",
+        "price": "16",
+        "currency": "EUR"
+      },
+      {
+        "id": "dew-hours",
+        "kind": "hours",
+        "label": "Studio hours",
+        "value": "Studio open 10am to 7pm, Monday to Saturday"
+      },
+      {
+        "id": "dew-claim",
+        "kind": "claim",
+        "label": "Award",
+        "value": "Best clean skincare brand in Berlin 2029"
+      }
+    ],
+    "media": [
+      {
+        "id": "dew-m1",
+        "name": "starter set close-up.jpg",
+        "kind": "image",
+        "tags": [
+          "product"
+        ]
+      },
+      {
+        "id": "dew-m2",
+        "name": "team at work.jpg",
+        "kind": "image",
+        "tags": [
+          "team"
+        ]
+      },
+      {
+        "id": "dew-m3",
+        "name": "storefront.mp4",
+        "kind": "video",
+        "tags": [
+          "place"
+        ]
+      }
+    ],
+    "existing": [
+      {
+        "date": "2030-01-08",
+        "platforms": [
+          "ig"
+        ],
+        "summary": "Meet the people behind Dew Skincare and see how every order is made by hand"
+      }
+    ]
+  },
+  "otherWorkspace": [],
+  "goal": {
+    "goal": "Get more people to try our starter set",
+    "weeks": 2,
+    "platforms": [
+      "ig",
+      "fb"
+    ]
+  },
+  "forbidden": [
+    "40%"
+  ],
+  "minKept": 3,
+  "fake": {
+    "items": [
+      {
+        "platform": "ig",
+        "date": "2030-01-09",
+        "localTime": "18:00",
+        "pillar": "product",
+        "idea": "Weekend offer",
+        "caption": "Starter set: 15% off, now €34. Come and find your favourite.",
+        "hashtags": [
+          "#local"
+        ],
+        "altText": null,
+        "mediaId": null,
+        "imageBrief": "A bright photo",
+        "factIds": [
+          "dew-offer"
+        ],
+        "reasoning": "Supports the goal",
+        "warnings": []
+      },
+      {
+        "platform": "ig",
+        "date": "2030-01-10",
+        "localTime": "18:00",
+        "pillar": "product",
+        "idea": "Made-up deal",
+        "caption": "Today only: 40% off everything in store.",
+        "hashtags": [
+          "#local"
+        ],
+        "altText": null,
+        "mediaId": null,
+        "imageBrief": "A bright photo",
+        "factIds": [],
+        "reasoning": "Supports the goal",
+        "warnings": []
+      },
+      {
+        "platform": "ig",
+        "date": "2030-01-11",
+        "localTime": "18:00",
+        "pillar": "product",
+        "idea": "Uncited price",
+        "caption": "The cleanser is only €16 this week.",
+        "hashtags": [
+          "#local"
+        ],
+        "altText": null,
+        "mediaId": null,
+        "imageBrief": "A bright photo",
+        "factIds": [],
+        "reasoning": "Supports the goal",
+        "warnings": []
+      },
+      {
+        "platform": "fb",
+        "date": "2030-01-12",
+        "localTime": "18:00",
+        "pillar": "product",
+        "idea": "Cited price",
+        "caption": "Cleanser for €16. A small treat for a long week.",
+        "hashtags": [
+          "#local"
+        ],
+        "altText": null,
+        "mediaId": null,
+        "imageBrief": "A bright photo",
+        "factIds": [
+          "dew-price"
+        ],
+        "reasoning": "Supports the goal",
+        "warnings": []
+      },
+      {
+        "platform": "ig",
+        "date": "2030-01-15",
+        "localTime": "18:00",
+        "pillar": "story",
+        "idea": "Story post",
+        "caption": "How we started Dew Skincare, told by the people who make it happen.",
+        "hashtags": [
+          "#local"
+        ],
+        "altText": null,
+        "mediaId": null,
+        "imageBrief": "A bright photo",
+        "factIds": [],
+        "reasoning": "Supports the goal",
+        "warnings": []
+      }
+    ]
+  },
+  "expect": {
+    "keep": [
+      "Weekend offer",
+      "Cited price",
+      "Story post"
+    ],
+    "drop": [
+      "Made-up deal",
+      "Uncited price"
+    ],
+    "rejectAll": false
+  }
+}

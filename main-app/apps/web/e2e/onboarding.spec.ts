@@ -1,5 +1,5 @@
 import AxeBuilder from "@axe-core/playwright";
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Page } from "./fixtures";
 
 const heading = (page: Page) => page.locator("#app-main h1");
 const alert = (page: Page, text: string) => page.getByRole("alert").filter({ hasText: text });
@@ -16,12 +16,18 @@ async function signUp(page: Page) {
   await submit.click();
   await expect(page).toHaveURL(/\/code$/);
   await page.getByLabel("Digit 1").fill("123456");
+  await page.getByRole("dialog", { name: "Account created" }).getByRole("button", { name: "Continue" }).click();
   await expect(page).toHaveURL(/\/app\/onboarding\/verify$/);
 }
 
 test("full onboarding: email check, two accounts, brand voice, then Home", async ({ page }) => {
   await signUp(page);
   await expect(heading(page)).toHaveText("Confirm you're a student");
+  await expect(page.getByRole("radio", { name: /Student ID/ })).toBeDisabled();
+
+  await page.getByLabel("School email address").fill("ada@gmail.com");
+  await page.getByRole("button", { name: "Continue" }).click();
+  await expect(page.getByText("Use your school email.")).toBeVisible();
 
   await page.getByLabel("School email address").fill("ada@stu.ui.edu.ng");
   await page.getByRole("button", { name: "Continue" }).click();

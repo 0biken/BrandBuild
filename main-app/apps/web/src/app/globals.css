@@ -159,6 +159,37 @@ body {
   animation: sheet-in 320ms var(--ease-sheet) both;
 }
 
+/* Landing hero intro. Plain CSS so it starts on first paint from the
+   server-rendered HTML instead of waiting for hydration; skipped entirely
+   (content shown as-is) for reduced motion. Stagger index comes from --i. */
+@keyframes hero-word {
+  from {
+    transform: translateY(110%);
+  }
+}
+@keyframes hero-photo {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.96);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .hero-word {
+    animation: hero-word 800ms cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-delay: calc(var(--i, 0) * 45ms);
+  }
+  .hero-fade {
+    animation: rise 600ms var(--ease-press) both;
+    animation-delay: calc(300ms + var(--i, 0) * 80ms);
+  }
+  .hero-photo {
+    animation: hero-photo 900ms var(--ease-press) 200ms both;
+  }
+  .hero-card {
+    animation: rise 700ms var(--ease-press) 500ms both;
+  }
+}
+
 @keyframes marquee {
   to {
     transform: translateX(-50%);

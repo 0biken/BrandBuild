@@ -95,7 +95,7 @@ export function BlogBuzz() {
     <section ref={sectionRef} className="bg-[#fcfcfc] py-20 lg:py-[100px]">
       <div className="max-w-[1440px] mx-auto px-6 lg:px-20">
         
-        <h2 className="blog-header font-display font-black text-[32px] sm:text-[40px] text-brand-black mb-12 text-center">
+        <h2 className="blog-header font-display font-black text-[28px] sm:text-[40px] text-brand-black mb-8 sm:mb-12 text-center">
           Keep up with the latest buzz.
         </h2>
 

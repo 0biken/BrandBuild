@@ -75,7 +75,7 @@ export function CaseStudies() {
           {BRANDS.map((brand, i) => (
             <button 
               key={i} 
-              className={`font-display font-bold text-[20px] sm:text-[24px] md:text-[32px] text-left transition-colors ${i === 0 ? 'text-white' : 'text-white/40 hover:text-white/80'}`}
+              className={`font-display font-bold text-[20px] sm:text-[24px] md:text-[26px] sm:text-[32px] text-left transition-colors ${i === 0 ? 'text-white' : 'text-white/40 hover:text-white/80'}`}
             >
               {brand}
             </button>
@@ -104,7 +104,7 @@ export function CaseStudies() {
 
         {/* Column 3: Quote (Standardized to Testimonial style) */}
         <div className="case-col w-full flex flex-col relative">
-          <span className="font-display font-black text-[60px] lg:text-[80px] leading-none text-[#2DBF6E] opacity-40 absolute -top-6 lg:-top-8 -left-4 pointer-events-none select-none">
+          <span className="font-display font-black text-[44px] sm:text-[60px] lg:text-[80px] leading-none text-[#2DBF6E] opacity-40 absolute -top-6 lg:-top-8 -left-4 pointer-events-none select-none">
             “
           </span>
           <p className="font-body font-light text-[18px] leading-[1.6] text-white/80 mb-8 relative z-10">

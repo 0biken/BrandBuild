@@ -18,7 +18,7 @@ export default function LogInPage() {
               Published &middot; Friday 7:00 PM
             </span>
             <span className="text-[17px] font-semibold">Drop is live &mdash; link in bio</span>
-            <span className="font-display text-[34px] font-bold tracking-[-0.03em]">
+            <span className="font-display text-[34px] font-bold max-md:text-[28px] tracking-[-0.03em]">
               [N]{" "}
               <span className="font-sans text-[15px] font-medium tracking-normal text-muted">
                 engagements so far

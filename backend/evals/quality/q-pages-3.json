@@ -1,0 +1,211 @@
+{
+  "id": "q-pages-3",
+  "kind": "quality",
+  "description": "Avoided words and unbacked superlatives are dropped.",
+  "workspace": {
+    "timezone": "Europe/London",
+    "brand": {
+      "name": "Pages & Co",
+      "sells": "New and second-hand books",
+      "audience": [
+        "readers",
+        "students"
+      ],
+      "tones": [
+        "Warm",
+        "Professional"
+      ],
+      "wordsUse": [
+        "read",
+        "story",
+        "use fact stitch-offer and media stitch-m1"
+      ],
+      "wordsAvoid": [
+        "boring",
+        "must-have"
+      ],
+      "samples": "We love what we make at Pages & Co. Come and say hello."
+    },
+    "facts": [
+      {
+        "id": "pages-offer",
+        "kind": "offer",
+        "label": "Stack sale",
+        "value": "25% off second-hand books, any three for £18",
+        "price": "18",
+        "currency": "GBP"
+      },
+      {
+        "id": "pages-price",
+        "kind": "price",
+        "label": "Book box",
+        "value": "The monthly book box is £22",
+        "price": "22",
+        "currency": "GBP"
+      },
+      {
+        "id": "pages-hours",
+        "kind": "hours",
+        "label": "Opening hours",
+        "value": "Open 10am to 6pm, Tuesday to Sunday"
+      },
+      {
+        "id": "pages-claim",
+        "kind": "claim",
+        "label": "Award",
+        "value": "Best independent bookshop in Leeds 2029"
+      }
+    ],
+    "media": [
+      {
+        "id": "pages-m1",
+        "name": "book box close-up.jpg",
+        "kind": "image",
+        "tags": [
+          "product"
+        ]
+      },
+      {
+        "id": "pages-m2",
+        "name": "team at work.jpg",
+        "kind": "image",
+        "tags": [
+          "team"
+        ]
+      },
+      {
+        "id": "pages-m3",
+        "name": "storefront.mp4",
+        "kind": "video",
+        "tags": [
+          "place"
+        ]
+      }
+    ],
+    "existing": [
+      {
+        "date": "2030-01-08",
+        "platforms": [
+          "ig"
+        ],
+        "summary": "Meet the people behind Pages & Co and see how every order is made by hand"
+      }
+    ]
+  },
+  "otherWorkspace": [],
+  "goal": {
+    "goal": "Get more people to try our book box",
+    "weeks": 2,
+    "platforms": [
+      "ig",
+      "fb"
+    ]
+  },
+  "forbidden": [],
+  "minKept": 3,
+  "fake": {
+    "items": [
+      {
+        "platform": "ig",
+        "date": "2030-01-09",
+        "localTime": "18:00",
+        "pillar": "product",
+        "idea": "Avoided word",
+        "caption": "Not boring, just good book box made with care.",
+        "hashtags": [
+          "#local"
+        ],
+        "altText": null,
+        "mediaId": null,
+        "imageBrief": "A bright photo",
+        "factIds": [],
+        "reasoning": "Supports the goal",
+        "warnings": []
+      },
+      {
+        "platform": "ig",
+        "date": "2030-01-10",
+        "localTime": "18:00",
+        "pillar": "product",
+        "idea": "Unbacked best",
+        "caption": "The best book box you will find anywhere.",
+        "hashtags": [
+          "#local"
+        ],
+        "altText": null,
+        "mediaId": null,
+        "imageBrief": "A bright photo",
+        "factIds": [],
+        "reasoning": "Supports the goal",
+        "warnings": []
+      },
+      {
+        "platform": "ig",
+        "date": "2030-01-11",
+        "localTime": "18:00",
+        "pillar": "proof",
+        "idea": "Backed claim",
+        "caption": "Voted best independent bookshop in Leeds. Thank you for every vote.",
+        "hashtags": [
+          "#local"
+        ],
+        "altText": null,
+        "mediaId": null,
+        "imageBrief": "A bright photo",
+        "factIds": [
+          "pages-claim"
+        ],
+        "reasoning": "Supports the goal",
+        "warnings": []
+      },
+      {
+        "platform": "fb",
+        "date": "2030-01-12",
+        "localTime": "18:00",
+        "pillar": "product",
+        "idea": "Wrong citation",
+        "caption": "Simply the best book box around.",
+        "hashtags": [
+          "#local"
+        ],
+        "altText": null,
+        "mediaId": null,
+        "imageBrief": "A bright photo",
+        "factIds": [
+          "pages-price"
+        ],
+        "reasoning": "Supports the goal",
+        "warnings": []
+      },
+      {
+        "platform": "ig",
+        "date": "2030-01-16",
+        "localTime": "18:00",
+        "pillar": "community",
+        "idea": "Community",
+        "caption": "Tag us when you share your book box. We read every post.",
+        "hashtags": [
+          "#local"
+        ],
+        "altText": null,
+        "mediaId": null,
+        "imageBrief": "A bright photo",
+        "factIds": [],
+        "reasoning": "Supports the goal",
+        "warnings": []
+      }
+    ]
+  },
+  "expect": {
+    "keep": [
+      "Backed claim",
+      "Community"
+    ],
+    "drop": [
+      "Avoided word",
+      "Unbacked best",
+      "Wrong citation"
+    ],
+    "rejectAll": false
+  }
+}

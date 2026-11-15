@@ -8,15 +8,27 @@ import { Button } from "@/components/ui/Button";
 import { Textarea } from "@/components/ui/FormControls";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useToast } from "@/components/ui/Toast";
-import { ArrowRightIcon, CheckIcon, ClockIcon, CloseIcon, RefreshIcon, SparkIcon } from "@/components/ui/icons";
+import {
+  ArrowRightIcon,
+  CheckIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  ClockIcon,
+  CloseIcon,
+  RefreshIcon,
+  SparkIcon,
+} from "@/components/ui/icons";
+import { MediaLibraryDialog } from "@/components/media/MediaLibraryDialog";
+import { MediaView } from "@/components/media/MediaView";
 import { listPlatforms } from "@/lib/api/accounts";
 import { generatePost, type Tone, type Tweak } from "@/lib/api/ai";
 import { getSession } from "@/lib/api/auth";
 import { getBrand } from "@/lib/api/brand";
 import { createDraft, deleteDraft, getDraft, updateDraft } from "@/lib/api/drafts";
 import { invalidate, useQuery } from "@/lib/api/hooks";
+import { MAX_MEDIA_PER_POST, addMedia, mediaProblem } from "@/lib/api/media";
 import { createPost, getPost, updatePost, type PostInput } from "@/lib/api/posts";
-import type { PlatformConfig, PlatformId } from "@/lib/api/types";
+import type { MediaRef, PlatformConfig, PlatformId } from "@/lib/api/types";
 import { formatShort, fromInputs, isPast, isoDay, isoTime, postDate } from "@/lib/postDates";
 import { ROUTES } from "@/lib/routes";
 import { ComposerPreview } from "./ComposerPreview";
@@ -96,7 +108,9 @@ function ComposerForm({ idea: initialIdea = "", draftId: initialDraftId, postId,
   const [day, setDay] = useState(isoDay(initial));
   const [time, setTime] = useState(isoTime(initial));
   const [bestTime, setBestTime] = useState<Date | null>(null);
-  const [media, setMedia] = useState<{ url: string; name: string } | null>(null);
+  const [media, setMedia] = useState<MediaRef[]>([]);
+  const [importing, setImporting] = useState(0);
+  const [libraryOpen, setLibraryOpen] = useState(false);
   const [draftId, setDraftId] = useState(initialDraftId);
   const [saved, setSaved] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -108,9 +122,6 @@ function ComposerForm({ idea: initialIdea = "", draftId: initialDraftId, postId,
     timers.current = [];
   };
   useEffect(() => clearTimers, []);
-  useEffect(() => () => {
-    if (media) URL.revokeObjectURL(media.url);
-  }, [media]);
 
   // Prefill from a draft or an existing post.
   useEffect(() => {
@@ -125,6 +136,7 @@ function ComposerForm({ idea: initialIdea = "", draftId: initialDraftId, postId,
         setHashtags(p.hashtags);
         setSelected(p.platforms);
         setTab(p.platforms[0] ?? null);
+        setMedia(p.media ?? []);
         const at = postDate(p);
         setDay(isoDay(at));
         setTime(isoTime(at));
@@ -135,6 +147,7 @@ function ComposerForm({ idea: initialIdea = "", draftId: initialDraftId, postId,
         if (!live || !res.ok) return;
         const d = res.data;
         setIdea(d.title);
+        setMedia(d.media ?? []);
         if (d.state !== "Idea") {
           setCaption(d.body);
           setShown(d.body.length);
@@ -230,15 +243,37 @@ function ComposerForm({ idea: initialIdea = "", draftId: initialDraftId, postId,
     setTagDraft(null);
   }
 
-  function pickMedia(file: File | undefined) {
-    if (!file) return;
-    if (!/^(image|video)\//.test(file.type)) {
-      setError("That file isn't an image or video.");
-      return;
+  async function importFiles(list: FileList | File[] | null | undefined) {
+    const files = Array.from(list ?? []);
+    if (!files.length) return;
+    const problems = files.map(mediaProblem).filter((p): p is string => !!p);
+    const valid = files.filter((f) => !mediaProblem(f));
+    const room = Math.max(0, MAX_MEDIA_PER_POST - media.length);
+    if (valid.length > room) problems.push(`A post can have up to ${MAX_MEDIA_PER_POST} photos and videos.`);
+    const good = valid.slice(0, room);
+    setError(problems.join(" "));
+    if (!good.length) return;
+    setImporting((n) => n + good.length);
+    const added: MediaRef[] = [];
+    for (const file of good) {
+      const res = await addMedia(file);
+      if (res.ok) added.push(res.data);
+      else problems.push(`We couldn't import ${file.name}. Try again.`);
+      setImporting((n) => n - 1);
     }
-    // The effect cleanup revokes the previous object URL.
-    setMedia({ url: URL.createObjectURL(file), name: file.name });
-    setError("");
+    setMedia((m) => [...m, ...added].slice(0, MAX_MEDIA_PER_POST));
+    setError(problems.join(" "));
+    invalidate("media");
+  }
+
+  function moveMedia(i: number, by: -1 | 1) {
+    setMedia((m) => {
+      const j = i + by;
+      if (j < 0 || j >= m.length) return m;
+      const next = [...m];
+      [next[i], next[j]] = [next[j], next[i]];
+      return next;
+    });
   }
 
   // Only read in event handlers; render uses the pure fromInputs value.
@@ -272,6 +307,7 @@ function ComposerForm({ idea: initialIdea = "", draftId: initialDraftId, postId,
       platforms: selected,
       scheduledAt: when === "later" ? scheduledAt!.toISOString() : undefined,
       intent: isEditor ? "approval" : when === "now" ? "publish" : "schedule",
+      media,
     };
     const res = postId ? await updatePost(postId, input) : await createPost(input);
     if (!res.ok) {
@@ -302,10 +338,11 @@ function ComposerForm({ idea: initialIdea = "", draftId: initialDraftId, postId,
     const body = {
       title: idea.trim() || caption.split("\n")[0].slice(0, 60),
       body: caption || idea,
-      state: caption ? (media ? "Ready" : "Needs a photo") : "Idea",
+      state: caption ? (media.length ? "Ready" : "Needs a photo") : "Idea",
       pfs: chosen.map((p) => ({ k: p.k, bg: p.bg })),
       edited: "Just now",
-      action: caption ? (media ? "Schedule" : "Add photo") : "Write it",
+      action: caption ? (media.length ? "Schedule" : "Add photo") : "Write it",
+      media,
     } as const;
     const res = draftId ? await updateDraft(draftId, body) : await createDraft(body);
     setBusy(false);
@@ -331,7 +368,7 @@ function ComposerForm({ idea: initialIdea = "", draftId: initialDraftId, postId,
         >
           <ArrowRightIcon size={18} className="rotate-180" />
         </Link>
-        <h1 className="m-0 font-display text-[30px] font-bold tracking-[-0.03em] max-md:text-[26px]">
+        <h1 className="m-0 font-display text-[30px] font-bold tracking-[-0.03em] max-md:text-[24px]">
           {postId ? "Edit post" : "New post"}
         </h1>
         <span role="status" className="ml-auto flex items-center gap-1.5 text-sm text-muted">
@@ -527,45 +564,104 @@ function ComposerForm({ idea: initialIdea = "", draftId: initialDraftId, postId,
 
               {/* Media */}
               <section aria-label="Media" className={card}>
-                <h2 className={h2}>Media</h2>
-                <div className="flex flex-wrap gap-3">
-                  {media && (
-                    <div
-                      className="relative size-32 overflow-hidden rounded-[14px] bg-cover bg-center"
-                      style={{ backgroundImage: `url(${media.url})` }}
-                      role="img"
-                      aria-label={`Attached: ${media.name}`}
-                    >
-                      <button
-                        type="button"
-                        aria-label="Remove media"
-                        onClick={() => setMedia(null)}
-                        className="press absolute top-1.5 right-1.5 inline-flex size-8 cursor-pointer items-center justify-center rounded-lg border-0 bg-ink/70 text-white"
-                      >
-                        <CloseIcon size={14} />
-                      </button>
-                    </div>
-                  )}
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <h2 className={h2}>
+                    Media{" "}
+                    <span className="font-sans text-sm font-normal text-muted">
+                      {media.length} of {MAX_MEDIA_PER_POST}
+                    </span>
+                  </h2>
+                  <Button variant="soft" onClick={() => setLibraryOpen(true)}>
+                    From library
+                  </Button>
+                </div>
+                {media.length > 0 && (
+                  <ul aria-label="Attached media" className="m-0 grid list-none grid-cols-3 gap-2.5 p-0 sm:grid-cols-4">
+                    {media.map((m, i) => (
+                      <li key={m.id} className="relative aspect-square overflow-hidden rounded-[14px]">
+                        <MediaView media={m} className="size-full" />
+                        {i === 0 && (
+                          <span className="absolute top-1.5 left-1.5 rounded-md bg-white/90 px-1.5 py-0.5 text-[11px] font-semibold text-ink">
+                            Cover
+                          </span>
+                        )}
+                        <button
+                          type="button"
+                          aria-label={`Remove ${m.name}`}
+                          onClick={() => setMedia((all) => all.filter((x) => x.id !== m.id))}
+                          className="press absolute top-1.5 right-1.5 inline-flex size-8 cursor-pointer items-center justify-center rounded-lg border-0 bg-ink/70 text-white"
+                        >
+                          <CloseIcon size={14} />
+                        </button>
+                        {media.length > 1 && (
+                          <span className="absolute right-1.5 bottom-1.5 flex gap-1">
+                            <button
+                              type="button"
+                              aria-label={`Move ${m.name} earlier`}
+                              disabled={i === 0}
+                              onClick={() => moveMedia(i, -1)}
+                              className="press inline-flex size-8 cursor-pointer items-center justify-center rounded-lg border-0 bg-ink/70 text-white disabled:opacity-40"
+                            >
+                              <ChevronLeftIcon size={14} />
+                            </button>
+                            <button
+                              type="button"
+                              aria-label={`Move ${m.name} later`}
+                              disabled={i === media.length - 1}
+                              onClick={() => moveMedia(i, 1)}
+                              className="press inline-flex size-8 cursor-pointer items-center justify-center rounded-lg border-0 bg-ink/70 text-white disabled:opacity-40"
+                            >
+                              <ChevronRightIcon size={14} />
+                            </button>
+                          </span>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                {media.length < MAX_MEDIA_PER_POST && (
                   <label
                     onDragOver={(e) => e.preventDefault()}
                     onDrop={(e) => {
                       e.preventDefault();
-                      pickMedia(e.dataTransfer.files[0]);
+                      importFiles(e.dataTransfer.files);
                     }}
-                    className="flex min-h-32 min-w-0 flex-1 cursor-pointer flex-col items-center justify-center gap-2 rounded-[14px] border-[1.5px] border-dashed border-[#C7CCC1] bg-surface-2 p-4 text-center has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-primary"
+                    className="flex min-h-32 min-w-0 cursor-pointer flex-col items-center justify-center gap-2 rounded-[14px] border-[1.5px] border-dashed border-[#C7CCC1] bg-surface-2 p-4 text-center has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-primary"
                   >
-                    <span className="text-sm font-semibold text-ink-2">Drop an image or video here</span>
-                    <span className="text-[13px] text-muted">or choose a file</span>
+                    <span className="text-sm font-semibold text-ink-2">
+                      {importing > 0 ? `Importing ${importing}...` : "Drop photos or videos here"}
+                    </span>
+                    <span className="text-[13px] text-muted">or choose from your device · JPG, PNG, MP4, MOV</span>
                     <input
                       type="file"
+                      multiple
                       accept="image/*,video/*"
+                      aria-label="Import photos or videos"
                       className="sr-only"
-                      onChange={(e) => pickMedia(e.target.files?.[0])}
+                      onChange={(e) => {
+                        importFiles(e.target.files);
+                        e.target.value = "";
+                      }}
                     />
                   </label>
-                </div>
-                <span className="text-[13px] text-muted">Square images work on every platform you&apos;ve picked.</span>
+                )}
+                <span className="text-[13px] text-muted">
+                  The first item is the cover. Square photos work on every platform you&apos;ve picked.
+                </span>
               </section>
+
+              <MediaLibraryDialog
+                open={libraryOpen}
+                onClose={() => setLibraryOpen(false)}
+                attached={media}
+                max={MAX_MEDIA_PER_POST}
+                onAttach={(picked) => {
+                  setMedia((m) =>
+                    [...m, ...picked.filter((p) => !m.some((x) => x.id === p.id))].slice(0, MAX_MEDIA_PER_POST),
+                  );
+                  setLibraryOpen(false);
+                }}
+              />
 
               {/* Where and when */}
               <section aria-label="Where and when" className={card}>
@@ -708,11 +804,13 @@ function ComposerForm({ idea: initialIdea = "", draftId: initialDraftId, postId,
           tab={tab}
           onTab={setTab}
           brandName={brand.data?.name ?? "Brand"}
+          brandLogo={brand.data?.logo}
+          brandColor={brand.data?.color}
           caption={phase === "done" ? caption.slice(0, shown) : ""}
           hashtags={phase === "done" && !typing ? hashtags : []}
           generating={phase === "gen"}
           whenLabel={whenLabel}
-          mediaUrl={media?.url ?? null}
+          media={media}
         />
       </div>
     </div>

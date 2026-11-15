@@ -72,7 +72,7 @@ export function ConnectStep() {
       intro="Brandbuild posts only what you approve. You can add or remove accounts later in Settings."
       panel={
         <>
-          <p className="m-0 font-display text-[30px] leading-[1.05] font-bold tracking-[-0.03em] text-white">
+          <p className="m-0 font-display text-[30px] leading-[1.05] max-md:text-[24px] font-bold tracking-[-0.03em] text-white">
             Write once. Post everywhere you&apos;ve connected.
           </p>
           <p className="m-0 text-[15px] text-forest-ink">

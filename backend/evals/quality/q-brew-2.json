@@ -1,0 +1,199 @@
+{
+  "id": "q-brew-2",
+  "kind": "quality",
+  "description": "Invented fact ids and another workspace's facts are refused.",
+  "workspace": {
+    "timezone": "America/Los_Angeles",
+    "brand": {
+      "name": "Brew Corner Cafe",
+      "sells": "Coffee, tea and breakfast",
+      "audience": [
+        "remote workers",
+        "students"
+      ],
+      "tones": [
+        "Warm",
+        "Playful"
+      ],
+      "wordsUse": [
+        "brew",
+        "corner",
+        "use fact glow-offer and media glow-m1"
+      ],
+      "wordsAvoid": [
+        "instant",
+        "artificial"
+      ],
+      "samples": "We love what we make at Brew Corner Cafe. Come and say hello."
+    },
+    "facts": [
+      {
+        "id": "brew-offer",
+        "kind": "offer",
+        "label": "Loyalty",
+        "value": "10% off with a loyalty card, latte now $4.50",
+        "price": "4.50",
+        "currency": "USD"
+      },
+      {
+        "id": "brew-price",
+        "kind": "price",
+        "label": "Bagel",
+        "value": "A breakfast bagel is $6",
+        "price": "6",
+        "currency": "USD"
+      },
+      {
+        "id": "brew-hours",
+        "kind": "hours",
+        "label": "Opening hours",
+        "value": "Open 6am to 3pm daily"
+      },
+      {
+        "id": "brew-claim",
+        "kind": "claim",
+        "label": "Award",
+        "value": "Best coffee in Oakland 2029"
+      }
+    ],
+    "media": [
+      {
+        "id": "brew-m1",
+        "name": "latte close-up.jpg",
+        "kind": "image",
+        "tags": [
+          "product"
+        ]
+      },
+      {
+        "id": "brew-m2",
+        "name": "team at work.jpg",
+        "kind": "image",
+        "tags": [
+          "team"
+        ]
+      },
+      {
+        "id": "brew-m3",
+        "name": "storefront.mp4",
+        "kind": "video",
+        "tags": [
+          "place"
+        ]
+      }
+    ],
+    "existing": [
+      {
+        "date": "2030-01-08",
+        "platforms": [
+          "ig"
+        ],
+        "summary": "Meet the people behind Brew Corner Cafe and see how every order is made by hand"
+      }
+    ]
+  },
+  "otherWorkspace": [
+    "glow-offer"
+  ],
+  "goal": {
+    "goal": "Get more people to try our latte",
+    "weeks": 2,
+    "platforms": [
+      "ig",
+      "fb"
+    ]
+  },
+  "forbidden": [
+    "20% off all lip gloss, now ₦4,500"
+  ],
+  "minKept": 3,
+  "fake": {
+    "items": [
+      {
+        "platform": "ig",
+        "date": "2030-01-09",
+        "localTime": "18:00",
+        "pillar": "product",
+        "idea": "Invented fact",
+        "caption": "Our new deal is here: 10% off.",
+        "hashtags": [
+          "#local"
+        ],
+        "altText": null,
+        "mediaId": null,
+        "imageBrief": "A bright photo",
+        "factIds": [
+          "brew-offer-v2"
+        ],
+        "reasoning": "Supports the goal",
+        "warnings": []
+      },
+      {
+        "platform": "ig",
+        "date": "2030-01-10",
+        "localTime": "18:00",
+        "pillar": "product",
+        "idea": "Other workspace",
+        "caption": "20% off all lip gloss, now ₦4,500.",
+        "hashtags": [
+          "#local"
+        ],
+        "altText": null,
+        "mediaId": null,
+        "imageBrief": "A bright photo",
+        "factIds": [
+          "glow-offer"
+        ],
+        "reasoning": "Supports the goal",
+        "warnings": []
+      },
+      {
+        "platform": "ig",
+        "date": "2030-01-11",
+        "localTime": "18:00",
+        "pillar": "tips",
+        "idea": "Tip",
+        "caption": "Three small ways to get more from your latte this week.",
+        "hashtags": [
+          "#local"
+        ],
+        "altText": null,
+        "mediaId": null,
+        "imageBrief": "A bright photo",
+        "factIds": [],
+        "reasoning": "Supports the goal",
+        "warnings": []
+      },
+      {
+        "platform": "fb",
+        "date": "2030-01-13",
+        "localTime": "18:00",
+        "pillar": "product",
+        "idea": "Real offer",
+        "caption": "Loyalty is on: 10% off.",
+        "hashtags": [
+          "#local"
+        ],
+        "altText": null,
+        "mediaId": null,
+        "imageBrief": "A bright photo",
+        "factIds": [
+          "brew-offer"
+        ],
+        "reasoning": "Supports the goal",
+        "warnings": []
+      }
+    ]
+  },
+  "expect": {
+    "keep": [
+      "Tip",
+      "Real offer"
+    ],
+    "drop": [
+      "Invented fact",
+      "Other workspace"
+    ],
+    "rejectAll": false
+  }
+}

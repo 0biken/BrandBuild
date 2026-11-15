@@ -6,9 +6,9 @@ export default function PrivacyPolicy() {
     <main className="flex min-h-screen flex-col w-full selection:bg-brand-green/30 selection:text-brand-black">
       <Navbar />
       
-      <section className="bg-wavy-pattern pt-40 pb-20 lg:pt-[200px] lg:pb-[100px] flex-1">
+      <section className="bg-wavy-pattern pt-28 pb-16 sm:pt-40 sm:pb-20 lg:pt-[200px] lg:pb-[100px] flex-1">
         <div className="max-w-[800px] mx-auto px-6 lg:px-20">
-          <h1 className="font-display font-black text-[40px] lg:text-[56px] text-brand-black mb-8">
+          <h1 className="font-display font-black text-[32px] sm:text-[40px] lg:text-[56px] text-brand-black mb-8">
             Privacy Policy
           </h1>
           

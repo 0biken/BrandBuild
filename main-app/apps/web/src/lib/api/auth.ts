@@ -1,5 +1,5 @@
-import { read, write } from "@/lib/mock/store";
-import { API_MODE, API_URL } from "./config";
+import { read, resetMockDb, write } from "@/lib/mock/store";
+import { API_MODE } from "./config";
 import { apiFetch } from "./http";
 import {
   APP_HOME,
@@ -12,9 +12,10 @@ import type { ApiResult, Provider, Session } from "./types";
  * Auth API. In mock mode every call resolves after a short delay, with
  * behaviour chosen so each designed state is reachable:
  *  - logIn:      succeeds only for MOCK_ACCOUNT; anything else is "invalid".
- *  - verifyCode: MOCK_CODE succeeds, MOCK_EXPIRED_CODE is "expired",
- *                any other 6 digits is "invalid".
- *  - signInWithProvider: always "network" (not wired up yet).
+ *  - verifyCode: no email is sent in demo mode, so any 6 digits succeed,
+ *                except MOCK_EXPIRED_CODE ("expired") and MOCK_INVALID_CODE
+ *                ("invalid"), which keep those designed states reachable.
+ *  - signInWithProvider: always "network" in both modes (deferred).
  *  - signUp / requestCode / resetPassword: always succeed.
  */
 
@@ -26,6 +27,18 @@ export const MOCK_ACCOUNT = {
 } as const;
 export const MOCK_CODE = "123456";
 export const MOCK_EXPIRED_CODE = "000000";
+export const MOCK_INVALID_CODE = "111111";
+
+/** True when no real codes are sent, so the UI should say so. */
+export const DEMO_CODES = API_MODE !== "http";
+
+/** Demo-mode rule shared by every code screen. */
+export function mockCodeResult(code: string): "ok" | "expired" | "invalid" {
+  if (!/^\d{6}$/.test(code)) return "invalid";
+  if (code === MOCK_EXPIRED_CODE) return "expired";
+  if (code === MOCK_INVALID_CODE) return "invalid";
+  return "ok";
+}
 
 /** Where a signed-in user lands. */
 export const HOME_HREF = APP_HOME;
@@ -70,19 +83,31 @@ export async function logOut(): Promise<ApiResult> {
   return ok;
 }
 
+/**
+ * Permanently delete the signed-in user's account and sign them out. In mock
+ * mode the demo data goes back to its seed, so the demo account still works.
+ */
+export async function deleteAccount(): Promise<ApiResult> {
+  if (API_MODE === "http") return apiFetch("/v1/auth/account", { method: "DELETE" });
+  const res = await write(() => undefined);
+  if (!res.ok) return res;
+  resetMockDb();
+  clearMockSessionCookie();
+  return ok;
+}
+
 export async function getSession(): Promise<ApiResult<Session>> {
   if (API_MODE === "http") return apiFetch<Session>("/v1/auth/session");
   return read((d) => d.session);
 }
 
+/**
+ * Google and Apple sign-in are deferred (x-status: deferred in the contract), so
+ * this never calls the API. When they ship, http mode becomes a full-page redirect
+ * to `{API_URL}/v1/auth/oauth/{provider}`.
+ */
 export async function signInWithProvider(provider: Provider): Promise<ApiResult> {
-  if (API_MODE === "http") {
-    // OAuth is a full-page redirect owned by the API.
-    // External API origin, not a Next route, so the router can't do this.
-    // eslint-disable-next-line @next/next/no-location-assign-relative-destination
-    window.location.assign(`${API_URL}/v1/auth/oauth/${provider}`);
-    return ok;
-  }
+  void provider;
   await wait(300);
   return { ok: false, error: "network" };
 }
@@ -93,15 +118,13 @@ export async function requestCode(identifier: string): Promise<ApiResult> {
   return ok;
 }
 
-export async function verifyCode(code: string): Promise<ApiResult> {
-  if (API_MODE === "http") return apiFetch("/v1/auth/code/verify", { method: "POST", body: { code } });
+export async function verifyCode(code: string, identifier = ""): Promise<ApiResult> {
+  if (API_MODE === "http") return apiFetch("/v1/auth/code/verify", { method: "POST", body: { identifier, code } });
   await wait();
-  if (code === MOCK_CODE) {
-    setMockSessionCookie();
-    return ok;
-  }
-  if (code === MOCK_EXPIRED_CODE) return { ok: false, error: "expired" };
-  return { ok: false, error: "invalid" };
+  const result = mockCodeResult(code);
+  if (result !== "ok") return { ok: false, error: result };
+  setMockSessionCookie();
+  return ok;
 }
 
 export async function resetPassword(password: string): Promise<ApiResult> {

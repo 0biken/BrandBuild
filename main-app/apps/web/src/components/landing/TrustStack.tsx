@@ -63,7 +63,7 @@ export function TrustStack() {
   );
 
   return (
-    <section ref={root} aria-label="Your control" className="px-6 py-32 md:px-12 md:py-48">
+    <section ref={root} aria-label="Your control" className="px-5 py-20 md:px-12 md:py-48">
       <div className="mx-auto flex max-w-[1280px] flex-col gap-[22vh]">
         {CARDS.map((c, i) => (
           <article
@@ -71,7 +71,7 @@ export function TrustStack() {
             className={`stack-card sticky flex min-h-[420px] origin-top flex-col justify-between gap-12 overflow-hidden rounded-[36px] p-8 shadow-[0_40px_80px_-40px_rgba(15,42,27,0.5)] md:min-h-[480px] md:p-14 ${c.tone}`}
             style={{ top: `calc(6.5rem + ${i * 1.25}rem)` }}
           >
-            <h2 className="m-0 max-w-4xl font-sans text-[clamp(2.5rem,6vw,5.5rem)] leading-[0.98] font-semibold tracking-[-0.045em]">
+            <h2 className="m-0 max-w-4xl font-sans text-[clamp(2rem,6vw,5.5rem)] leading-[0.98] font-semibold tracking-[-0.045em]">
               {c.title}
             </h2>
             <div className="flex flex-wrap items-end justify-between gap-8">

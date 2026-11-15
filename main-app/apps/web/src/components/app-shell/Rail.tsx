@@ -35,6 +35,29 @@ export function Rail() {
       className="sticky top-0 flex h-screen w-60 shrink-0 flex-col gap-7 overflow-y-auto border-r border-line bg-surface-2 px-4 py-6 max-md:hidden [&>*]:shrink-0"
     >
       <Logo href={ROUTES.home} className="px-2" />
+      {brand.data && (
+        <Link
+          href={ROUTES.brand}
+          className="-mt-3 flex min-h-12 items-center gap-2.5 rounded-xl px-2 text-sm text-ink no-underline fine:bg-page-hover"
+        >
+          {brand.data.logo ? (
+            // eslint-disable-next-line @next/next/no-img-element -- data URL, not optimisable
+            <img src={brand.data.logo} alt="" className="size-8 rounded-lg bg-white object-contain shadow-[inset_0_0_0_1px_var(--color-line)]" />
+          ) : (
+            <span
+              aria-hidden="true"
+              className="inline-flex size-8 items-center justify-center rounded-lg font-display font-bold text-white"
+              style={{ background: brand.data.color }}
+            >
+              {brand.data.name.charAt(0)}
+            </span>
+          )}
+          <span className="min-w-0 flex-1 truncate font-semibold">
+            {brand.data.name}
+            <span className="sr-only"> brand kit</span>
+          </span>
+        </Link>
+      )}
       <ButtonLink href={ROUTES.compose} block>
         <PlusIcon size={18} />
         New post
@@ -52,7 +75,7 @@ export function Rail() {
           badgeLabel={`${awaiting} awaiting approval`}
         />
         <NavItem href={ROUTES.analytics} label="Analytics" icon={ChartIcon} />
-        <NavItem href={ROUTES.brand} label="Brand profile" icon={BrandProfileIcon} />
+        <NavItem href={ROUTES.brand} label="Brand kit" icon={BrandProfileIcon} />
         <NavItem href={ROUTES.settings} label="Settings" icon={SettingsIcon} />
       </div>
 

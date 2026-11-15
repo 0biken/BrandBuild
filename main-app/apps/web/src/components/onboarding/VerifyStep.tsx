@@ -6,7 +6,15 @@ import { Button } from "@/components/ui/Button";
 import { CodeInput } from "@/components/ui/CodeInput";
 import { Field } from "@/components/ui/Field";
 import { CheckIcon, MailIcon, ShieldIcon } from "@/components/ui/icons";
-import { sendStudentCode, skipStudentCheck, studentIdProblem, submitStudentId, verifyStudentCode } from "@/lib/api/verify";
+import { DEMO_CODES } from "@/lib/api/auth";
+import {
+  sendStudentCode,
+  skipStudentCheck,
+  STUDENT_ID_AVAILABLE,
+  studentIdProblem,
+  submitStudentId,
+  verifyStudentCode,
+} from "@/lib/api/verify";
 import { OnboardingShell, StepActions } from "./OnboardingShell";
 import { useOnboardingNav } from "./useOnboardingNav";
 
@@ -39,7 +47,11 @@ export function VerifyStep() {
     const res = await sendStudentCode(email);
     setBusy(false);
     if (!res.ok) {
-      setError("Check the email address. It should look like name@school.edu.ng.");
+      setError(
+        res.error === "invalid"
+          ? "Use your school email. It should end in .edu, or .edu or .ac with a country, like .edu.ng or .ac.uk."
+          : "We couldn't send the code just now. Try again in a moment.",
+      );
       return;
     }
     setSentTo(email.trim());
@@ -130,34 +142,40 @@ export function VerifyStep() {
             {(
               [
                 ["email", "School email", "Instant · we send a 6-digit code", MailIcon],
-                ["id", "Student ID", "Reviewed within [X HOURS]", ShieldIcon],
+                ["id", "Student ID", STUDENT_ID_AVAILABLE ? "Reviewed within [X HOURS]" : "Coming soon", ShieldIcon],
               ] as const
-            ).map(([id, label, sub, Icon]) => (
-              <label
-                key={id}
-                className={`press flex cursor-pointer items-start gap-3 rounded-2xl p-4 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-primary ${
-                  method === id
-                    ? "bg-[#F2FAF5] shadow-[inset_0_0_0_2px_var(--color-primary)]"
-                    : "bg-surface shadow-[inset_0_0_0_1px_var(--color-line-strong)]"
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="method"
-                  checked={method === id}
-                  onChange={() => {
-                    setMethod(id);
-                    setError("");
-                  }}
-                  className="sr-only"
-                />
-                <Icon size={22} className="mt-0.5 shrink-0 text-primary-ink" />
-                <span className="flex flex-col gap-0.5">
-                  <span className="text-[15px] font-semibold">{label}</span>
-                  <span className="text-[13px] text-muted">{sub}</span>
-                </span>
-              </label>
-            ))}
+            ).map(([id, label, sub, Icon]) => {
+              const off = id === "id" && !STUDENT_ID_AVAILABLE;
+              return (
+                <label
+                  key={id}
+                  className={`flex items-start gap-3 rounded-2xl p-4 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-primary ${
+                    off ? "cursor-not-allowed opacity-60" : "press cursor-pointer"
+                  } ${
+                    method === id
+                      ? "bg-[#F2FAF5] shadow-[inset_0_0_0_2px_var(--color-primary)]"
+                      : "bg-surface shadow-[inset_0_0_0_1px_var(--color-line-strong)]"
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="method"
+                    checked={method === id}
+                    disabled={off}
+                    onChange={() => {
+                      setMethod(id);
+                      setError("");
+                    }}
+                    className="sr-only"
+                  />
+                  <Icon size={22} className="mt-0.5 shrink-0 text-primary-ink" />
+                  <span className="flex flex-col gap-0.5">
+                    <span className="text-[15px] font-semibold">{label}</span>
+                    <span className="text-[13px] text-muted">{sub}</span>
+                  </span>
+                </label>
+              );
+            })}
           </div>
         </fieldset>
 
@@ -169,7 +187,7 @@ export function VerifyStep() {
             autoComplete="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            hint="Most Nigerian university addresses end in .edu.ng. Others work too."
+            hint="Addresses ending in .edu, or .edu or .ac with a country (like .edu.ng or .ac.uk), qualify."
           />
         )}
 
@@ -178,6 +196,9 @@ export function VerifyStep() {
             <p className="m-0 text-[15px] text-ink-2">
               Enter the code we sent to <strong className="text-ink">{sentTo}</strong>.
             </p>
+            {DEMO_CODES && (
+              <Alert tone="info">Demo mode: no email is sent yet. Enter any 6 digits to continue.</Alert>
+            )}
             <CodeInput
               value={code}
               onChange={(v) => {

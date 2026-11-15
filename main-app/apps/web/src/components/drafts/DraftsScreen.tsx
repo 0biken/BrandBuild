@@ -1,5 +1,6 @@
 "use client";
 
+import { MediaView } from "@/components/media/MediaView";
 import Link from "next/link";
 import { useDeferredValue, useState } from "react";
 import { Button, ButtonLink } from "@/components/ui/Button";
@@ -185,6 +186,20 @@ export function DraftsScreen() {
                     </Link>
                   </h2>
                   <p className="m-0 line-clamp-3 text-sm leading-relaxed text-ink-2">{d.body}</p>
+                  {d.media && d.media.length > 0 && (
+                    <ul aria-label={`${d.media.length} attached`} className="m-0 flex list-none gap-1.5 p-0">
+                      {d.media.slice(0, 4).map((m) => (
+                        <li key={m.id} className="size-14 overflow-hidden rounded-lg">
+                          <MediaView media={m} className="size-full" />
+                        </li>
+                      ))}
+                      {d.media.length > 4 && (
+                        <li className="inline-flex size-14 items-center justify-center rounded-lg bg-page text-sm font-semibold text-ink-2">
+                          +{d.media.length - 4}
+                        </li>
+                      )}
+                    </ul>
+                  )}
                   {d.feedback && (
                     <p className="m-0 rounded-xl bg-amber-soft px-3 py-2.5 text-sm text-amber-ink">
                       <strong className="font-semibold">Changes asked:</strong> {d.feedback}

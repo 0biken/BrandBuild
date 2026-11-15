@@ -20,16 +20,16 @@ const PROMISES = [
   },
 ];
 
-const h2 = "m-0 font-sans text-[clamp(1.75rem,3vw,2.5rem)] leading-tight font-semibold tracking-[-0.035em]";
+const h2 = "m-0 font-sans text-[clamp(1.5rem,3vw,2.5rem)] leading-tight font-semibold tracking-[-0.035em]";
 const h3 = "m-0 text-lg font-semibold";
 const p = "m-0 max-w-2xl text-[17px] leading-relaxed text-ink-2";
 
 export default function LegalPage() {
   return (
-    <div className="px-6 pt-40 pb-32 md:px-12 md:pt-52 md:pb-48">
+    <div className="px-5 pt-28 pb-20 md:px-12 md:pt-52 md:pb-48">
       <div className="mx-auto flex max-w-[1280px] flex-col gap-20">
         <header className="flex flex-col gap-5">
-          <h1 className="m-0 max-w-5xl font-sans text-[clamp(2.4rem,6.2vw,5.75rem)] leading-[0.98] font-semibold tracking-[-0.045em]">
+          <h1 className="m-0 max-w-5xl font-sans text-[clamp(2.1rem,6.2vw,5.75rem)] leading-[0.98] font-semibold tracking-[-0.045em]">
             Privacy, terms and your data
           </h1>
           <p className="m-0 text-sm text-muted">Last updated [DATE]</p>

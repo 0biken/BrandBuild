@@ -1,0 +1,229 @@
+{
+  "id": "q-jollof-5",
+  "kind": "quality",
+  "description": "Near-copies, captions that are too long and unbacked hours are dropped.",
+  "workspace": {
+    "timezone": "Africa/Lagos",
+    "brand": {
+      "name": "Jollof Kitchen Catering",
+      "sells": "Party trays and office lunches",
+      "audience": [
+        "event planners",
+        "offices"
+      ],
+      "tones": [
+        "Warm",
+        "Bold"
+      ],
+      "wordsUse": [
+        "tray",
+        "party",
+        "use fact dew-offer and media dew-m1"
+      ],
+      "wordsAvoid": [
+        "leftover",
+        "microwave"
+      ],
+      "samples": "We love what we make at Jollof Kitchen Catering. Come and say hello."
+    },
+    "facts": [
+      {
+        "id": "jollof-offer",
+        "kind": "offer",
+        "label": "Party pack",
+        "value": "12% off party trays, now ₦44,000",
+        "price": "44000",
+        "currency": "NGN"
+      },
+      {
+        "id": "jollof-price",
+        "kind": "price",
+        "label": "Lunch box",
+        "value": "An office lunch box is ₦4,000",
+        "price": "4000",
+        "currency": "NGN"
+      },
+      {
+        "id": "jollof-hours",
+        "kind": "hours",
+        "label": "Ordering hours",
+        "value": "Orders taken 8am to 4pm daily"
+      },
+      {
+        "id": "jollof-claim",
+        "kind": "claim",
+        "label": "Award",
+        "value": "Best caterer in Port Harcourt 2029"
+      }
+    ],
+    "media": [
+      {
+        "id": "jollof-m1",
+        "name": "party tray close-up.jpg",
+        "kind": "image",
+        "tags": [
+          "product"
+        ]
+      },
+      {
+        "id": "jollof-m2",
+        "name": "team at work.jpg",
+        "kind": "image",
+        "tags": [
+          "team"
+        ]
+      },
+      {
+        "id": "jollof-m3",
+        "name": "storefront.mp4",
+        "kind": "video",
+        "tags": [
+          "place"
+        ]
+      }
+    ],
+    "existing": [
+      {
+        "date": "2030-01-08",
+        "platforms": [
+          "ig"
+        ],
+        "summary": "Meet the people behind Jollof Kitchen Catering and see how every order is made by hand"
+      }
+    ]
+  },
+  "otherWorkspace": [],
+  "goal": {
+    "goal": "Get more people to try our party tray",
+    "weeks": 2,
+    "platforms": [
+      "ig",
+      "fb"
+    ]
+  },
+  "forbidden": [],
+  "minKept": 3,
+  "fake": {
+    "items": [
+      {
+        "platform": "ig",
+        "date": "2030-01-09",
+        "localTime": "18:00",
+        "pillar": "product",
+        "idea": "Repeat",
+        "caption": "Meet the people behind Jollof Kitchen Catering and see how every order is made by hand",
+        "hashtags": [
+          "#local"
+        ],
+        "altText": null,
+        "mediaId": null,
+        "imageBrief": "A bright photo",
+        "factIds": [],
+        "reasoning": "Supports the goal",
+        "warnings": []
+      },
+      {
+        "platform": "ig",
+        "date": "2030-01-10",
+        "localTime": "18:00",
+        "pillar": "product",
+        "idea": "Too long",
+        "caption": "Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week.",
+        "hashtags": [
+          "#local"
+        ],
+        "altText": null,
+        "mediaId": null,
+        "imageBrief": "A bright photo",
+        "factIds": [],
+        "reasoning": "Supports the goal",
+        "warnings": []
+      },
+      {
+        "platform": "ig",
+        "date": "2030-01-11",
+        "localTime": "18:00",
+        "pillar": "product",
+        "idea": "Uncited hours",
+        "caption": "We open at 8am tomorrow, see you there.",
+        "hashtags": [
+          "#local"
+        ],
+        "altText": null,
+        "mediaId": null,
+        "imageBrief": "A bright photo",
+        "factIds": [],
+        "reasoning": "Supports the goal",
+        "warnings": []
+      },
+      {
+        "platform": "ig",
+        "date": "2030-01-12",
+        "localTime": "18:00",
+        "pillar": "product",
+        "idea": "Cited hours",
+        "caption": "Doors open at 8am. Come early for the first pick.",
+        "hashtags": [
+          "#local"
+        ],
+        "altText": null,
+        "mediaId": null,
+        "imageBrief": "A bright photo",
+        "factIds": [
+          "jollof-hours"
+        ],
+        "reasoning": "Supports the goal",
+        "warnings": []
+      },
+      {
+        "platform": "fb",
+        "date": "2030-01-13",
+        "localTime": "18:00",
+        "pillar": "product",
+        "idea": "Second copy",
+        "caption": "Doors open at 8am. Come early for the first pick.",
+        "hashtags": [
+          "#local"
+        ],
+        "altText": null,
+        "mediaId": null,
+        "imageBrief": "A bright photo",
+        "factIds": [
+          "jollof-hours"
+        ],
+        "reasoning": "Supports the goal",
+        "warnings": []
+      },
+      {
+        "platform": "ig",
+        "date": "2030-01-17",
+        "localTime": "18:00",
+        "pillar": "community",
+        "idea": "Question",
+        "caption": "What should we make next? Tell us in the comments.",
+        "hashtags": [
+          "#local"
+        ],
+        "altText": null,
+        "mediaId": null,
+        "imageBrief": "A bright photo",
+        "factIds": [],
+        "reasoning": "Supports the goal",
+        "warnings": []
+      }
+    ]
+  },
+  "expect": {
+    "keep": [
+      "Cited hours",
+      "Question"
+    ],
+    "drop": [
+      "Repeat",
+      "Too long",
+      "Uncited hours",
+      "Second copy"
+    ],
+    "rejectAll": false
+  }
+}
