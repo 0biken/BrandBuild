@@ -18,6 +18,7 @@ use serde::de::DeserializeOwned;
 use serde_json::{json, Value};
 
 pub mod context;
+pub mod evals;
 pub mod planner;
 pub mod routes;
 pub mod validate;

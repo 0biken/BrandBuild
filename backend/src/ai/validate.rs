@@ -7,6 +7,7 @@
 //! - cites a fact or media file that isn't in this workspace's snapshot
 //! - states a price, percentage, opening time or "best/#1"-style claim that no cited,
 //!   verified fact backs (CA-6)
+//! - links to a site no cited, verified fact mentions
 //! - is a near-copy of something already planned or already chosen
 use std::collections::{HashMap, HashSet};
 use std::sync::LazyLock;
@@ -81,6 +82,9 @@ static HOURS: LazyLock<Regex> =
 static SUPERLATIVE: LazyLock<Regex> = LazyLock::new(|| {
     Regex::new(r"(?i)(?:\bbest\b|#1\b|\bnumber one\b|\bcheapest\b|\bguarantee[ds]?\b|\blowest price\b|\btop[- ]rated\b|\bno\.? ?1\b)").unwrap()
 });
+static LINK: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"(?i)\b(?:https?://|www\.)[^\s]+|\b[a-z0-9-]+(?:\.[a-z0-9-]+)*\.(?:com|net|org|io|co|ng|uk|shop|store|link|xyz|app|ly|me|info|biz)\b(?:/[^\s]*)?").unwrap()
+});
 static NUMBER: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"\d[\d,]*(?:\.\d+)?").unwrap());
 
 fn num(text: &str) -> Option<f64> {
@@ -123,6 +127,23 @@ pub fn claims(text: &str) -> (Vec<f64>, bool) {
         }
     }
     (numbers, SUPERLATIVE.is_match(text))
+}
+
+/// The sites a caption links to, as bare lowercase hosts ("glow.ng").
+pub fn links(text: &str) -> Vec<String> {
+    LINK.find_iter(text)
+        .map(|m| {
+            let l = m.as_str().to_lowercase();
+            let l = l
+                .trim_start_matches("https://")
+                .trim_start_matches("http://")
+                .trim_start_matches("www.");
+            let host = l.split(['/', '?', '#']).next().unwrap_or("");
+            host.trim_end_matches(['.', ',', '!', ')', ';', ':'])
+                .to_owned()
+        })
+        .filter(|h| !h.is_empty())
+        .collect()
 }
 
 fn words(text: &str) -> Vec<String> {
@@ -209,6 +230,16 @@ pub fn check(c: &Candidate, snap: &Snapshot) -> Result<(), String> {
         .find(|n| !backed.iter().any(|b| (*b - **n).abs() < 0.005))
     {
         return Err(format!("states {n} without a verified fact behind it"));
+    }
+    let alt = c.alt_text.as_deref().unwrap_or("");
+    if let Some(link) = links(&format!("{full} {alt}")).into_iter().find(|host| {
+        !cited.iter().any(|f| {
+            format!("{} {}", f.label, f.value)
+                .to_lowercase()
+                .contains(host.as_str())
+        })
+    }) {
+        return Err(format!("links to {link}, which no verified fact mentions"));
     }
     if superlative && !cited.iter().any(|f| f.kind == "claim") {
         return Err("makes a \"best\" or \"#1\" claim without a verified claim fact".into());
@@ -354,6 +385,26 @@ pub mod tests {
                 summary: "Meet the new shades of our everyday lip gloss collection".into(),
             }],
         }
+    }
+
+    #[test]
+    fn links_need_a_verified_fact() {
+        let mut snap = snapshot();
+        snap.facts[0].value = "20% off lip gloss at glow.ng/shop".into();
+        let mut c = cand(
+            "ig",
+            9,
+            "New shades are in. Order at https://glow-deals.xyz/now",
+        );
+        assert!(check(&c, &snap).unwrap_err().contains("glow-deals.xyz"));
+        c.caption = "Shop the range at www.glow.ng today".into();
+        assert!(check(&c, &snap).is_err(), "not cited yet");
+        c.fact_ids = vec!["f-offer".into()];
+        c.caption = "Shop the range at www.glow.ng today".into();
+        assert_eq!(check(&c, &snap), Ok(()));
+        c.alt_text = Some("Visit evil.example.com".into());
+        assert!(check(&c, &snap).is_err());
+        assert_eq!(links("link in bio, see you soon."), Vec::<String>::new());
     }
 
     pub fn cand(platform: &str, day: u32, caption: &str) -> Candidate {

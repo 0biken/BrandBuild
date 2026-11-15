@@ -1,0 +1,210 @@
+{
+  "id": "q-ironworks-3",
+  "kind": "quality",
+  "description": "Avoided words and unbacked superlatives are dropped.",
+  "workspace": {
+    "timezone": "America/New_York",
+    "brand": {
+      "name": "Ironworks Gym",
+      "sells": "Strength classes and open gym",
+      "audience": [
+        "beginners",
+        "lifters"
+      ],
+      "tones": [
+        "Bold"
+      ],
+      "wordsUse": [
+        "strong",
+        "together",
+        "use fact pages-offer and media pages-m1"
+      ],
+      "wordsAvoid": [
+        "shred",
+        "detox"
+      ],
+      "samples": "We love what we make at Ironworks Gym. Come and say hello."
+    },
+    "facts": [
+      {
+        "id": "ironworks-offer",
+        "kind": "offer",
+        "label": "New member",
+        "value": "30% off the first month, now $35",
+        "price": "35",
+        "currency": "USD"
+      },
+      {
+        "id": "ironworks-price",
+        "kind": "price",
+        "label": "Day pass",
+        "value": "A day pass is $12",
+        "price": "12",
+        "currency": "USD"
+      },
+      {
+        "id": "ironworks-hours",
+        "kind": "hours",
+        "label": "Opening hours",
+        "value": "Open 5am to 10pm on weekdays"
+      },
+      {
+        "id": "ironworks-claim",
+        "kind": "claim",
+        "label": "Rating",
+        "value": "Top-rated gym in Midtown 2029"
+      }
+    ],
+    "media": [
+      {
+        "id": "ironworks-m1",
+        "name": "strength class close-up.jpg",
+        "kind": "image",
+        "tags": [
+          "product"
+        ]
+      },
+      {
+        "id": "ironworks-m2",
+        "name": "team at work.jpg",
+        "kind": "image",
+        "tags": [
+          "team"
+        ]
+      },
+      {
+        "id": "ironworks-m3",
+        "name": "storefront.mp4",
+        "kind": "video",
+        "tags": [
+          "place"
+        ]
+      }
+    ],
+    "existing": [
+      {
+        "date": "2030-01-08",
+        "platforms": [
+          "ig"
+        ],
+        "summary": "Meet the people behind Ironworks Gym and see how every order is made by hand"
+      }
+    ]
+  },
+  "otherWorkspace": [],
+  "goal": {
+    "goal": "Get more people to try our strength class",
+    "weeks": 2,
+    "platforms": [
+      "ig",
+      "fb"
+    ]
+  },
+  "forbidden": [],
+  "minKept": 3,
+  "fake": {
+    "items": [
+      {
+        "platform": "ig",
+        "date": "2030-01-09",
+        "localTime": "18:00",
+        "pillar": "product",
+        "idea": "Avoided word",
+        "caption": "Not shred, just good strength class made with care.",
+        "hashtags": [
+          "#local"
+        ],
+        "altText": null,
+        "mediaId": null,
+        "imageBrief": "A bright photo",
+        "factIds": [],
+        "reasoning": "Supports the goal",
+        "warnings": []
+      },
+      {
+        "platform": "ig",
+        "date": "2030-01-10",
+        "localTime": "18:00",
+        "pillar": "product",
+        "idea": "Unbacked best",
+        "caption": "The best strength class you will find anywhere.",
+        "hashtags": [
+          "#local"
+        ],
+        "altText": null,
+        "mediaId": null,
+        "imageBrief": "A bright photo",
+        "factIds": [],
+        "reasoning": "Supports the goal",
+        "warnings": []
+      },
+      {
+        "platform": "ig",
+        "date": "2030-01-11",
+        "localTime": "18:00",
+        "pillar": "proof",
+        "idea": "Backed claim",
+        "caption": "Voted top-rated gym in Midtown. Thank you for every vote.",
+        "hashtags": [
+          "#local"
+        ],
+        "altText": null,
+        "mediaId": null,
+        "imageBrief": "A bright photo",
+        "factIds": [
+          "ironworks-claim"
+        ],
+        "reasoning": "Supports the goal",
+        "warnings": []
+      },
+      {
+        "platform": "fb",
+        "date": "2030-01-12",
+        "localTime": "18:00",
+        "pillar": "product",
+        "idea": "Wrong citation",
+        "caption": "Simply the best strength class around.",
+        "hashtags": [
+          "#local"
+        ],
+        "altText": null,
+        "mediaId": null,
+        "imageBrief": "A bright photo",
+        "factIds": [
+          "ironworks-price"
+        ],
+        "reasoning": "Supports the goal",
+        "warnings": []
+      },
+      {
+        "platform": "ig",
+        "date": "2030-01-16",
+        "localTime": "18:00",
+        "pillar": "community",
+        "idea": "Community",
+        "caption": "Tag us when you share your strength class. We read every post.",
+        "hashtags": [
+          "#local"
+        ],
+        "altText": null,
+        "mediaId": null,
+        "imageBrief": "A bright photo",
+        "factIds": [],
+        "reasoning": "Supports the goal",
+        "warnings": []
+      }
+    ]
+  },
+  "expect": {
+    "keep": [
+      "Backed claim",
+      "Community"
+    ],
+    "drop": [
+      "Avoided word",
+      "Unbacked best",
+      "Wrong citation"
+    ],
+    "rejectAll": false
+  }
+}

@@ -6,6 +6,7 @@ resolver = "2"
 name = "brandbuild-backend"
 version = "0.1.0"
 edition = "2021"
+default-run = "brandbuild-backend"
 
 [lib]
 name = "brandbuild_backend"

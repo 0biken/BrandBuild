@@ -1,0 +1,228 @@
+{
+  "id": "q-crumbs-5",
+  "kind": "quality",
+  "description": "Near-copies, captions that are too long and unbacked hours are dropped.",
+  "workspace": {
+    "timezone": "Africa/Lagos",
+    "brand": {
+      "name": "Crumbs Bakery",
+      "sells": "Sourdough, buns and celebration cakes",
+      "audience": [
+        "families",
+        "office teams"
+      ],
+      "tones": [
+        "Warm"
+      ],
+      "wordsUse": [
+        "fresh",
+        "baked",
+        "use fact ironworks-offer and media ironworks-m1"
+      ],
+      "wordsAvoid": [
+        "artificial",
+        "frozen"
+      ],
+      "samples": "We love what we make at Crumbs Bakery. Come and say hello."
+    },
+    "facts": [
+      {
+        "id": "crumbs-offer",
+        "kind": "offer",
+        "label": "Bread club",
+        "value": "15% off sourdough on Fridays, now ₦3,400",
+        "price": "3400",
+        "currency": "NGN"
+      },
+      {
+        "id": "crumbs-price",
+        "kind": "price",
+        "label": "Cake slice",
+        "value": "A cake slice is ₦1,500",
+        "price": "1500",
+        "currency": "NGN"
+      },
+      {
+        "id": "crumbs-hours",
+        "kind": "hours",
+        "label": "Opening hours",
+        "value": "Open 7am to 7pm daily"
+      },
+      {
+        "id": "crumbs-claim",
+        "kind": "claim",
+        "label": "Award",
+        "value": "Best bakery in Ibadan 2029"
+      }
+    ],
+    "media": [
+      {
+        "id": "crumbs-m1",
+        "name": "sourdough close-up.jpg",
+        "kind": "image",
+        "tags": [
+          "product"
+        ]
+      },
+      {
+        "id": "crumbs-m2",
+        "name": "team at work.jpg",
+        "kind": "image",
+        "tags": [
+          "team"
+        ]
+      },
+      {
+        "id": "crumbs-m3",
+        "name": "storefront.mp4",
+        "kind": "video",
+        "tags": [
+          "place"
+        ]
+      }
+    ],
+    "existing": [
+      {
+        "date": "2030-01-08",
+        "platforms": [
+          "ig"
+        ],
+        "summary": "Meet the people behind Crumbs Bakery and see how every order is made by hand"
+      }
+    ]
+  },
+  "otherWorkspace": [],
+  "goal": {
+    "goal": "Get more people to try our sourdough",
+    "weeks": 2,
+    "platforms": [
+      "ig",
+      "fb"
+    ]
+  },
+  "forbidden": [],
+  "minKept": 3,
+  "fake": {
+    "items": [
+      {
+        "platform": "ig",
+        "date": "2030-01-09",
+        "localTime": "18:00",
+        "pillar": "product",
+        "idea": "Repeat",
+        "caption": "Meet the people behind Crumbs Bakery and see how every order is made by hand",
+        "hashtags": [
+          "#local"
+        ],
+        "altText": null,
+        "mediaId": null,
+        "imageBrief": "A bright photo",
+        "factIds": [],
+        "reasoning": "Supports the goal",
+        "warnings": []
+      },
+      {
+        "platform": "ig",
+        "date": "2030-01-10",
+        "localTime": "18:00",
+        "pillar": "product",
+        "idea": "Too long",
+        "caption": "Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week. Fresh this week.",
+        "hashtags": [
+          "#local"
+        ],
+        "altText": null,
+        "mediaId": null,
+        "imageBrief": "A bright photo",
+        "factIds": [],
+        "reasoning": "Supports the goal",
+        "warnings": []
+      },
+      {
+        "platform": "ig",
+        "date": "2030-01-11",
+        "localTime": "18:00",
+        "pillar": "product",
+        "idea": "Uncited hours",
+        "caption": "We open at 7am tomorrow, see you there.",
+        "hashtags": [
+          "#local"
+        ],
+        "altText": null,
+        "mediaId": null,
+        "imageBrief": "A bright photo",
+        "factIds": [],
+        "reasoning": "Supports the goal",
+        "warnings": []
+      },
+      {
+        "platform": "ig",
+        "date": "2030-01-12",
+        "localTime": "18:00",
+        "pillar": "product",
+        "idea": "Cited hours",
+        "caption": "Doors open at 7am. Come early for the first pick.",
+        "hashtags": [
+          "#local"
+        ],
+        "altText": null,
+        "mediaId": null,
+        "imageBrief": "A bright photo",
+        "factIds": [
+          "crumbs-hours"
+        ],
+        "reasoning": "Supports the goal",
+        "warnings": []
+      },
+      {
+        "platform": "fb",
+        "date": "2030-01-13",
+        "localTime": "18:00",
+        "pillar": "product",
+        "idea": "Second copy",
+        "caption": "Doors open at 7am. Come early for the first pick.",
+        "hashtags": [
+          "#local"
+        ],
+        "altText": null,
+        "mediaId": null,
+        "imageBrief": "A bright photo",
+        "factIds": [
+          "crumbs-hours"
+        ],
+        "reasoning": "Supports the goal",
+        "warnings": []
+      },
+      {
+        "platform": "ig",
+        "date": "2030-01-17",
+        "localTime": "18:00",
+        "pillar": "community",
+        "idea": "Question",
+        "caption": "What should we make next? Tell us in the comments.",
+        "hashtags": [
+          "#local"
+        ],
+        "altText": null,
+        "mediaId": null,
+        "imageBrief": "A bright photo",
+        "factIds": [],
+        "reasoning": "Supports the goal",
+        "warnings": []
+      }
+    ]
+  },
+  "expect": {
+    "keep": [
+      "Cited hours",
+      "Question"
+    ],
+    "drop": [
+      "Repeat",
+      "Too long",
+      "Uncited hours",
+      "Second copy"
+    ],
+    "rejectAll": false
+  }
+}

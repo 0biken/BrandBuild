@@ -3,7 +3,7 @@
 //! window. No emails, member names or other personal data, and no past captions beyond
 //! a short summary used to avoid repeats.
 use chrono::{DateTime, Duration, NaiveDate, Utc};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use sqlx::{Postgres, Row, Transaction};
 use uuid::Uuid;
@@ -14,8 +14,8 @@ type Tx = Transaction<'static, Postgres>;
 
 pub const CONTEXT_VERSION: &str = "context.v1";
 
-#[derive(Clone, Debug, Serialize, Default)]
-#[serde(rename_all = "camelCase")]
+#[derive(Clone, Debug, Serialize, Deserialize, Default)]
+#[serde(rename_all = "camelCase", default)]
 pub struct BrandCtx {
     pub name: String,
     pub sells: String,
@@ -26,31 +26,32 @@ pub struct BrandCtx {
     pub samples: String,
 }
 
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct FactCtx {
     pub id: String,
     pub kind: String,
     pub label: String,
     pub value: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub price: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub currency: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ends_at: Option<DateTime<Utc>>,
 }
 
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct MediaCtx {
     pub id: String,
     pub name: String,
     pub kind: String,
+    #[serde(default)]
     pub tags: Vec<String>,
 }
 
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ExistingCtx {
     pub date: NaiveDate,
