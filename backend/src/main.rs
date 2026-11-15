@@ -19,7 +19,8 @@ async fn main() -> anyhow::Result<()> {
     }
     let pool = db::connect(&database_url).await?;
     let storage = brandbuild_backend::storage::Storage::from_env()?;
-    let state = AppState { pool, storage };
+    let ai = std::sync::Arc::new(brandbuild_backend::ai::Gateway::from_env());
+    let state = AppState { pool, storage, ai };
     tokio::spawn(workers::run(state.clone()));
     let app = api::router(state);
     let port = std::env::var("PORT").unwrap_or_else(|_| "3000".to_owned());

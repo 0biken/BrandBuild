@@ -52,7 +52,10 @@ pub async fn run(state: AppState) {
 
 async fn dispatch(state: &AppState, event: &outbox::ClaimedEvent) -> Result<(), String> {
     match event.topic.as_str() {
-        "agent.run" => run_agent_placeholder(state, event).await,
+        "agent.run" => match payload_id(event, "run_id") {
+            Ok(run) => crate::ai::planner::run(state, event.tenant_id, run).await,
+            Err(_) => run_agent_placeholder(state, event).await,
+        },
         "media.scan" => {
             let media = payload_id(event, "media_id")?;
             crate::media::finish_scan(&state.pool, event.tenant_id, media)

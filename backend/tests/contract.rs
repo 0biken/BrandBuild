@@ -23,6 +23,7 @@ fn app() -> Router {
     api::router(AppState {
         pool,
         storage: Storage::local(std::env::temp_dir().join("brandbuild-test-media")).unwrap(),
+        ai: std::sync::Arc::new(brandbuild_backend::ai::Gateway::disabled()),
     })
 }
 

@@ -145,6 +145,12 @@ fn draft_json(row: &PostRow, refs: &HashMap<Uuid, Value>) -> Value {
             out["feedback"] = json!(feedback);
         }
     }
+    if let Some(when) = row.scheduled_for {
+        out["scheduledAt"] = json!(when.to_rfc3339());
+    }
+    if let Some(source) = row.content.get("source").filter(|v| !v.is_null()) {
+        out["source"] = source.clone();
+    }
     out
 }
 
@@ -468,6 +474,124 @@ async fn update_draft(
     let out = draft_out(&mut tx, id).await?;
     tx.commit().await?;
     Ok(Json(json!({ "data": out })))
+}
+
+/// A draft saved under an idempotency key (batch saves, AI plans).
+pub(crate) struct NewDraft {
+    pub key: String,
+    pub title: String,
+    pub platforms: Vec<String>,
+    pub draft_state: String,
+    pub scheduled_for: Option<DateTime<Utc>>,
+    /// Already-built `social_content.v1` content.
+    pub content: Value,
+}
+
+/// Saves a draft once per key. The same key with the same request returns the draft
+/// saved the first time; the same key with a different request is a conflict.
+pub(crate) async fn save_keyed_draft(
+    tx: &mut Tx,
+    ctx: &TenantContext,
+    d: &NewDraft,
+) -> Result<Uuid, ApiError> {
+    check_platforms(&d.platforms)?;
+    check_draft_state(&d.draft_state)?;
+    check_content(&d.content)?;
+    if d.key.is_empty() || d.key.len() > 200 || d.title.chars().count() > 200 {
+        return Err(ApiError::InvalidInput);
+    }
+    let request_hash = domain::content_hash(&json!({
+        "title": d.title, "platforms": d.platforms, "draftState": d.draft_state,
+        "scheduledFor": d.scheduled_for, "content": d.content,
+    }));
+    let seen: Option<(Uuid, String)> =
+        sqlx::query_as("SELECT post_id,request_hash FROM draft_keys WHERE key=$1 FOR UPDATE")
+            .bind(&d.key)
+            .fetch_optional(&mut **tx)
+            .await?;
+    if let Some((post, hash)) = seen {
+        return if hash == request_hash {
+            Ok(post)
+        } else {
+            Err(ApiError::Conflict)
+        };
+    }
+    let id: Uuid = sqlx::query_scalar(
+        "INSERT INTO posts(tenant_id,title,platforms,draft_state,scheduled_for,created_by) VALUES($1,$2,$3,$4,$5,$6) RETURNING id",
+    )
+    .bind(ctx.tenant_id)
+    .bind(&d.title)
+    .bind(&d.platforms)
+    .bind(&d.draft_state)
+    .bind(d.scheduled_for)
+    .bind(ctx.actor_id)
+    .fetch_one(&mut **tx)
+    .await?;
+    add_version(tx, ctx, id, 1, &d.content).await?;
+    sqlx::query("INSERT INTO draft_keys(tenant_id,key,post_id,request_hash) VALUES($1,$2,$3,$4)")
+        .bind(ctx.tenant_id)
+        .bind(&d.key)
+        .bind(id)
+        .bind(&request_hash)
+        .execute(&mut **tx)
+        .await?;
+    Ok(id)
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct BatchItem {
+    key: String,
+    #[serde(default)]
+    title: String,
+    #[serde(default)]
+    body: String,
+    #[serde(default)]
+    hashtags: Vec<String>,
+    #[serde(default)]
+    platforms: Vec<String>,
+    state: Option<String>,
+    scheduled_at: Option<DateTime<Utc>>,
+    #[serde(default)]
+    media: Vec<MediaIn>,
+}
+
+#[derive(Deserialize)]
+struct BatchInput {
+    items: Vec<BatchItem>,
+}
+
+/// Saves 1 to 100 drafts in one transaction, each under its own key, so a retried
+/// request never makes duplicates. All or nothing.
+async fn batch_drafts(
+    State(s): State<AppState>,
+    ctx: TenantContext,
+    Json(input): Json<BatchInput>,
+) -> Result<Json<Value>, ApiError> {
+    if input.items.is_empty() || input.items.len() > 100 {
+        return Err(ApiError::InvalidInput);
+    }
+    let mut tx = tenant_tx(&s.pool, ctx.tenant_id).await?;
+    let mut ids = Vec::new();
+    for item in &input.items {
+        let media = resolve_media(&mut tx, &item.media).await?;
+        let content = build_content(&mut tx, &item.body, &item.hashtags, "1 / 1", &media).await?;
+        let draft = NewDraft {
+            key: item.key.clone(),
+            title: item.title.clone(),
+            platforms: item.platforms.clone(),
+            draft_state: item.state.clone().unwrap_or_else(|| "ready".into()),
+            scheduled_for: item.scheduled_at,
+            content,
+        };
+        ids.push(save_keyed_draft(&mut tx, &ctx, &draft).await?);
+    }
+    let mut data = Vec::new();
+    for id in ids {
+        data.push(draft_out(&mut tx, id).await?);
+    }
+    tx.commit().await?;
+    Ok(Json(json!({ "data": data })))
 }
 
 /// Hides the draft and reports where it sat in the list, so Undo can put it back.
@@ -1010,6 +1134,7 @@ pub fn routes() -> Router<AppState> {
             get(get_draft).patch(update_draft).delete(delete_draft),
         )
         .route("/drafts/:draft_id/restore", post(restore_draft))
+        .route("/drafts/batch", post(batch_drafts))
         .route("/posts", get(list_posts).post(create_post))
         .route(
             "/posts/:post_id",

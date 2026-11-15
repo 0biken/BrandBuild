@@ -159,6 +159,13 @@ pub enum ApiError {
     EmailUnavailable,
     #[error("internal server error")]
     Internal,
+    #[error("AI planning isn't available right now; you can still plan posts yourself")]
+    AiUnavailable,
+    #[error("this workspace has used its AI allowance for the month")]
+    AiBudget,
+    /// The model's draft failed a check; the message says which.
+    #[error("{0}")]
+    AiRejected(String),
 }
 impl From<AuthError> for ApiError {
     fn from(err: AuthError) -> Self {
@@ -193,6 +200,9 @@ impl IntoResponse for ApiError {
             Self::NotAvailable => (StatusCode::NOT_IMPLEMENTED, "not_available"),
             Self::EmailUnavailable => (StatusCode::SERVICE_UNAVAILABLE, "email_unavailable"),
             Self::Internal => (StatusCode::INTERNAL_SERVER_ERROR, "internal_error"),
+            Self::AiUnavailable => (StatusCode::SERVICE_UNAVAILABLE, "ai_unavailable"),
+            Self::AiBudget => (StatusCode::TOO_MANY_REQUESTS, "ai_budget"),
+            Self::AiRejected(_) => (StatusCode::UNPROCESSABLE_ENTITY, "ai_rejected"),
         };
         (
             status,
@@ -684,6 +694,7 @@ pub fn router(state: AppState) -> Router {
         .merge(crate::facts::routes())
         .merge(crate::content::routes())
         .merge(crate::approvals::routes())
+        .merge(crate::ai::routes::routes())
         .merge(crate::media::routes())
         .merge(crate::notifications::routes())
         .layer(middleware::from_fn_with_state(

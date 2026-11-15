@@ -1,3 +1,4 @@
+pub mod ai;
 pub mod api;
 pub mod approvals;
 pub mod audit;
@@ -19,4 +20,5 @@ pub mod workers;
 pub struct AppState {
     pub pool: sqlx::PgPool,
     pub storage: storage::Storage,
+    pub ai: std::sync::Arc<ai::Gateway>,
 }
