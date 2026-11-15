@@ -96,20 +96,20 @@ Release path: Now → Build MVP → 🚦 Beta gate → Private beta → 🚦 Lau
 - [ ] ✅ Exit: user can create/edit/review content; every edit makes a new immutable version with evidence refs
 
 ### Phase 2 — Planning agent
-- [ ] `ai_gateway` crate: provider adapter, structured-output validation, per-run token/USD budget, timeouts
-- [ ] `agent_runs` state machine (queued → context_loading → planning → generating → validating → awaiting_review)
-- [ ] Context snapshot builder (tenant-scoped, minimal data, versioned)
-- [ ] Generate a 2- or 4-week plan from a goal: candidates → hard-constraint filter → greedy ranker with diversity penalty (CA-4)
-- [ ] Drafts per channel: caption, hashtags, alt text, uploaded image or image brief (CA-5)
-- [ ] Every price, offer, opening hour or claim links to a saved brand fact; unsupported claims blocked (CA-6)
-- [ ] Deterministic validators: length, forbidden terms, duplicate similarity
-- [ ] Calendar UI: week and month views, slots per channel, timezone-aware (CA-4)
-- [ ] Golden eval corpus + prompt-injection red-team cases in `evals/`
-- [ ] Limit the agent's tools to: read brand brief, list approved media, read calendar, read channel capabilities, propose plan, save drafts. No approve, publish, token or open-web tools; workspace scope enforced in code, not by the model (24HR)
-- [ ] Plan-proposal format: each item carries platform, channel, media id, caption, proposed local time, sources, reasoning and warnings, plus model and prompt versions. Saving a proposal creates drafts only, never approvals (24HR)
-- [ ] Eval gate sizes: 60 quality cases (no cross-workspace facts or made-up claims), 30 attack cases (no approve/publish attempts, injected text can't widen tools), 20 owner-graded marketing reviews ≥ 4/5 on 80% (24HR)
-- [ ] When the AI is down, over budget or cancelled: no half-saved content, and manual planning keeps working (24HR)
-- [ ] ✅ Exit: eval targets met; no unsupported fact passes validation
+- [x] AI gateway: provider adapter, structured-output validation, per-run token/USD budget, timeouts — `backend/src/ai/mod.rs` (a module, not yet its own crate); Gemini via AI Studio key, fake provider for tests; monthly per-workspace cap
+- [x] `agent_runs` state machine (queued → context_loading → planning → generating → validating → awaiting_review) — migration 0009; cancel checked between steps
+- [x] Context snapshot builder (tenant-scoped, minimal data, versioned) — `context.v1`: brand profile, verified facts, ready media, what's already planned; no emails or names
+- [x] Generate a 2- or 4-week plan from a goal: candidates → hard-constraint filter → greedy ranker with diversity penalty (CA-4) — `POST /v1/plans`
+- [x] Drafts per channel: caption, hashtags, alt text, uploaded image or image brief (CA-5)
+- [x] Every price, offer, opening hour or claim links to a saved brand fact; unsupported claims blocked (CA-6) — also links: a site must appear in a cited fact
+- [x] Deterministic validators: length, forbidden terms, duplicate similarity — `backend/src/ai/validate.rs`
+- [~] Calendar UI: week and month views, slots per channel, timezone-aware (CA-4) — "Plan my weeks" with AI drafts in their slots; times still show in the browser's timezone, not the workspace's
+- [x] Golden eval corpus + prompt-injection red-team cases in `evals/` — `backend/evals/`, `cargo run --bin evals -- --provider fake|gemini`; fake suite runs in `cargo test`
+- [x] Limit the agent's tools to: read brand brief, list approved media, read calendar, read channel capabilities, propose plan, save drafts. No approve, publish, token or open-web tools; workspace scope enforced in code, not by the model (24HR) — the planner has no tools at all: one structured call, and code saves drafts
+- [x] Plan-proposal format: each item carries platform, channel, media id, caption, proposed local time, sources, reasoning and warnings, plus model and prompt versions. Saving a proposal creates drafts only, never approvals (24HR)
+- [~] Eval gate sizes: 60 quality cases (no cross-workspace facts or made-up claims), 30 attack cases (no approve/publish attempts, injected text can't widen tools), 20 owner-graded marketing reviews ≥ 4/5 on 80% (24HR) — 60 + 30 written and passing on the fake provider; live Gemini run and the 20 owner reviews (`backend/evals/owner-review.md`) not done yet
+- [x] When the AI is down, over budget or cancelled: no half-saved content, and manual planning keeps working (24HR)
+- [ ] ✅ Exit: eval targets met; no unsupported fact passes validation — validators pass all 90 planted cases; waiting on a live Gemini run and owner reviews
 
 ### Phase 3 — Social connections (needs B approved)
 - [ ] `SocialConnector` trait + capability manifest type
@@ -132,7 +132,7 @@ Release path: Now → Build MVP → 🚦 Beta gate → Private beta → 🚦 Lau
 - [x] "Require a second approver" workspace setting (24HR) — `PATCH /v1/settings/workspace`; publish rechecks it
 - [x] Rescheduling an approved post needs a new approval when a second approver is required (24HR)
 - [~] Approval inbox: phone-first approve / edit / reject, approve a whole week at once, opens from email link (CA-8) — backend routes done (list, approve, changes, reject, undo, withdraw, retry); approve-a-week and email links not built
-- [ ] Batch drafts: save 1–100 rows in one call with a key per row, so a retry returns the same posts and changed content under the same key is rejected; the AI planner saves through this (24HR)
+- [x] Batch drafts: save 1–100 rows in one call with a key per row, so a retry returns the same posts and changed content under the same key is rejected; the AI planner saves through this (24HR) — `POST /v1/drafts/batch` and `draft_keys`
 - [ ] Manual hand-off mode for channels we can't post to automatically (TikTok, personal profiles, before Meta review clears): approve → waiting for a person → they post and paste the link → shown as "reported by a person", never as verified (24HR)
 - [ ] Schedule in the business's timezone; reschedule or cancel; DST gap/overlap prompts (CA-9) — store the UTC time plus the workspace timezone used to pick it; reject times that don't exist or are ambiguous around clock changes; never reinterpret saved times after a timezone change (24HR). Today everything is UTC with no workspace timezone
 - [~] `publish_jobs` + `publish_attempts` tables; unique active-target index — `publish_attempts` with an idempotency key exists; no due-post runner picks up scheduled posts yet
