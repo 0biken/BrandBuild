@@ -1,11 +1,12 @@
 import { mockAnalytics } from "@/lib/mock/analytics-data";
 import { read } from "@/lib/mock/store";
 import { API_MODE } from "./config";
+import { fromApiStat, mapResult, type ApiStat } from "./adapt";
 import { apiFetch } from "./http";
 import type { AnalyticsRange, AnalyticsReport, ApiResult, StatItem } from "./types";
 
 export async function getHomeStats(): Promise<ApiResult<StatItem[]>> {
-  if (API_MODE === "http") return apiFetch<StatItem[]>("/v1/analytics/home");
+  if (API_MODE === "http") return mapResult(await apiFetch<ApiStat[]>("/v1/analytics/home"), (list) => list.map(fromApiStat));
   return read((d) => d.stats);
 }
 

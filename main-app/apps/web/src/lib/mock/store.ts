@@ -3,6 +3,7 @@ import type {
   ApiResult,
   AppNotification,
   Brand,
+  BrandFact,
   ConnectedAccount,
   DraftItem,
   MediaRef,
@@ -48,6 +49,8 @@ export interface MockDb {
   notifications: AppNotification[];
   /** Media library: metadata only; files live in lib/media/store. */
   media: MediaRef[];
+  /** Brand facts (offers, prices, hours, claims). Older saved databases lack it. */
+  facts?: BrandFact[];
   /** Connect attempts per platform (mock OAuth decides outcomes from this). */
   connectAttempts: Record<string, number>;
 }

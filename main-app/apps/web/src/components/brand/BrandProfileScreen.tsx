@@ -13,6 +13,7 @@ import { DEFAULT_FONTS, fontStack, loadBrandFonts } from "@/lib/brandKit";
 import { TONES } from "@/lib/tones";
 import { BrandFields } from "./BrandFields";
 import { BrandKitFields } from "./BrandKitFields";
+import { FactsSection } from "./FactsSection";
 
 const toProfile = ({
   name,
@@ -185,6 +186,7 @@ function BrandProfileForm({ saved }: { saved: BrandProfile }) {
           <span className="text-[13px] text-forest-ink">Change the colours, fonts or tone and this updates.</span>
         </aside>
       </div>
+      <FactsSection />
     </Shell>
   );
 }

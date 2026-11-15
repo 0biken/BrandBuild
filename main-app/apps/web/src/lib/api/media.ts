@@ -1,6 +1,7 @@
 import { deleteBlob, putBlob } from "@/lib/media/store";
 import { newId, read, write } from "@/lib/mock/store";
 import { API_MODE } from "./config";
+import { fromApiMedia, mapResult, type ApiMedia } from "./adapt";
 import { apiFetch, apiUpload } from "./http";
 import type { ApiResult, MediaRef } from "./types";
 
@@ -51,14 +52,14 @@ function videoDuration(file: File): Promise<number | undefined> {
 }
 
 export async function listMedia(): Promise<ApiResult<MediaRef[]>> {
-  if (API_MODE === "http") return apiFetch<MediaRef[]>("/v1/media");
+  if (API_MODE === "http") return mapResult(await apiFetch<ApiMedia[]>("/v1/media"), (list) => list.map(fromApiMedia));
   return read((d) => d.media);
 }
 
 export async function addMedia(file: File): Promise<ApiResult<MediaRef>> {
   if (mediaProblem(file)) return { ok: false, error: "invalid" };
   if (API_MODE === "http") {
-    return apiUpload<MediaRef>("/v1/media", file);
+    return mapResult(await apiUpload<ApiMedia>("/v1/media", file), fromApiMedia);
   }
   const kind = file.type.startsWith("video/") ? "video" : "image";
   const ref: MediaRef = {

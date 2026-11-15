@@ -644,6 +644,106 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/brand/facts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * listBrandFacts
+         * @description Offers, prices, opening hours and claims. Only verified, unexpired facts reach the AI planner.
+         */
+        get: operations["listBrandFacts"];
+        put?: never;
+        /** createBrandFact */
+        post: operations["createBrandFact"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/brand/facts/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** deleteBrandFact */
+        delete: operations["deleteBrandFact"];
+        options?: never;
+        head?: never;
+        /**
+         * updateBrandFact
+         * @description Any change makes the fact unverified again.
+         */
+        patch: operations["updateBrandFact"];
+        trace?: never;
+    };
+    "/v1/brand/facts/{id}/verify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * verifyBrandFact
+         * @description Owners and reviewers only. Expired facts can't be verified.
+         */
+        post: operations["verifyBrandFact"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/posts/{id}/versions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** listPostVersions */
+        get: operations["listPostVersions"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/settings/workspace": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** getWorkspaceSettings */
+        get: operations["getWorkspaceSettings"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * updateWorkspaceSettings
+         * @description Owners only.
+         */
+        patch: operations["updateWorkspaceSettings"];
+        trace?: never;
+    };
     "/v1/ai/generate": {
         parameters: {
             query?: never;
@@ -693,7 +793,8 @@ export interface paths {
         delete: operations["removeMedia"];
         options?: never;
         head?: never;
-        patch?: never;
+        /** setMediaTags */
+        patch: operations["setMediaTags"];
         trace?: never;
     };
     "/v1/analytics/home": {
@@ -887,6 +988,10 @@ export interface components {
             /** Format: date-time */
             addedAt: string;
             url?: string;
+            /** @enum {string} */
+            status?: "quarantine" | "ready" | "blocked";
+            sha256?: string;
+            tags?: string[];
         };
         /** @enum {string} */
         PostState: "scheduled" | "approval" | "published" | "failed" | "checking" | "paused";
@@ -1008,6 +1113,66 @@ export interface components {
         };
         /** @enum {string} */
         Tone: "Warm" | "Playful" | "Professional" | "Bold";
+        /** @enum {string} */
+        BrandFactKind: "offer" | "price" | "hours" | "claim" | "other";
+        BrandFact: {
+            id: string;
+            kind: components["schemas"]["BrandFactKind"];
+            label: string;
+            value: string;
+            /** @description Plain amount, e.g. 4500.00 */
+            price?: string;
+            /** @description ISO 4217 code */
+            currency?: string;
+            /** Format: date-time */
+            startsAt?: string;
+            /** Format: date-time */
+            endsAt?: string;
+            source?: string;
+            /** @enum {string} */
+            status: "unverified" | "verified" | "expired";
+            /** Format: date-time */
+            verifiedAt?: string;
+            /** Format: date-time */
+            expiresAt?: string;
+            /** Format: date-time */
+            updatedAt: string;
+        };
+        BrandFactInput: {
+            kind?: components["schemas"]["BrandFactKind"];
+            label?: string;
+            value?: string;
+            price?: string | number | null;
+            currency?: string | null;
+            /** Format: date-time */
+            startsAt?: string | null;
+            /** Format: date-time */
+            endsAt?: string | null;
+            source?: string | null;
+            /** Format: date-time */
+            expiresAt?: string | null;
+        };
+        PostVersion: {
+            version: number;
+            caption: string;
+            hashtags: string[];
+            media: string[];
+            /** Format: date-time */
+            createdAt: string;
+            contentHash?: string;
+            author?: string;
+            /** @enum {string} */
+            decision?: "approved" | "changes_requested" | "rejected" | "undone";
+        };
+        WorkspaceSettings: {
+            requireSecondApprover: boolean;
+            /** @description IANA zone, e.g. Africa/Lagos */
+            timezone: string;
+        };
+        WorkspaceSettingsInput: {
+            requireSecondApprover?: boolean;
+            timezone?: string;
+        };
         BrandProfile: {
             name: string;
             sells: string;
@@ -1049,8 +1214,9 @@ export interface components {
         };
         StatItem: {
             key: string;
-            value: number;
-            previous: number;
+            /** @description null when we have no data; never reported as 0 */
+            value: number | null;
+            previous: number | null;
             spark: number[];
         };
         /** @enum {string} */
@@ -2228,6 +2394,206 @@ export interface operations {
             default: components["responses"]["Error"];
         };
     };
+    listBrandFacts: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["BrandFact"][];
+                    };
+                };
+            };
+            default: components["responses"]["Error"];
+        };
+    };
+    createBrandFact: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BrandFactInput"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["BrandFact"];
+                    };
+                };
+            };
+            default: components["responses"]["Error"];
+        };
+    };
+    deleteBrandFact: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Done */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            default: components["responses"]["Error"];
+        };
+    };
+    updateBrandFact: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BrandFactInput"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["BrandFact"];
+                    };
+                };
+            };
+            default: components["responses"]["Error"];
+        };
+    };
+    verifyBrandFact: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["BrandFact"];
+                    };
+                };
+            };
+            default: components["responses"]["Error"];
+        };
+    };
+    listPostVersions: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["PostVersion"][];
+                    };
+                };
+            };
+            default: components["responses"]["Error"];
+        };
+    };
+    getWorkspaceSettings: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["WorkspaceSettings"];
+                    };
+                };
+            };
+            default: components["responses"]["Error"];
+        };
+    };
+    updateWorkspaceSettings: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WorkspaceSettingsInput"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["WorkspaceSettings"];
+                    };
+                };
+            };
+            default: components["responses"]["Error"];
+        };
+    };
     generatePost: {
         parameters: {
             query?: never;
@@ -2325,6 +2691,37 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            default: components["responses"]["Error"];
+        };
+    };
+    setMediaTags: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    tags: string[];
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["MediaRef"];
+                    };
+                };
             };
             default: components["responses"]["Error"];
         };

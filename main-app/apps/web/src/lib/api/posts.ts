@@ -1,6 +1,7 @@
 import { newId, read, write, type MockDb } from "@/lib/mock/store";
 import { formatShort, scheduleFields } from "@/lib/postDates";
 import { API_MODE } from "./config";
+import { fromApiDraft, fromApiPost, mapResult, toApiPostInput, type ApiDraft, type ApiPost } from "./adapt";
 import { apiFetch } from "./http";
 import type { ApiResult, DraftItem, MediaRef, PlatformId, PostItem, PostState } from "./types";
 
@@ -34,12 +35,12 @@ const requested = (d: MockDb): Pick<PostItem, "requestedBy" | "requestedAt"> => 
 const MOVABLE: PostState[] = ["scheduled", "approval", "paused"];
 
 export async function listPosts(): Promise<ApiResult<PostItem[]>> {
-  if (API_MODE === "http") return apiFetch<PostItem[]>("/v1/posts");
+  if (API_MODE === "http") return mapResult(await apiFetch<ApiPost[]>("/v1/posts"), (list) => list.map(fromApiPost));
   return read((d) => d.posts);
 }
 
 export async function getPost(id: string): Promise<ApiResult<PostItem>> {
-  if (API_MODE === "http") return apiFetch<PostItem>(`/v1/posts/${enc(id)}`);
+  if (API_MODE === "http") return mapResult(await apiFetch<ApiPost>(`/v1/posts/${enc(id)}`), fromApiPost);
   const res = await read((d) => d.posts.find((p) => p.id === id) ?? null);
   if (!res.ok) return res;
   return res.data ? { ok: true, data: res.data } : { ok: false, error: "not_found" };
@@ -58,7 +59,11 @@ function logLine(state: PostState, when: Date): string {
 }
 
 export async function createPost(input: PostInput | NewPost): Promise<ApiResult<PostItem>> {
-  if (API_MODE === "http") return apiFetch<PostItem>("/v1/posts", { method: "POST", body: input });
+  if (API_MODE === "http") {
+    // The API takes what the composer submits; whole sample posts exist only in mock mode.
+    if (!("intent" in input)) return { ok: false, error: "invalid" };
+    return mapResult(await apiFetch<ApiPost>("/v1/posts", { method: "POST", body: toApiPostInput(input) }), fromApiPost);
+  }
   return write((d) => {
     let post: PostItem;
     if ("intent" in input) {
@@ -90,7 +95,9 @@ export async function createPost(input: PostInput | NewPost): Promise<ApiResult<
 
 /** Save edits to an existing post. Editing an approved or scheduled post keeps its state. */
 export async function updatePost(id: string, input: PostInput): Promise<ApiResult<PostItem>> {
-  if (API_MODE === "http") return apiFetch<PostItem>(`/v1/posts/${enc(id)}`, { method: "PUT", body: input });
+  if (API_MODE === "http") {
+    return mapResult(await apiFetch<ApiPost>(`/v1/posts/${enc(id)}`, { method: "PUT", body: toApiPostInput(input) }), fromApiPost);
+  }
   return write((d) => {
     const post = d.posts.find((p) => p.id === id);
     if (!post) return "not_found";
@@ -115,10 +122,11 @@ export async function updatePost(id: string, input: PostInput): Promise<ApiResul
 /** Move a post to a new time. Published or unconfirmed posts can't move. */
 export async function reschedulePost(id: string, when: Date): Promise<ApiResult<PostItem>> {
   if (API_MODE === "http") {
-    return apiFetch<PostItem>(`/v1/posts/${enc(id)}/schedule`, {
+    const res = await apiFetch<ApiPost>(`/v1/posts/${enc(id)}/schedule`, {
       method: "POST",
       body: { scheduledAt: when.toISOString() },
     });
+    return mapResult(res, fromApiPost);
   }
   return write((d) => {
     const post = d.posts.find((p) => p.id === id);
@@ -144,10 +152,11 @@ export async function setPostState(
   state: PostState,
 ): Promise<ApiResult<PostItem>> {
   if (API_MODE === "http") {
-    return apiFetch<PostItem>(`/v1/posts/${enc(id)}/state`, {
+    const res = await apiFetch<ApiPost>(`/v1/posts/${enc(id)}/state`, {
       method: "POST",
       body: { state },
     });
+    return mapResult(res, fromApiPost);
   }
   return write((d) => {
     const post = d.posts.find((p) => p.id === id);
@@ -160,7 +169,7 @@ export async function setPostState(
 
 /** Retry a failed post now. Not allowed while the outcome is being checked. */
 export async function retryPost(id: string): Promise<ApiResult<PostItem>> {
-  if (API_MODE === "http") return apiFetch<PostItem>(`/v1/posts/${enc(id)}/retry`, { method: "POST" });
+  if (API_MODE === "http") return mapResult(await apiFetch<ApiPost>(`/v1/posts/${enc(id)}/retry`, { method: "POST" }), fromApiPost);
   return write((d) => {
     const post = d.posts.find((p) => p.id === id);
     if (!post) return "not_found";
@@ -193,7 +202,7 @@ export function draftFrom(d: MockDb, post: PostItem, title: string): DraftItem {
 
 /** Copy a post into Drafts. */
 export async function duplicateToDraft(id: string): Promise<ApiResult<DraftItem>> {
-  if (API_MODE === "http") return apiFetch<DraftItem>(`/v1/posts/${enc(id)}/duplicate`, { method: "POST" });
+  if (API_MODE === "http") return mapResult(await apiFetch<ApiDraft>(`/v1/posts/${enc(id)}/duplicate`, { method: "POST" }), fromApiDraft);
   return write((d) => {
     const post = d.posts.find((p) => p.id === id);
     if (!post) return "not_found";
@@ -203,7 +212,7 @@ export async function duplicateToDraft(id: string): Promise<ApiResult<DraftItem>
 
 /** Withdraw an approval request: the post goes back to Drafts. */
 export async function withdrawApproval(id: string): Promise<ApiResult<DraftItem>> {
-  if (API_MODE === "http") return apiFetch<DraftItem>(`/v1/posts/${enc(id)}/withdraw`, { method: "POST" });
+  if (API_MODE === "http") return mapResult(await apiFetch<ApiDraft>(`/v1/posts/${enc(id)}/withdraw`, { method: "POST" }), fromApiDraft);
   return write((d) => {
     const i = d.posts.findIndex((p) => p.id === id);
     if (i < 0) return "not_found";

@@ -1,16 +1,24 @@
 import { mockConfig, newId, read, write } from "@/lib/mock/store";
 import { API_MODE, API_URL } from "./config";
+import { fromApiAccount, fromApiPlatform, mapResult, type ApiAccount, type ApiPlatform } from "./adapt";
 import { apiFetch } from "./http";
 import type { AccountPlatform, ApiResult, ConnectedAccount, PlatformConfig } from "./types";
 
 export async function listAccounts(): Promise<ApiResult<ConnectedAccount[]>> {
-  if (API_MODE === "http") return apiFetch<ConnectedAccount[]>("/v1/accounts");
+  if (API_MODE === "http") return mapResult(await apiFetch<ApiAccount[]>("/v1/accounts"), (list) => list.map(fromApiAccount));
   return read((d) => d.accounts);
 }
 
 /** Platforms with per-platform limits and connection hints, for the composer. */
 export async function listPlatforms(): Promise<ApiResult<PlatformConfig[]>> {
-  if (API_MODE === "http") return apiFetch<PlatformConfig[]>("/v1/platforms");
+  if (API_MODE === "http") {
+    const [platforms, accounts] = await Promise.all([
+      apiFetch<ApiPlatform[]>("/v1/platforms"),
+      apiFetch<ApiAccount[]>("/v1/accounts"),
+    ]);
+    if (!accounts.ok) return accounts;
+    return mapResult(platforms, (list) => list.map((p) => fromApiPlatform(p, accounts.data)));
+  }
   return read((d) => d.platforms);
 }
 
@@ -73,11 +81,11 @@ export async function finishConnect(platform: AccountPlatform): Promise<ApiResul
 }
 
 export async function cancelConnect(platform: AccountPlatform): Promise<ApiResult<ConnectedAccount>> {
-  if (API_MODE === "http") return apiFetch<ConnectedAccount>(`/v1/accounts/${platform}/cancel`, { method: "POST" });
+  if (API_MODE === "http") return mapResult(await apiFetch<ApiAccount>(`/v1/accounts/${platform}/cancel`, { method: "POST" }), fromApiAccount);
   return write((d) => upsert(d, platform, { status: "disconnected" }));
 }
 
 export async function disconnectAccount(platform: AccountPlatform): Promise<ApiResult<ConnectedAccount>> {
-  if (API_MODE === "http") return apiFetch<ConnectedAccount>(`/v1/accounts/${platform}`, { method: "DELETE" });
+  if (API_MODE === "http") return mapResult(await apiFetch<ApiAccount>(`/v1/accounts/${platform}`, { method: "DELETE" }), fromApiAccount);
   return write((d) => upsert(d, platform, { status: "disconnected", handle: "", note: undefined }));
 }

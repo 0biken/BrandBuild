@@ -160,12 +160,43 @@ export interface DraftItem {
 
 export interface StatItem {
   label: string;
+  /** True when we have no number yet. The tile says "No data" instead of showing 0. */
+  missing?: boolean;
   value: string;
   delta: string;
   deltaColor: string;
   isUp: boolean;
   spark: string;
   sparkColor: string;
+}
+
+export type BrandFactKind = "offer" | "price" | "hours" | "claim" | "other";
+
+/** An offer, price, opening hours or claim the AI may state once it is verified. */
+export interface BrandFact {
+  id: string;
+  kind: BrandFactKind;
+  label: string;
+  value: string;
+  price?: string;
+  currency?: string;
+  startsAt?: string;
+  endsAt?: string;
+  source?: string;
+  status: "unverified" | "verified" | "expired";
+  verifiedAt?: string;
+  expiresAt?: string;
+  updatedAt: string;
+}
+
+export interface BrandFactInput {
+  kind?: BrandFactKind;
+  label?: string;
+  value?: string;
+  price?: string | number | null;
+  currency?: string | null;
+  endsAt?: string | null;
+  source?: string | null;
 }
 
 export type AnalyticsRange = "7d" | "30d" | "90d";

@@ -623,7 +623,7 @@ paths:
       operationId: retryPost
       tags: [content]
       summary: retryPost
-      x-status: new
+      x-status: matches
       x-phase: 7
       parameters:
         - {name: id, in: path, required: true, schema: {type: string}}
@@ -663,7 +663,7 @@ paths:
       operationId: withdrawApproval
       tags: [approvals]
       summary: withdrawApproval
-      x-status: new
+      x-status: matches
       x-phase: 7
       parameters:
         - {name: id, in: path, required: true, schema: {type: string}}
@@ -683,7 +683,7 @@ paths:
       operationId: listApprovals
       tags: [approvals]
       summary: listApprovals
-      x-status: new
+      x-status: matches
       x-phase: 7
       responses:
         '200':
@@ -701,7 +701,7 @@ paths:
       operationId: approvePost
       tags: [approvals]
       summary: approvePost
-      x-status: adapt
+      x-status: matches
       x-phase: 7
       parameters:
         - {name: id, in: path, required: true, schema: {type: string}}
@@ -721,7 +721,7 @@ paths:
       operationId: requestChanges
       tags: [approvals]
       summary: requestChanges
-      x-status: adapt
+      x-status: matches
       x-phase: 7
       parameters:
         - {name: id, in: path, required: true, schema: {type: string}}
@@ -746,7 +746,7 @@ paths:
       operationId: rejectPost
       tags: [approvals]
       summary: rejectPost
-      x-status: new
+      x-status: matches
       x-phase: 7
       parameters:
         - {name: id, in: path, required: true, schema: {type: string}}
@@ -766,7 +766,7 @@ paths:
       operationId: undoDecision
       tags: [approvals]
       summary: undoDecision
-      x-status: new
+      x-status: matches
       x-phase: 7
       parameters:
         - {name: id, in: path, required: true, schema: {type: string}}
@@ -909,6 +909,166 @@ paths:
                 properties:
                   data: {$ref: '#/components/schemas/Brand'}
         default: {$ref: '#/components/responses/Error'}
+  /v1/brand/facts:
+    get:
+      operationId: listBrandFacts
+      tags: [brand]
+      summary: listBrandFacts
+      description: Offers, prices, opening hours and claims. Only verified, unexpired facts reach the AI planner.
+      x-status: new
+      x-phase: 4
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: {type: array, items: {$ref: '#/components/schemas/BrandFact'}}
+        default: {$ref: '#/components/responses/Error'}
+    post:
+      operationId: createBrandFact
+      tags: [brand]
+      summary: createBrandFact
+      x-status: new
+      x-phase: 4
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/BrandFactInput'}
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: {$ref: '#/components/schemas/BrandFact'}
+        default: {$ref: '#/components/responses/Error'}
+  /v1/brand/facts/{id}:
+    patch:
+      operationId: updateBrandFact
+      tags: [brand]
+      summary: updateBrandFact
+      description: Any change makes the fact unverified again.
+      x-status: new
+      x-phase: 4
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: string}}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/BrandFactInput'}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: {$ref: '#/components/schemas/BrandFact'}
+        default: {$ref: '#/components/responses/Error'}
+    delete:
+      operationId: deleteBrandFact
+      tags: [brand]
+      summary: deleteBrandFact
+      x-status: new
+      x-phase: 4
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: string}}
+      responses:
+        '204': {description: Done}
+        default: {$ref: '#/components/responses/Error'}
+  /v1/brand/facts/{id}/verify:
+    post:
+      operationId: verifyBrandFact
+      tags: [brand]
+      summary: verifyBrandFact
+      description: Owners and reviewers only. Expired facts can't be verified.
+      x-status: new
+      x-phase: 4
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: string}}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: {$ref: '#/components/schemas/BrandFact'}
+        default: {$ref: '#/components/responses/Error'}
+  /v1/posts/{id}/versions:
+    get:
+      operationId: listPostVersions
+      tags: [content]
+      summary: listPostVersions
+      x-status: new
+      x-phase: 4
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: string}}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: {type: array, items: {$ref: '#/components/schemas/PostVersion'}}
+        default: {$ref: '#/components/responses/Error'}
+  /v1/settings/workspace:
+    get:
+      operationId: getWorkspaceSettings
+      tags: [approvals]
+      summary: getWorkspaceSettings
+      x-status: new
+      x-phase: 4
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: {$ref: '#/components/schemas/WorkspaceSettings'}
+        default: {$ref: '#/components/responses/Error'}
+    patch:
+      operationId: updateWorkspaceSettings
+      tags: [approvals]
+      summary: updateWorkspaceSettings
+      description: Owners only.
+      x-status: new
+      x-phase: 4
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/WorkspaceSettingsInput'}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: {$ref: '#/components/schemas/WorkspaceSettings'}
+        default: {$ref: '#/components/responses/Error'}
   /v1/ai/generate:
     post:
       operationId: generatePost
@@ -977,6 +1137,33 @@ paths:
                   data: {$ref: '#/components/schemas/MediaRef'}
         default: {$ref: '#/components/responses/Error'}
   /v1/media/{id}:
+    patch:
+      operationId: setMediaTags
+      tags: [media]
+      summary: setMediaTags
+      x-status: new
+      x-phase: 4
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: string}}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [tags]
+              properties: {tags: {type: array, items: {type: string}, maxItems: 20}}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: {$ref: '#/components/schemas/MediaRef'}
+        default: {$ref: '#/components/responses/Error'}
     delete:
       operationId: removeMedia
       tags: [media]
@@ -1214,6 +1401,9 @@ components:
         duration: {type: number, description: "Seconds, for videos"}
         addedAt: {type: string, format: date-time}
         url: {type: string}
+        status: {type: string, enum: [quarantine, ready, blocked]}
+        sha256: {type: string}
+        tags: {type: array, items: {type: string}}
     PostState: {type: string, enum: [scheduled, approval, published, failed, checking, paused]}
     Notice:
       type: object
@@ -1343,6 +1533,61 @@ components:
         limit: {type: integer, description: Caption character limit}
         enabled: {type: boolean}
     Tone: {type: string, enum: [Warm, Playful, Professional, Bold]}
+    BrandFactKind: {type: string, enum: [offer, price, hours, claim, other]}
+    BrandFact:
+      type: object
+      required: [id, kind, label, value, status, updatedAt]
+      properties:
+        id: {type: string}
+        kind: {$ref: '#/components/schemas/BrandFactKind'}
+        label: {type: string}
+        value: {type: string}
+        price: {type: string, description: "Plain amount, e.g. 4500.00"}
+        currency: {type: string, description: ISO 4217 code}
+        startsAt: {type: string, format: date-time}
+        endsAt: {type: string, format: date-time}
+        source: {type: string}
+        status: {type: string, enum: [unverified, verified, expired]}
+        verifiedAt: {type: string, format: date-time}
+        expiresAt: {type: string, format: date-time}
+        updatedAt: {type: string, format: date-time}
+    BrandFactInput:
+      type: object
+      additionalProperties: false
+      properties:
+        kind: {$ref: '#/components/schemas/BrandFactKind'}
+        label: {type: string, maxLength: 200}
+        value: {type: string, maxLength: 1000}
+        price: {type: [string, number, 'null']}
+        currency: {type: [string, 'null']}
+        startsAt: {type: [string, 'null'], format: date-time}
+        endsAt: {type: [string, 'null'], format: date-time}
+        source: {type: [string, 'null']}
+        expiresAt: {type: [string, 'null'], format: date-time}
+    PostVersion:
+      type: object
+      required: [version, caption, hashtags, media, createdAt]
+      properties:
+        version: {type: integer}
+        caption: {type: string}
+        hashtags: {type: array, items: {type: string}}
+        media: {type: array, items: {type: string}}
+        createdAt: {type: string, format: date-time}
+        contentHash: {type: string}
+        author: {type: string}
+        decision: {type: string, enum: [approved, changes_requested, rejected, undone]}
+    WorkspaceSettings:
+      type: object
+      required: [requireSecondApprover, timezone]
+      properties:
+        requireSecondApprover: {type: boolean}
+        timezone: {type: string, description: "IANA zone, e.g. Africa/Lagos"}
+    WorkspaceSettingsInput:
+      type: object
+      additionalProperties: false
+      properties:
+        requireSecondApprover: {type: boolean}
+        timezone: {type: string}
     BrandProfile:
       type: object
       required: [name, sells, audience, tones, wordsUse, wordsAvoid, color, samples]
@@ -1392,8 +1637,8 @@ components:
       required: [key, value, previous, spark]
       properties:
         key: {type: string}
-        value: {type: number}
-        previous: {type: number}
+        value: {type: [number, 'null'], description: "null when we have no data; never reported as 0"}
+        previous: {type: [number, 'null']}
         spark: {type: array, items: {type: number}}
     AnalyticsRange: {type: string, enum: [7d, 30d, 90d]}
     AnalyticsTotals:
