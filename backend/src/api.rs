@@ -13,9 +13,9 @@ use sqlx::{PgPool, Row};
 use uuid::Uuid;
 
 use crate::{
-    auth::{self, AuthError, TenantContext, DECIDERS, OWNERS},
+    auth::{self, AuthError, TenantContext, OWNERS},
     db::tenant_tx,
-    outbox, AppState,
+    AppState,
 };
 
 async fn health() -> Json<Value> {
@@ -166,6 +166,12 @@ impl From<AuthError> for ApiError {
             AuthError::Forbidden => Self::Forbidden,
             _ => Self::Internal,
         }
+    }
+}
+impl From<crate::storage::StorageError> for ApiError {
+    fn from(err: crate::storage::StorageError) -> Self {
+        tracing::error!(error=?err, "file storage request failed");
+        Self::Internal
     }
 }
 impl From<sqlx::Error> for ApiError {
@@ -528,116 +534,6 @@ async fn audit(
     tx.commit().await?;
     Ok(Json(AuditResponse { data }))
 }
-#[derive(Deserialize)]
-struct ApprovalInput {
-    decision: Option<String>,
-    comment: Option<String>,
-}
-async fn approve(
-    State(s): State<AppState>,
-    ctx: TenantContext,
-    Path(id): Path<Uuid>,
-    input: Option<Json<ApprovalInput>>,
-) -> Result<Json<Value>, ApiError> {
-    ctx.require(DECIDERS)?;
-    let input = input.map(|Json(i)| i).unwrap_or(ApprovalInput {
-        decision: None,
-        comment: None,
-    });
-    let mut tx = tenant_tx(&s.pool, ctx.tenant_id).await?;
-    let post=sqlx::query("SELECT current_version,state::text AS state FROM posts WHERE tenant_id=$1 AND id=$2 FOR UPDATE").bind(ctx.tenant_id).bind(id).fetch_optional(&mut *tx).await?.ok_or(ApiError::NotFound)?;
-    let version: i32 = post.try_get("current_version")?;
-    if post.try_get::<String, _>("state")? != "in_review" {
-        return Err(ApiError::InvalidInput);
-    }
-    let row = sqlx::query(
-        "SELECT id FROM post_versions WHERE tenant_id=$1 AND post_id=$2 AND version=$3",
-    )
-    .bind(ctx.tenant_id)
-    .bind(id)
-    .bind(version)
-    .fetch_one(&mut *tx)
-    .await?;
-    let vid: Uuid = row.try_get("id")?;
-    let decision = input.decision.unwrap_or_else(|| "approved".into());
-    if decision != "approved" && decision != "changes_requested" {
-        return Err(ApiError::InvalidInput);
-    }
-    let approval = Uuid::new_v4();
-    sqlx::query("INSERT INTO approvals(id,tenant_id,post_id,post_version_id,reviewer_id,decision,comment) VALUES($1,$2,$3,$4,$5,$6::approval_decision,$7)").bind(approval).bind(ctx.tenant_id).bind(id).bind(vid).bind(ctx.actor_id).bind(decision.as_str()).bind(input.comment).execute(&mut *tx).await?;
-    sqlx::query(
-        "UPDATE posts SET state=$3::post_state,updated_at=now() WHERE tenant_id=$1 AND id=$2",
-    )
-    .bind(ctx.tenant_id)
-    .bind(id)
-    .bind(if decision == "approved" {
-        "approved"
-    } else {
-        "changes_requested"
-    })
-    .execute(&mut *tx)
-    .await?;
-    tx.commit().await?;
-    Ok(Json(
-        json!({"data":{"id":approval,"postId":id,"postVersionId":vid,"decision":decision}}),
-    ))
-}
-async fn publish(
-    State(s): State<AppState>,
-    ctx: TenantContext,
-    Path(id): Path<Uuid>,
-) -> Result<Json<Value>, ApiError> {
-    ctx.require(DECIDERS)?;
-    let mut tx = tenant_tx(&s.pool, ctx.tenant_id).await?;
-    let p=sqlx::query("SELECT current_version,channel_id,state::text AS state FROM posts WHERE tenant_id=$1 AND id=$2 FOR UPDATE").bind(ctx.tenant_id).bind(id).fetch_optional(&mut *tx).await?.ok_or(ApiError::NotFound)?;
-    let post_state = p.try_get::<String, _>("state")?;
-    if post_state != "approved" && post_state != "publishing" {
-        return Err(ApiError::InvalidInput);
-    }
-    let version: i32 = p.try_get("current_version")?;
-    let v = sqlx::query(
-        "SELECT id FROM post_versions WHERE tenant_id=$1 AND post_id=$2 AND version=$3",
-    )
-    .bind(ctx.tenant_id)
-    .bind(id)
-    .bind(version)
-    .fetch_one(&mut *tx)
-    .await?;
-    let vid: Uuid = v.try_get("id")?;
-    let approved=sqlx::query("SELECT EXISTS(SELECT 1 FROM approvals WHERE tenant_id=$1 AND post_id=$2 AND post_version_id=$3 AND decision='approved') AS ok").bind(ctx.tenant_id).bind(id).bind(vid).fetch_one(&mut *tx).await?.try_get::<bool,_>("ok")?;
-    if !approved {
-        return Err(ApiError::InvalidInput);
-    }
-    let key = format!("publish:{id}:{vid}");
-    let attempt = Uuid::new_v4();
-    let inserted=sqlx::query("INSERT INTO publish_attempts(id,tenant_id,post_id,post_version_id,channel_id,idempotency_key,state,started_at) VALUES($1,$2,$3,$4,$5,$6,'running',now()) ON CONFLICT(tenant_id,idempotency_key) DO NOTHING RETURNING id").bind(attempt).bind(ctx.tenant_id).bind(id).bind(vid).bind(p.try_get::<Option<Uuid>,_>("channel_id")?).bind(&key).fetch_optional(&mut *tx).await?;
-    let attempt_id = if let Some(r) = inserted {
-        let aid: Uuid = r.try_get("id")?;
-        sqlx::query("INSERT INTO audit_log(tenant_id,actor_id,action,resource_type,resource_id,details) VALUES($1,$2,'publish_requested','post',$3,jsonb_build_object('post_version_id',$4::text,'attempt_id',$5::text))").bind(ctx.tenant_id).bind(ctx.actor_id).bind(id).bind(vid).bind(aid).execute(&mut *tx).await?;
-        sqlx::query(
-            "UPDATE posts SET state='publishing',updated_at=now() WHERE tenant_id=$1 AND id=$2",
-        )
-        .bind(ctx.tenant_id)
-        .bind(id)
-        .execute(&mut *tx)
-        .await?;
-        aid
-    } else {
-        sqlx::query(
-            "SELECT id FROM publish_attempts WHERE tenant_id=$1 AND idempotency_key=$2 FOR UPDATE",
-        )
-        .bind(ctx.tenant_id)
-        .bind(&key)
-        .fetch_one(&mut *tx)
-        .await?
-        .try_get("id")?
-    };
-    tx.commit().await?;
-    Ok(Json(
-        json!({"data":{"id":attempt_id,"postId":id,"postVersionId":vid,"state":"running"}}),
-    ))
-}
-
 async fn tenant_config_get(
     State(s): State<AppState>,
     ctx: TenantContext,
@@ -737,102 +633,6 @@ async fn slot_create(
         Json(json!({"data":{"id":id,"status":"open"}})),
     ))
 }
-#[derive(Deserialize)]
-struct ChangeInput {
-    note: String,
-}
-async fn request_changes(
-    State(s): State<AppState>,
-    ctx: TenantContext,
-    Path(id): Path<Uuid>,
-    Json(input): Json<ChangeInput>,
-) -> Result<Json<Value>, ApiError> {
-    ctx.require(DECIDERS)?;
-    let mut tx = tenant_tx(&s.pool, ctx.tenant_id).await?;
-    let p=sqlx::query("SELECT current_version,state::text state FROM posts WHERE tenant_id=$1 AND id=$2 FOR UPDATE").bind(ctx.tenant_id).bind(id).fetch_optional(&mut *tx).await?.ok_or(ApiError::NotFound)?;
-    if p.try_get::<String, _>("state")? != "in_review" {
-        return Err(ApiError::InvalidInput);
-    }
-    let version: i32 = p.try_get::<i32, _>("current_version")? + 1;
-    let content = sqlx::query(
-        "SELECT content FROM post_versions WHERE tenant_id=$1 AND post_id=$2 AND version=$3",
-    )
-    .bind(ctx.tenant_id)
-    .bind(id)
-    .bind(version - 1)
-    .fetch_one(&mut *tx)
-    .await?
-    .try_get::<Value, _>("content")?;
-    let mut edited = content;
-    edited["change_request"] = json!(input.note);
-    let vid = Uuid::new_v4();
-    sqlx::query("INSERT INTO post_versions(id,tenant_id,post_id,version,content,created_by) VALUES($1,$2,$3,$4,$5,$6)").bind(vid).bind(ctx.tenant_id).bind(id).bind(version).bind(edited).bind(ctx.actor_id).execute(&mut *tx).await?;
-    sqlx::query("UPDATE posts SET current_version=$3,state='changes_requested',updated_at=now() WHERE tenant_id=$1 AND id=$2").bind(ctx.tenant_id).bind(id).bind(version).execute(&mut *tx).await?;
-    outbox::enqueue(
-        &mut tx,
-        ctx.tenant_id,
-        "post.changes_requested",
-        json!({"post_id":id,"post_version_id":vid}),
-    )
-    .await?;
-    tx.commit().await?;
-    Ok(Json(
-        json!({"data":{"postId":id,"state":"changes_requested","version":version}}),
-    ))
-}
-#[derive(Deserialize)]
-struct ScheduleInput {
-    #[serde(rename = "scheduledAt")]
-    scheduled_for: DateTime<Utc>,
-}
-async fn schedule(
-    State(s): State<AppState>,
-    ctx: TenantContext,
-    Path(id): Path<Uuid>,
-    Json(input): Json<ScheduleInput>,
-) -> Result<Json<Value>, ApiError> {
-    ctx.require(DECIDERS)?;
-    if input.scheduled_for <= Utc::now() {
-        return Err(ApiError::InvalidInput);
-    }
-    let mut tx = tenant_tx(&s.pool, ctx.tenant_id).await?;
-    let n=sqlx::query("UPDATE posts SET state='scheduled',scheduled_for=$3,updated_at=now() WHERE tenant_id=$1 AND id=$2 AND state='approved'").bind(ctx.tenant_id).bind(id).bind(input.scheduled_for).execute(&mut *tx).await?.rows_affected();
-    if n == 0 {
-        return Err(ApiError::InvalidInput);
-    }
-    outbox::enqueue(
-        &mut tx,
-        ctx.tenant_id,
-        "post.scheduled",
-        json!({"post_id":id,"scheduled_for":input.scheduled_for}),
-    )
-    .await?;
-    tx.commit().await?;
-    Ok(Json(
-        json!({"data":{"postId":id,"state":"scheduled","scheduledFor":input.scheduled_for}}),
-    ))
-}
-async fn cancel_post(
-    State(s): State<AppState>,
-    ctx: TenantContext,
-    Path(id): Path<Uuid>,
-) -> Result<Json<Value>, ApiError> {
-    ctx.require(DECIDERS)?;
-    let mut tx = tenant_tx(&s.pool, ctx.tenant_id).await?;
-    let n=sqlx::query("UPDATE posts SET state='canceled',updated_at=now() WHERE tenant_id=$1 AND id=$2 AND state IN ('draft','in_review','changes_requested','approved','scheduled')").bind(ctx.tenant_id).bind(id).execute(&mut *tx).await?.rows_affected();
-    if n == 0 {
-        return Err(ApiError::InvalidInput);
-    }
-    outbox::enqueue(
-        &mut tx,
-        ctx.tenant_id,
-        "post.canceled",
-        json!({"post_id":id}),
-    )
-    .await?;
-    tx.commit().await?;
-    Ok(Json(json!({"data":{"postId":id,"state":"canceled"}})))
-}
 async fn oauth_start(
     State(s): State<AppState>,
     ctx: TenantContext,
@@ -857,7 +657,6 @@ async fn oauth_start(
 
 pub fn router(state: AppState) -> Router {
     let v1 = Router::new()
-        .route("/brand", get(list_brand).post(create_brand))
         .route("/channels", get(list_channel).post(create_channel))
         .route(
             "/channels/:channel_id",
@@ -877,20 +676,16 @@ pub fn router(state: AppState) -> Router {
             "/tenant/config",
             get(tenant_config_get).put(tenant_config_put),
         )
-        .route("/posts", get(list_post).post(create_post))
-        .route(
-            "/posts/:post_id",
-            get(get_post).put(update_post).delete(delete_post),
-        )
-        .route("/posts/:post_id/approve", post(approve))
-        .route("/posts/:post_id/request-changes", post(request_changes))
-        .route("/posts/:post_id/schedule", post(schedule))
-        .route("/posts/:post_id/cancel", post(cancel_post))
-        .route("/posts/:post_id/publish", post(publish))
         .route("/analytics", get(analytics))
         .route("/audit", get(audit))
         .route("/auth/session", get(crate::auth_api::session))
         .merge(crate::onboarding::routes())
+        .merge(crate::brand::routes())
+        .merge(crate::facts::routes())
+        .merge(crate::content::routes())
+        .merge(crate::approvals::routes())
+        .merge(crate::media::routes())
+        .merge(crate::notifications::routes())
         .layer(middleware::from_fn_with_state(
             state.clone(),
             auth_middleware,
@@ -914,13 +709,6 @@ pub fn router(state: AppState) -> Router {
                 .put(update_calendar)
                 .delete(delete_calendar),
         )
-        .route("/posts", get(list_post).post(create_post))
-        .route(
-            "/posts/:id",
-            get(get_post).put(update_post).delete(delete_post),
-        )
-        .route("/posts/:id/approve", post(approve))
-        .route("/posts/:id/publish", post(publish))
         .layer(middleware::from_fn_with_state(
             state.clone(),
             auth_middleware,
@@ -1019,12 +807,4 @@ resource_handlers!(
     Calendar,
     CalendarInput
 );
-resource_handlers!(
-    list_post,
-    create_post,
-    get_post,
-    update_post,
-    delete_post,
-    Post,
-    PostInput
-);
+// Posts have no generic /v2 routes: they go through /v1, where approval rules apply.

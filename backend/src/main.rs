@@ -18,7 +18,8 @@ async fn main() -> anyhow::Result<()> {
         Err(_) => db::migrate(&db::connect(&database_url).await?).await?,
     }
     let pool = db::connect(&database_url).await?;
-    let state = AppState { pool };
+    let storage = brandbuild_backend::storage::Storage::from_env()?;
+    let state = AppState { pool, storage };
     tokio::spawn(workers::run(state.clone()));
     let app = api::router(state);
     let port = std::env::var("PORT").unwrap_or_else(|_| "3000".to_owned());

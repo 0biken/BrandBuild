@@ -7,6 +7,7 @@ use axum::{
 use brandbuild_backend::{
     api::{self, PostInput, Resource, ResourceKind},
     auth::{cookie_value, set_cookie},
+    storage::Storage,
     AppState,
 };
 use chrono::Utc;
@@ -19,7 +20,10 @@ fn app() -> Router {
     let pool = PgPoolOptions::new()
         .connect_lazy("postgres://unused@localhost/unused")
         .unwrap();
-    api::router(AppState { pool })
+    api::router(AppState {
+        pool,
+        storage: Storage::local(std::env::temp_dir().join("brandbuild-test-media")).unwrap(),
+    })
 }
 
 async fn error_of(response: axum::response::Response) -> Value {
