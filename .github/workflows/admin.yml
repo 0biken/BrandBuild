@@ -1,0 +1,28 @@
+name: admin
+
+on:
+  pull_request:
+    paths: ["main-app/package.json", "main-app/apps/admin/**", "docs/api/admin-openapi.yaml", ".github/workflows/admin.yml"]
+  push:
+    branches: [main]
+    paths: ["main-app/package.json", "main-app/apps/admin/**", "docs/api/admin-openapi.yaml", ".github/workflows/admin.yml"]
+
+defaults:
+  run:
+    working-directory: main-app
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: main-app/package-lock.json
+      - run: npm ci
+      - run: npm run lint --workspace=brandbuild-admin
+      - run: npx tsc --noEmit -p apps/admin/tsconfig.json
+      - run: npm test --workspace=brandbuild-admin
+      - run: npm run build --workspace=brandbuild-admin

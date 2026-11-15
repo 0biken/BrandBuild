@@ -21,8 +21,7 @@ export function isAcademicEmail(email: string): boolean {
   return last === "edu" || (labels.length >= 3 && (second === "edu" || second === "ac") && /^[a-z]{2}$/.test(last));
 }
 
-/** Student ID review isn't built yet; the Verify screen shows it as "Coming soon". */
-export const STUDENT_ID_AVAILABLE = false;
+export const STUDENT_ID_AVAILABLE = true;
 
 const ID_TYPES = ["image/jpeg", "image/png", "application/pdf"];
 const ID_MAX_BYTES = 10 * 1024 * 1024;
@@ -62,13 +61,30 @@ export function studentIdProblem(file: Pick<File, "type" | "size">): string | nu
   return null;
 }
 
-export async function submitStudentId(file: File): Promise<ApiResult<StudentCheck>> {
+export async function submitStudentId(
+  file: File,
+  meta?: { applicantName: string; school: string; cardExpiryDate: string },
+): Promise<ApiResult<StudentCheck>> {
   if (studentIdProblem(file)) return { ok: false, error: "invalid" };
   if (API_MODE === "http") {
-    return apiUpload<StudentCheck>("/v1/student-check/id", file);
+    const form = new FormData();
+    form.set("applicantName", meta?.applicantName ?? "");
+    form.set("school", meta?.school ?? "");
+    form.set("cardExpiryDate", meta?.cardExpiryDate ?? "");
+    form.set("file", file);
+    try {
+      const res = await fetch("/api/v1/student-check/id", {
+        method: "POST",
+        credentials: "include",
+        body: form,
+      });
+      if (!res.ok) return { ok: false, error: "invalid" };
+      const json = (await res.json()) as { data: StudentCheck };
+      return { ok: true, data: json.data };
+    } catch {
+      return { ok: false, error: "network" };
+    }
   }
-  // Matches the API, which answers 501 not_available until review exists.
-  if (!STUDENT_ID_AVAILABLE) return { ok: false, error: "network" };
   return write((d) => {
     d.studentCheck = { status: "pending_review", method: "id" };
     return d.studentCheck;

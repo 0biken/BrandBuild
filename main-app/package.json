@@ -1,0 +1,15 @@
+{
+  "name": "brandbuild-main-app",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "lint:web": "npm run lint --workspace=brandbuild-web",
+    "lint:admin": "npm run lint --workspace=brandbuild-admin",
+    "test:web": "npm test --workspace=brandbuild-web",
+    "test:admin": "npm test --workspace=brandbuild-admin",
+    "build:web": "npm run build --workspace=brandbuild-web",
+    "build:admin": "npm run build --workspace=brandbuild-admin"
+  }
+}

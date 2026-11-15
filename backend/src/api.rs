@@ -665,6 +665,53 @@ async fn oauth_start(
     ))
 }
 
+async fn customer_notices(
+    State(s): State<AppState>,
+    ctx: TenantContext,
+) -> Result<Json<Value>, ApiError> {
+    let incidents = sqlx::query(
+        "SELECT id, title, platforms, customer_message, created_at FROM admin.active_customer_incidents()",
+    )
+    .fetch_all(&s.admin_pool)
+    .await?;
+    let holds = sqlx::query(
+        "SELECT id, scope, channel_id, customer_message, created_at FROM admin.active_holds_for_target($1, NULL)",
+    )
+    .bind(ctx.tenant_id)
+    .fetch_all(&s.admin_pool)
+    .await?;
+
+    let incident_items: Vec<Value> = incidents
+        .into_iter()
+        .map(|r| {
+            json!({
+                "id": r.get::<Uuid, _>("id"),
+                "title": r.get::<String, _>("title"),
+                "platforms": r.get::<Vec<String>, _>("platforms"),
+                "customerMessage": r.get::<String, _>("customer_message"),
+                "createdAt": r.get::<DateTime<Utc>, _>("created_at"),
+            })
+        })
+        .collect();
+
+    let hold_items: Vec<Value> = holds
+        .into_iter()
+        .map(|r| {
+            json!({
+                "id": r.get::<Uuid, _>("id"),
+                "scope": r.get::<String, _>("scope"),
+                "channelId": r.get::<Option<Uuid>, _>("channel_id"),
+                "customerMessage": r.get::<String, _>("customer_message"),
+                "createdAt": r.get::<DateTime<Utc>, _>("created_at"),
+            })
+        })
+        .collect();
+
+    Ok(Json(
+        json!({"data": {"incidents": incident_items, "holds": hold_items}}),
+    ))
+}
+
 pub fn router(state: AppState) -> Router {
     let v1 = Router::new()
         .route("/channels", get(list_channel).post(create_channel))
@@ -688,6 +735,7 @@ pub fn router(state: AppState) -> Router {
         )
         .route("/analytics", get(analytics))
         .route("/audit", get(audit))
+        .route("/notices", get(customer_notices))
         .route("/auth/session", get(crate::auth_api::session))
         .merge(crate::onboarding::routes())
         .merge(crate::brand::routes())
@@ -734,6 +782,7 @@ pub fn router(state: AppState) -> Router {
                 .merge(v1),
         )
         .nest("/v2", v2)
+        .nest("/admin/v1", crate::admin::router(state.clone()))
         .layer(middleware::from_fn(json_errors))
         .with_state(state)
 }

@@ -139,6 +139,19 @@ impl Gateway {
             / 1_000_000.0
     }
 
+    /// Conservative maximum cost for one call, used for pre-call budget reservations
+    /// and timeout (`uncertain`) accounting.
+    pub fn max_cost_usd(&self) -> f64 {
+        let est = (8_000.0 * self.usd_per_mtok_in
+            + f64::from(self.max_output_tokens) * self.usd_per_mtok_out)
+            / 1_000_000.0;
+        est.max(0.01)
+    }
+
+    pub fn pricing_version(&self) -> &'static str {
+        "v1"
+    }
+
     async fn call(&self, req: &ModelRequest, user: &str) -> Result<(String, Usage), AiError> {
         match self.provider.as_ref().ok_or(AiError::NotConfigured)? {
             Provider::Fake(replies) => {

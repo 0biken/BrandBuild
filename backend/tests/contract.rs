@@ -21,7 +21,8 @@ fn app() -> Router {
         .connect_lazy("postgres://unused@localhost/unused")
         .unwrap();
     api::router(AppState {
-        pool,
+        pool: pool.clone(),
+        admin_pool: pool,
         storage: Storage::local(std::env::temp_dir().join("brandbuild-test-media")).unwrap(),
         ai: std::sync::Arc::new(brandbuild_backend::ai::Gateway::disabled()),
     })
@@ -51,6 +52,11 @@ async fn protected_routes_answer_401_in_the_error_shape() {
     let response = app().oneshot(request).await.unwrap();
     assert_eq!(response.status(), StatusCode::UNAUTHORIZED);
     assert_eq!(error_of(response).await["code"], "unauthorized");
+
+    let admin_req = Request::get("/admin/v1/me").body(Body::empty()).unwrap();
+    let admin_res = app().oneshot(admin_req).await.unwrap();
+    assert_eq!(admin_res.status(), StatusCode::UNAUTHORIZED);
+    assert_eq!(error_of(admin_res).await["code"], "unauthorized");
 }
 
 #[tokio::test]
