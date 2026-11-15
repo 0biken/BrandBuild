@@ -15,7 +15,11 @@ export type ApiError =
   | "network"
   | "not_found"
   | "forbidden"
-  | "conflict";
+  | "conflict"
+  /** AI is switched off on this server (no model key). */
+  | "unavailable"
+  /** The workspace has used its AI budget for the month. */
+  | "budget";
 
 export type ApiResult<T = void> =
   | { ok: true; data: T }
@@ -154,6 +158,65 @@ export interface DraftItem {
   feedback?: string;
   /** Photos and videos attached so far. */
   media?: MediaRef[];
+  /** Suggested slot (ISO), set on drafts from an AI plan. */
+  scheduledAt?: string;
+  /** Where an AI draft came from. Absent on drafts people wrote. */
+  source?: DraftSource;
+}
+
+export interface DraftSource {
+  kind: "ai_plan";
+  runId?: string;
+  model?: string;
+  promptVersion?: string;
+  /** Verified brand facts the caption relies on. */
+  factIds?: string[];
+  pillar?: string;
+  reasoning?: string;
+  imageBrief?: string | null;
+  warnings?: string[];
+  localTime?: string;
+  timezone?: string;
+}
+
+// ---------- AI planner ----------
+
+export interface PlanGoal {
+  goal: string;
+  weeks: 2 | 4;
+  platforms: PlatformId[];
+  /** YYYY-MM-DD, the first day of the plan in the workspace's timezone. */
+  startDate: string;
+}
+
+export type RunStatus =
+  | "queued"
+  | "context_loading"
+  | "planning"
+  | "generating"
+  | "validating"
+  | "awaiting_review"
+  | "succeeded"
+  | "failed"
+  | "canceled";
+
+export interface DroppedItem {
+  platform: string;
+  date: string;
+  idea: string;
+  reason: string;
+}
+
+export interface AgentRun {
+  id: string;
+  kind: string;
+  status: RunStatus;
+  draftIds: string[];
+  dropped: DroppedItem[];
+  warnings: string[];
+  error?: string;
+  createdAt: string;
+  finishedAt?: string;
 }
 
 // ---------- Analytics ----------

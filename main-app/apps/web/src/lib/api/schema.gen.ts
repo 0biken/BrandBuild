@@ -744,6 +744,83 @@ export interface paths {
         patch: operations["updateWorkspaceSettings"];
         trace?: never;
     };
+    "/v1/drafts/batch": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * createDraftsBatch
+         * @description Saves 1-100 drafts in one transaction, each under its own key. The same key with the same input returns the draft saved the first time; the same key with different input is 409 and nothing is saved.
+         */
+        post: operations["createDraftsBatch"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/plans": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * createPlan
+         * @description Starts an AI plan in the background. The plan only ever saves drafts. 503 ai_unavailable when AI is off, 429 ai_budget when the monthly cap is used.
+         */
+        post: operations["createPlan"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/agent-runs/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** getAgentRun */
+        get: operations["getAgentRun"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/agent-runs/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * cancelAgentRun
+         * @description Stops a run that hasn't saved its drafts yet. 409 if it already finished.
+         */
+        post: operations["cancelAgentRun"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/ai/generate": {
         parameters: {
             query?: never;
@@ -1082,6 +1159,83 @@ export interface components {
             updatedAt: string;
             feedback?: string;
             media?: components["schemas"]["MediaRef"][];
+            /**
+             * Format: date-time
+             * @description Suggested slot (AI plans).
+             */
+            scheduledAt?: string;
+            source?: components["schemas"]["DraftSource"];
+        };
+        /** @description Where an AI draft came from. Absent on drafts people wrote. */
+        DraftSource: {
+            /** @enum {string} */
+            kind: "ai_plan";
+            runId?: string;
+            model?: string;
+            promptVersion?: string;
+            contextVersion?: string;
+            factIds?: string[];
+            pillar?: string;
+            reasoning?: string;
+            imageBrief?: string | null;
+            warnings?: string[];
+            localTime?: string;
+            timezone?: string;
+        };
+        DraftBatchItem: {
+            key: string;
+            title?: string;
+            body?: string;
+            hashtags?: string[];
+            platforms?: components["schemas"]["PlatformId"][];
+            state?: components["schemas"]["DraftState"];
+            /** Format: date-time */
+            scheduledAt?: string;
+            media?: components["schemas"]["MediaRef"][];
+        };
+        DraftBatchInput: {
+            items: components["schemas"]["DraftBatchItem"][];
+        };
+        PlanGoal: {
+            goal: string;
+            /** @enum {integer} */
+            weeks: 2 | 4;
+            platforms: components["schemas"]["PlatformId"][];
+            /** Format: date */
+            startDate: string;
+        };
+        PlanQueued: {
+            runId: string;
+            status: string;
+        };
+        DroppedItem: {
+            platform: string;
+            /** Format: date */
+            date: string;
+            idea: string;
+            reason: string;
+        };
+        AgentRun: {
+            id: string;
+            kind: string;
+            /** @enum {string} */
+            status: "queued" | "context_loading" | "planning" | "generating" | "validating" | "awaiting_review" | "succeeded" | "failed" | "canceled";
+            goal?: components["schemas"]["PlanGoal"] | null;
+            draftIds: string[];
+            dropped: components["schemas"]["DroppedItem"][];
+            warnings: string[];
+            model?: string | null;
+            promptVersion?: string | null;
+            usage: {
+                inputTokens: number;
+                outputTokens: number;
+                costUsd: number;
+            };
+            error?: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            finishedAt?: string;
         };
         /** @description On PATCH every field is optional. */
         DraftInput: {
@@ -1211,6 +1365,9 @@ export interface components {
             hashtags: string[];
             /** Format: date-time */
             bestTime: string;
+            /** @description Verified brand facts the caption relies on. */
+            factIds: string[];
+            warnings: string[];
         };
         StatItem: {
             key: string;
@@ -2588,6 +2745,110 @@ export interface operations {
                 content: {
                     "application/json": {
                         data: components["schemas"]["WorkspaceSettings"];
+                    };
+                };
+            };
+            default: components["responses"]["Error"];
+        };
+    };
+    createDraftsBatch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DraftBatchInput"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["Draft"][];
+                    };
+                };
+            };
+            default: components["responses"]["Error"];
+        };
+    };
+    createPlan: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PlanGoal"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["PlanQueued"];
+                    };
+                };
+            };
+            default: components["responses"]["Error"];
+        };
+    };
+    getAgentRun: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["AgentRun"];
+                    };
+                };
+            };
+            default: components["responses"]["Error"];
+        };
+    };
+    cancelAgentRun: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["AgentRun"];
                     };
                 };
             };

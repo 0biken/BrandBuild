@@ -1069,12 +1069,101 @@ paths:
                 properties:
                   data: {$ref: '#/components/schemas/WorkspaceSettings'}
         default: {$ref: '#/components/responses/Error'}
+  /v1/drafts/batch:
+    post:
+      operationId: createDraftsBatch
+      tags: [content]
+      summary: createDraftsBatch
+      description: Saves 1-100 drafts in one transaction, each under its own key. The same key with the same input returns the draft saved the first time; the same key with different input is 409 and nothing is saved.
+      x-status: matches
+      x-phase: 5
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/DraftBatchInput'}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: {type: array, items: {$ref: '#/components/schemas/Draft'}}
+        default: {$ref: '#/components/responses/Error'}
+  /v1/plans:
+    post:
+      operationId: createPlan
+      tags: [ai]
+      summary: createPlan
+      description: Starts an AI plan in the background. The plan only ever saves drafts. 503 ai_unavailable when AI is off, 429 ai_budget when the monthly cap is used.
+      x-status: matches
+      x-phase: 5
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/PlanGoal'}
+      responses:
+        '202':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: {$ref: '#/components/schemas/PlanQueued'}
+        default: {$ref: '#/components/responses/Error'}
+  /v1/agent-runs/{id}:
+    get:
+      operationId: getAgentRun
+      tags: [ai]
+      summary: getAgentRun
+      x-status: matches
+      x-phase: 5
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: string}}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: {$ref: '#/components/schemas/AgentRun'}
+        default: {$ref: '#/components/responses/Error'}
+  /v1/agent-runs/{id}/cancel:
+    post:
+      operationId: cancelAgentRun
+      tags: [ai]
+      summary: cancelAgentRun
+      description: Stops a run that hasn't saved its drafts yet. 409 if it already finished.
+      x-status: matches
+      x-phase: 5
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: string}}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: {$ref: '#/components/schemas/AgentRun'}
+        default: {$ref: '#/components/responses/Error'}
   /v1/ai/generate:
     post:
       operationId: generatePost
       tags: [ai]
       summary: generatePost
-      x-status: new
+      x-status: matches
       x-phase: 5
       requestBody:
         required: true
@@ -1500,6 +1589,87 @@ components:
         updatedAt: {type: string, format: date-time}
         feedback: {type: string}
         media: {type: array, items: {$ref: '#/components/schemas/MediaRef'}}
+        scheduledAt: {type: string, format: date-time, description: Suggested slot (AI plans).}
+        source: {$ref: '#/components/schemas/DraftSource'}
+    DraftSource:
+      type: object
+      description: Where an AI draft came from. Absent on drafts people wrote.
+      required: [kind]
+      properties:
+        kind: {type: string, enum: [ai_plan]}
+        runId: {type: string}
+        model: {type: string}
+        promptVersion: {type: string}
+        contextVersion: {type: string}
+        factIds: {type: array, items: {type: string}}
+        pillar: {type: string}
+        reasoning: {type: string}
+        imageBrief: {type: [string, 'null']}
+        warnings: {type: array, items: {type: string}}
+        localTime: {type: string}
+        timezone: {type: string}
+    DraftBatchItem:
+      type: object
+      required: [key]
+      properties:
+        key: {type: string}
+        title: {type: string}
+        body: {type: string}
+        hashtags: {type: array, items: {type: string}}
+        platforms: {type: array, items: {$ref: '#/components/schemas/PlatformId'}}
+        state: {$ref: '#/components/schemas/DraftState'}
+        scheduledAt: {type: string, format: date-time}
+        media: {type: array, items: {$ref: '#/components/schemas/MediaRef'}}
+    DraftBatchInput:
+      type: object
+      required: [items]
+      properties:
+        items: {type: array, minItems: 1, maxItems: 100, items: {$ref: '#/components/schemas/DraftBatchItem'}}
+    PlanGoal:
+      type: object
+      required: [goal, weeks, platforms, startDate]
+      properties:
+        goal: {type: string}
+        weeks: {type: integer, enum: [2, 4]}
+        platforms: {type: array, items: {$ref: '#/components/schemas/PlatformId'}}
+        startDate: {type: string, format: date}
+    PlanQueued:
+      type: object
+      required: [runId, status]
+      properties:
+        runId: {type: string}
+        status: {type: string}
+    DroppedItem:
+      type: object
+      required: [platform, date, idea, reason]
+      properties:
+        platform: {type: string}
+        date: {type: string, format: date}
+        idea: {type: string}
+        reason: {type: string}
+    AgentRun:
+      type: object
+      required: [id, kind, status, draftIds, dropped, warnings, usage, createdAt]
+      properties:
+        id: {type: string}
+        kind: {type: string}
+        status: {type: string, enum: [queued, context_loading, planning, generating, validating, awaiting_review, succeeded, failed, canceled]}
+        goal: {oneOf: [{$ref: '#/components/schemas/PlanGoal'}, {type: 'null'}]}
+        draftIds: {type: array, items: {type: string}}
+        dropped: {type: array, items: {$ref: '#/components/schemas/DroppedItem'}}
+        warnings: {type: array, items: {type: string}}
+        model: {type: [string, 'null']}
+        promptVersion: {type: [string, 'null']}
+        usage:
+          type: object
+          required: [inputTokens, outputTokens, costUsd]
+          properties:
+            inputTokens: {type: integer}
+            outputTokens: {type: integer}
+            costUsd: {type: number}
+        error: {type: string}
+        createdAt: {type: string, format: date-time}
+        finishedAt: {type: string, format: date-time}
     DraftInput:
       type: object
       description: On PATCH every field is optional.
@@ -1627,11 +1797,13 @@ components:
         caption: {type: string}
     Generated:
       type: object
-      required: [caption, hashtags, bestTime]
+      required: [caption, hashtags, bestTime, factIds, warnings]
       properties:
         caption: {type: string}
         hashtags: {type: array, items: {type: string}}
         bestTime: {type: string, format: date-time}
+        factIds: {type: array, items: {type: string}, description: Verified brand facts the caption relies on.}
+        warnings: {type: array, items: {type: string}}
     StatItem:
       type: object
       required: [key, value, previous, spark]

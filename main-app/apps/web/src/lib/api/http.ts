@@ -29,6 +29,9 @@ const CODE_TO_ERROR: Record<string, ApiError> = {
   not_available: "network",
   rate_limited: "network",
   internal_error: "network",
+  ai_unavailable: "unavailable",
+  ai_budget: "budget",
+  ai_rejected: "invalid",
 };
 
 /** Turn a response into an ApiResult, per docs/api/openapi.yaml. */

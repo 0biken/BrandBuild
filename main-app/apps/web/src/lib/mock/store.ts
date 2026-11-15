@@ -169,5 +169,7 @@ const ERRORS: ReadonlySet<string> = new Set<ApiError>([
   "not_found",
   "forbidden",
   "conflict",
+  "unavailable",
+  "budget",
 ]);
 const isApiError = (v: string): v is ApiError => ERRORS.has(v);

@@ -92,6 +92,8 @@ export function fromApiDraft(d: ApiDraft): DraftItem {
     action: DRAFT_ACTION[state],
     ...(d.feedback ? { feedback: d.feedback } : {}),
     media: (d.media ?? []).map(fromApiMedia),
+    ...(d.scheduledAt ? { scheduledAt: d.scheduledAt } : {}),
+    ...(d.source ? { source: { ...d.source, kind: "ai_plan" as const } } : {}),
   };
 }
 

@@ -20,6 +20,9 @@ export interface Generated {
   hashtags: string[];
   /** ISO timestamp of the suggested slot. */
   bestTime: string;
+  /** Verified brand facts the caption relies on. */
+  factIds?: string[];
+  warnings?: string[];
 }
 
 /**

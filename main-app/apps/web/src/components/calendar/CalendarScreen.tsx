@@ -14,10 +14,11 @@ import { listPlatforms } from "@/lib/api/accounts";
 import { listDrafts } from "@/lib/api/drafts";
 import { invalidate, useQuery } from "@/lib/api/hooks";
 import { listPosts, reschedulePost } from "@/lib/api/posts";
-import type { PlatformId, PostItem, PostState } from "@/lib/api/types";
-import { formatShort, isPast, isoDay, postDate } from "@/lib/postDates";
+import type { DraftItem, PlatformId, PostItem, PostState } from "@/lib/api/types";
+import { formatShort, formatTime, isPast, isoDay, postDate } from "@/lib/postDates";
 import { ROUTES } from "@/lib/routes";
 import { useNow } from "@/lib/useNow";
+import { PlanDialog } from "./PlanDialog";
 
 type View = "month" | "week" | "list";
 
@@ -58,6 +59,7 @@ export function CalendarScreen() {
   const [hidden, setHidden] = useState<PlatformId[]>([]);
   const [selected, setSelected] = useState<string | null>(null);
   const [dropTarget, setDropTarget] = useState<string | null>(null);
+  const [planOpen, setPlanOpen] = useState(false);
 
   // Placeholder until the client clock is known; a skeleton shows meanwhile.
   const today = now ?? new Date(0);
@@ -78,6 +80,16 @@ export function CalendarScreen() {
     return m;
   }, [visible]);
   const pfById = new Map(platforms.data?.map((p) => [p.id, p]));
+  /** Drafts from an AI plan sit in their suggested slot until someone schedules them. */
+  const aiByDay = useMemo(() => {
+    const m = new Map<string, DraftItem[]>();
+    for (const d of drafts.data ?? []) {
+      if (!d.source || !d.scheduledAt) continue;
+      const k = isoDay(new Date(d.scheduledAt));
+      m.set(k, [...(m.get(k) ?? []), d]);
+    }
+    return m;
+  }, [drafts.data]);
 
   // ----- ranges -----
   const monthStart = new Date(anchor.getFullYear(), anchor.getMonth(), 1);
@@ -185,11 +197,37 @@ export function CalendarScreen() {
     );
   };
 
+  const aiChip = (d: DraftItem, compact = false) => {
+    const sources = d.source?.factIds?.length
+      ? `Uses ${d.source.factIds.length} verified fact${d.source.factIds.length === 1 ? "" : "s"}`
+      : "No prices or claims";
+    const warnings = d.source?.warnings ?? [];
+    return (
+      <Link
+        key={d.id}
+        href={`${ROUTES.compose}?draft=${encodeURIComponent(d.id)}`}
+        title={[d.source?.reasoning, sources, ...warnings].filter(Boolean).join("\n")}
+        className={`flex min-w-0 flex-col gap-0.5 rounded-lg border border-dashed border-[#B9A6E6] bg-[#F6F2FF] px-2 py-1.5 text-xs text-[#2E1F5E] no-underline ${
+          compact ? "max-md:hidden" : ""
+        }`}
+      >
+        <span className="flex min-w-0 flex-wrap items-center gap-1">
+          <span aria-hidden="true" className="rounded bg-[#E4DAFF] px-1 text-[10px] font-semibold whitespace-nowrap">AI</span>
+          {d.scheduledAt && <span className="font-mono text-[11px]">{formatTime(new Date(d.scheduledAt))}</span>}
+          {warnings.length > 0 && <AlertIcon size={12} aria-label={`${warnings.length} warning${warnings.length === 1 ? "" : "s"}`} />}
+        </span>
+        <span className="truncate font-semibold">{d.title}</span>
+        <span className="sr-only">, AI draft, not scheduled. {sources}.</span>
+      </Link>
+    );
+  };
+
   const selectedDate = (() => {
     const [y, m, d] = selectedKey.split("-").map(Number);
     return new Date(y, m - 1, d);
   })();
   const selectedPosts = byDay.get(selectedKey) ?? [];
+  const selectedAi = aiByDay.get(selectedKey) ?? [];
 
   return (
     <div className="mx-auto flex max-w-[1280px] flex-col gap-5">
@@ -224,6 +262,10 @@ export function CalendarScreen() {
           }}
         >
           Today
+        </Button>
+        <Button onClick={() => setPlanOpen(true)} disabled={!now || !platforms.data}>
+          <SparkIcon size={16} />
+          Plan my weeks
         </Button>
         <div role="radiogroup" aria-label="View" className="flex gap-1 rounded-xl bg-page-hover p-1">
           {(["month", "week", "list"] as const).map((v) => (
@@ -333,6 +375,7 @@ export function CalendarScreen() {
                           {d.getDate()}
                         </button>
                         {dayPosts.map((p) => chip(p, view === "month"))}
+                        {(aiByDay.get(key) ?? []).map((d) => aiChip(d, view === "month"))}
                         {view === "month" && dayPosts.length > 0 && (
                           <span aria-hidden="true" className="hidden justify-center gap-0.5 max-md:flex">
                             {dayPosts.slice(0, 3).map((p) => (
@@ -355,7 +398,36 @@ export function CalendarScreen() {
                 <h2 id="day-h" className="m-0 text-base font-semibold">
                   {formatShort(selectedDate).split(",")[0]}
                 </h2>
-                {selectedPosts.length === 0 ? (
+                {selectedAi.length > 0 && (
+                  <ul aria-label="AI drafts" className="m-0 flex list-none flex-col gap-1 p-0">
+                    {selectedAi.map((d) => (
+                      <li key={d.id}>
+                        <Link
+                          href={`${ROUTES.compose}?draft=${encodeURIComponent(d.id)}`}
+                          className="flex flex-col gap-1 rounded-xl px-2 py-2 text-ink no-underline fine:bg-surface-2"
+                        >
+                          <span className="flex items-center gap-3">
+                            <span className="w-16 font-mono text-[13px] text-muted">{d.scheduledAt ? formatTime(new Date(d.scheduledAt)) : ""}</span>
+                            <span className="min-w-0 flex-1 truncate text-[15px] font-semibold">{d.title}</span>
+                            <span className="rounded-md bg-[#E4DAFF] px-2 py-0.5 text-xs font-semibold text-[#2E1F5E]">AI draft</span>
+                          </span>
+                          <span className="pl-[76px] text-xs text-muted">
+                            {d.source?.factIds?.length
+                              ? `Uses ${d.source.factIds.length} verified fact${d.source.factIds.length === 1 ? "" : "s"}.`
+                              : "No prices or claims."}
+                            {d.source?.reasoning ? ` ${d.source.reasoning}` : ""}
+                          </span>
+                          {(d.source?.warnings ?? []).map((w) => (
+                            <span key={w} className="flex items-center gap-1 pl-[76px] text-xs text-[#4A2E00]">
+                              <AlertIcon size={12} /> {w}
+                            </span>
+                          ))}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                {selectedPosts.length === 0 && selectedAi.length > 0 ? null : selectedPosts.length === 0 ? (
                   <p className="m-0 flex flex-wrap items-center gap-3 text-sm text-muted">
                     Nothing planned.
                     <Link href={`${ROUTES.compose}?date=${selectedKey}`} className="font-semibold">Plan a post</Link>
@@ -439,6 +511,18 @@ export function CalendarScreen() {
             )}
           </aside>
         </div>
+      )}
+      {now && platforms.data && (
+        <PlanDialog
+          open={planOpen}
+          onClose={() => setPlanOpen(false)}
+          today={today}
+          platforms={platforms.data.filter((p) => !p.off).map((p) => ({ id: p.id, name: p.name }))}
+          onDone={(run) => {
+            if (run.status !== "awaiting_review") return;
+            toast({ tone: "success", message: `${run.draftIds.length} AI drafts added. Nothing is scheduled until you approve it.` });
+          }}
+        />
       )}
     </div>
   );
