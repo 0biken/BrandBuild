@@ -302,6 +302,16 @@ pub fn select(
             dropped.push(drop(&c, "too close to another post in this plan".into()));
             continue;
         }
+        if chosen
+            .iter()
+            .any(|k| k.platform == c.platform && k.date == c.date && k.local_time == c.local_time)
+        {
+            dropped.push(drop(
+                &c,
+                "another post in this plan already has that time".into(),
+            ));
+            continue;
+        }
         *per_platform.entry(c.platform.clone()).or_default() += 1;
         *per_pillar
             .entry((c.platform.clone(), c.pillar.to_lowercase()))
@@ -385,6 +395,24 @@ pub mod tests {
                 summary: "Meet the new shades of our everyday lip gloss collection".into(),
             }],
         }
+    }
+
+    #[test]
+    fn one_post_per_platform_slot() {
+        let snap = snapshot();
+        let a = cand("ig", 9, "Morning light on the new shades");
+        let mut b = cand("ig", 9, "A completely different idea about packing orders");
+        b.idea = "Second".into();
+        let mut c = cand(
+            "fb",
+            9,
+            "Tell us which shade you wore to the party last night",
+        );
+        c.idea = "Third".into();
+        let (chosen, dropped) = select(vec![a, b, c], &snap, 2);
+        assert_eq!(chosen.len(), 2);
+        assert_eq!(dropped.len(), 1);
+        assert!(dropped[0].reason.contains("already has that time"));
     }
 
     #[test]
