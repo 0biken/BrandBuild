@@ -3,7 +3,7 @@ import { photo } from "@/lib/images";
 
 const card = "group relative overflow-hidden rounded-[28px] p-8 md:p-9";
 const h3 =
-  "m-0 font-sans text-[clamp(1.5rem,2.4vw,2.25rem)] leading-[1.05] font-semibold tracking-[-0.035em]";
+  "m-0 font-sans text-[clamp(1.3rem,2.4vw,2.25rem)] leading-[1.05] font-semibold tracking-[-0.035em]";
 
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const FILLED = [true, false, true, false, true, false, false];
@@ -15,9 +15,9 @@ const FILLED = [true, false, true, false, true, false, false];
  */
 export function Features() {
   return (
-    <section id="features" className="scroll-mt-24 bg-surface-2 px-6 py-32 md:px-12 md:py-48">
+    <section id="features" className="scroll-mt-24 bg-surface-2 px-5 py-20 md:px-12 md:py-48">
       <div className="mx-auto max-w-[1280px]">
-        <h2 className="m-0 max-w-5xl font-sans text-[clamp(2.5rem,5vw,4.5rem)] leading-[1] font-semibold tracking-[-0.04em]">
+        <h2 className="m-0 max-w-5xl font-sans text-[clamp(2rem,5vw,4.5rem)] leading-[1] font-semibold tracking-[-0.04em]">
           Everything a small brand needs to post every week.
         </h2>
 

@@ -1,5 +1,5 @@
 import AxeBuilder from "@axe-core/playwright";
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Page } from "./fixtures";
 
 test.beforeEach(async ({ context, baseURL }) => {
   await context.addCookies([{ name: "bb_session", value: "mock", url: baseURL! }]);
@@ -52,6 +52,8 @@ test("a link from Post detail opens that post, and reject moves it to Drafts", a
 
 test("editors see who must approve, with no decision buttons", async ({ page }) => {
   await page.goto("/app/approvals");
+  // The demo helper attaches once the app's scripts load.
+  await page.waitForFunction(() => "__bbMock" in window);
   await page.evaluate(() => (window as unknown as { __bbMock: { setRole(r: string): void } }).__bbMock.setRole("editor"));
   await page.reload();
   await open(page, /Weekend gloss giveaway/);

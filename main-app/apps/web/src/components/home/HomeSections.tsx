@@ -106,9 +106,16 @@ export function Stats({ stats, accountCount }: { stats?: StatItem[]; accountCoun
           ? stats.map((s) => (
               <li key={s.label} className={`${card} flex flex-col gap-2 p-[18px] max-md:p-3.5`}>
                 <span className="text-xs font-semibold text-muted">{s.label}</span>
-                <span className="font-display text-[38px] leading-none font-bold tracking-[-0.03em] max-md:text-[30px]">
+                {s.missing ? (
+                  <span className="text-[15px] leading-snug text-muted">
+                    No data yet
+                  </span>
+                ) : (
+                <span className="font-display text-[38px] leading-none font-bold tracking-[-0.03em] max-md:text-[26px]">
                   {s.value}
                 </span>
+                )}
+                {!s.missing && (
                 <div className="flex items-center justify-between gap-2">
                   <span
                     className="flex items-center gap-1 text-sm font-semibold"
@@ -129,6 +136,7 @@ export function Stats({ stats, accountCount }: { stats?: StatItem[]; accountCoun
                     />
                   </svg>
                 </div>
+                )}
               </li>
             ))
           : Array.from({ length: 4 }, (_, i) => (

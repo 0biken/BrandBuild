@@ -2,12 +2,14 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState, type FormEvent } from "react";
+import { useState, useSyncExternalStore, type FormEvent } from "react";
 import { Alert } from "@/components/ui/Alert";
 import { Button } from "@/components/ui/Button";
 import { Field } from "@/components/ui/Field";
 import { PasswordField } from "@/components/ui/PasswordField";
-import { HOME_HREF, logIn } from "@/lib/api/auth";
+import { SuccessDialog } from "@/components/ui/SuccessDialog";
+import { HOME_HREF, logIn, requestCode } from "@/lib/api/auth";
+import { setPendingIdentifier } from "@/lib/pending";
 import { Divider } from "./AuthShell";
 import { SocialButtons } from "./SocialButtons";
 
@@ -18,12 +20,18 @@ function safeNext(next: string | null): string {
     : HOME_HREF;
 }
 
+const noop = () => () => {};
+/** Settings sends people here with ?deleted=1 after deleting their account. */
+const readDeleted = () => new URLSearchParams(window.location.search).has("deleted");
+
 export function LogInForm() {
   const router = useRouter();
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [failed, setFailed] = useState(false);
+  const [done, setDone] = useState(false);
+  const deleted = useSyncExternalStore(noop, readDeleted, () => false);
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
@@ -31,24 +39,39 @@ export function LogInForm() {
     setBusy(true);
     setFailed(false);
     const res = await logIn({ identifier, password });
+    if (!res.ok && res.error === "forbidden") {
+      // Right password, email not verified yet: send a fresh code and finish signup.
+      setPendingIdentifier(identifier.trim());
+      await requestCode(identifier.trim());
+      router.push("/code");
+      return;
+    }
     if (!res.ok) {
       setBusy(false);
       setFailed(true);
       return;
     }
+    setDone(true);
+  }
+
+  function goIn() {
     router.push(safeNext(new URLSearchParams(window.location.search).get("next")));
   }
 
   return (
     <form onSubmit={onSubmit} noValidate className="flex flex-col gap-5">
       <div className="flex flex-col gap-1.5">
-        <h1 className="m-0 font-display text-[32px] font-bold tracking-[-0.03em]">
+        <h1 className="m-0 font-display text-[32px] font-bold tracking-[-0.03em] max-md:text-[26px]">
           Welcome back
         </h1>
         <p className="m-0 text-[15px] text-ink-2">
           New here? <Link href="/signup" className="font-semibold">Create an account</Link>
         </p>
       </div>
+
+      {deleted && !failed && (
+        <Alert tone="info">Your account has been deleted. Thanks for trying Brandbuild.</Alert>
+      )}
 
       {failed && (
         <Alert tone="error">
@@ -90,6 +113,8 @@ export function LogInForm() {
 
       <Divider>or log in with</Divider>
       <SocialButtons />
+
+      <SuccessDialog open={done} title="Welcome back" body="You're now logged in." onContinue={goIn} />
     </form>
   );
 }

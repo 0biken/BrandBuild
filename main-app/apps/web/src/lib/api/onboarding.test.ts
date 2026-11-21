@@ -3,7 +3,14 @@ import { mockConfig, resetMockDb } from "@/lib/mock/store";
 import { finishConnect, listAccounts, startConnect } from "./accounts";
 import { signUp } from "./auth";
 import { completeStep, getOnboarding, nextStepPath } from "./onboarding";
-import { sendStudentCode, skipStudentCheck, studentIdProblem, verifyStudentCode } from "./verify";
+import {
+  isAcademicEmail,
+  sendStudentCode,
+  skipStudentCheck,
+  studentIdProblem,
+  submitStudentId,
+  verifyStudentCode,
+} from "./verify";
 
 beforeEach(() => {
   mockConfig.latencyMs = 0;
@@ -28,6 +35,7 @@ describe("onboarding (mock)", () => {
 
   it("verifies a school email with the mock code", async () => {
     expect((await sendStudentCode("not-an-email")).ok).toBe(false);
+    expect(await sendStudentCode("ada@gmail.com")).toEqual({ ok: false, error: "invalid" });
     await sendStudentCode("ada@stu.ui.edu.ng");
     expect(await verifyStudentCode("111111")).toEqual({ ok: false, error: "invalid" });
     const ok = await verifyStudentCode("123456");
@@ -37,6 +45,20 @@ describe("onboarding (mock)", () => {
   it("not a student leaves Student Access", async () => {
     const res = await skipStudentCheck();
     expect(res.ok && res.data.status).toBe("not_student");
+  });
+
+  it("counts the same school addresses as the API", () => {
+    for (const ok of ["ada@stu.ui.edu.ng", "ada@ox.ac.uk", "ada@mit.edu", "Ada@Student.Unilag.EDU.NG"]) {
+      expect(isAcademicEmail(ok)).toBe(true);
+    }
+    for (const no of ["ada@gmail.com", "ada@edu.com", "ada@ac.com", "not-an-email", "ada@.edu"]) {
+      expect(isAcademicEmail(no)).toBe(false);
+    }
+  });
+
+  it("student ID upload isn't available yet", async () => {
+    const file = new File(["x"], "id.png", { type: "image/png" });
+    expect(await submitStudentId(file)).toEqual({ ok: false, error: "network" });
   });
 
   it("checks student ID files", () => {

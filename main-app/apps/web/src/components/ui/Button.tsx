@@ -5,7 +5,7 @@ export type ButtonVariant = "primary" | "outline" | "ghost" | "soft" | "ghostOnD
 export type ButtonSize = "md" | "lg";
 
 const base =
-  "press inline-flex cursor-pointer select-none items-center justify-center gap-2 rounded-xl border-0 font-sans font-semibold no-underline " +
+  "press inline-flex cursor-pointer select-none items-center justify-center gap-2 rounded-xl font-sans font-semibold no-underline " +
   "disabled:cursor-not-allowed aria-disabled:cursor-not-allowed aria-disabled:pointer-events-none";
 
 // "fine:" is the hover variant gated to fine pointers (see globals.css).

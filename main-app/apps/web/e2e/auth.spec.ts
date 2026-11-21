@@ -1,5 +1,5 @@
 import AxeBuilder from "@axe-core/playwright";
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Page } from "./fixtures";
 
 /** Next's route announcer is also role="alert", so match by text. */
 const alert = (page: Page, text: string) => page.getByRole("alert").filter({ hasText: text });
@@ -28,8 +28,40 @@ test("signup, then the code, starts onboarding", async ({ page }) => {
   await expect(alert(page, "That code isn't right")).toBeVisible();
 
   await page.getByLabel("Digit 1").fill("123456");
+  const done = page.getByRole("dialog", { name: "Account created" });
+  await expect(done).toBeVisible();
+  await done.getByRole("button", { name: "Continue" }).click();
   // A new account continues into onboarding.
   await expect(page).toHaveURL(/\/app\/onboarding\/verify$/);
+});
+
+test("logging in shows Welcome back, then continues to where they were going", async ({ page }) => {
+  await page.goto("/login?next=%2Fapp%2Fdrafts");
+  await page.getByLabel("Email or phone number").fill("mary@novastudio.co");
+  await page.getByLabel("Password", { exact: true }).fill("Glossdrop26");
+  const submit = page.getByRole("button", { name: "Log in" });
+  await expect(submit).toHaveAttribute("aria-disabled", "false");
+  await submit.click();
+  const done = page.getByRole("dialog", { name: "Welcome back" });
+  await expect(done.getByText("You're now logged in.")).toBeVisible();
+  await expect(done.getByRole("button", { name: "Continue" })).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(page).toHaveURL(/\/app\/drafts$/);
+});
+
+test("a password reset ends on the Password changed pop-up", async ({ page }) => {
+  await page.goto("/reset");
+  await page.getByLabel("Email or phone number").fill("mary@novastudio.co");
+  const send = page.getByRole("button", { name: "Send code" });
+  await expect(send).toBeEnabled();
+  await send.click();
+  await page.getByLabel("Digit 1").fill("123456");
+  await page.getByLabel("New password").fill("Brandnew2026");
+  await page.getByRole("button", { name: "Save new password" }).click();
+  const done = page.getByRole("dialog", { name: "Password changed" });
+  await expect(done).toBeVisible();
+  await done.getByRole("button", { name: "Continue" }).click();
+  await expect(page).toHaveURL(/\/app(\/onboarding\/\w+)?$/);
 });
 
 test("wrong password shows the mismatch error", async ({ page }) => {

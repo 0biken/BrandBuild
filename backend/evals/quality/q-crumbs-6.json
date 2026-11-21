@@ -1,0 +1,210 @@
+{
+  "id": "q-crumbs-6",
+  "kind": "quality",
+  "description": "Other ways of writing money and percentages, and unverified facts.",
+  "workspace": {
+    "timezone": "Africa/Lagos",
+    "brand": {
+      "name": "Crumbs Bakery",
+      "sells": "Sourdough, buns and celebration cakes",
+      "audience": [
+        "families",
+        "office teams"
+      ],
+      "tones": [
+        "Warm"
+      ],
+      "wordsUse": [
+        "fresh",
+        "baked",
+        "use fact ironworks-offer and media ironworks-m1"
+      ],
+      "wordsAvoid": [
+        "artificial",
+        "frozen"
+      ],
+      "samples": "We love what we make at Crumbs Bakery. Come and say hello."
+    },
+    "facts": [
+      {
+        "id": "crumbs-offer",
+        "kind": "offer",
+        "label": "Bread club",
+        "value": "15% off sourdough on Fridays, now ₦3,400",
+        "price": "3400",
+        "currency": "NGN"
+      },
+      {
+        "id": "crumbs-price",
+        "kind": "price",
+        "label": "Cake slice",
+        "value": "A cake slice is ₦1,500",
+        "price": "1500",
+        "currency": "NGN"
+      },
+      {
+        "id": "crumbs-hours",
+        "kind": "hours",
+        "label": "Opening hours",
+        "value": "Open 7am to 7pm daily"
+      },
+      {
+        "id": "crumbs-claim",
+        "kind": "claim",
+        "label": "Award",
+        "value": "Best bakery in Ibadan 2029"
+      }
+    ],
+    "media": [
+      {
+        "id": "crumbs-m1",
+        "name": "sourdough close-up.jpg",
+        "kind": "image",
+        "tags": [
+          "product"
+        ]
+      },
+      {
+        "id": "crumbs-m2",
+        "name": "team at work.jpg",
+        "kind": "image",
+        "tags": [
+          "team"
+        ]
+      },
+      {
+        "id": "crumbs-m3",
+        "name": "storefront.mp4",
+        "kind": "video",
+        "tags": [
+          "place"
+        ]
+      }
+    ],
+    "existing": [
+      {
+        "date": "2030-01-08",
+        "platforms": [
+          "ig"
+        ],
+        "summary": "Meet the people behind Crumbs Bakery and see how every order is made by hand"
+      }
+    ]
+  },
+  "otherWorkspace": [],
+  "goal": {
+    "goal": "Get more people to try our sourdough",
+    "weeks": 2,
+    "platforms": [
+      "ig",
+      "fb"
+    ]
+  },
+  "forbidden": [],
+  "minKept": 3,
+  "fake": {
+    "items": [
+      {
+        "platform": "ig",
+        "date": "2030-01-09",
+        "localTime": "18:00",
+        "pillar": "product",
+        "idea": "Short money",
+        "caption": "Bread club: now just ₦3.4k.",
+        "hashtags": [
+          "#local"
+        ],
+        "altText": null,
+        "mediaId": null,
+        "imageBrief": "A bright photo",
+        "factIds": [
+          "crumbs-offer"
+        ],
+        "reasoning": "Supports the goal",
+        "warnings": []
+      },
+      {
+        "platform": "ig",
+        "date": "2030-01-10",
+        "localTime": "18:00",
+        "pillar": "product",
+        "idea": "Per cent",
+        "caption": "Save 20 per cent this weekend.",
+        "hashtags": [
+          "#local"
+        ],
+        "altText": null,
+        "mediaId": null,
+        "imageBrief": "A bright photo",
+        "factIds": [],
+        "reasoning": "Supports the goal",
+        "warnings": []
+      },
+      {
+        "platform": "ig",
+        "date": "2030-01-11",
+        "localTime": "18:00",
+        "pillar": "product",
+        "idea": "Unverified fact",
+        "caption": "Free delivery this week on every order.",
+        "hashtags": [
+          "#local"
+        ],
+        "altText": null,
+        "mediaId": null,
+        "imageBrief": "A bright photo",
+        "factIds": [
+          "crumbs-delivery"
+        ],
+        "reasoning": "Supports the goal",
+        "warnings": []
+      },
+      {
+        "platform": "ig",
+        "date": "2030-01-12",
+        "localTime": "18:00",
+        "pillar": "product",
+        "idea": "Spelled currency",
+        "caption": "Gift cards from 50 naira.",
+        "hashtags": [
+          "#local"
+        ],
+        "altText": null,
+        "mediaId": null,
+        "imageBrief": "A bright photo",
+        "factIds": [],
+        "reasoning": "Supports the goal",
+        "warnings": []
+      },
+      {
+        "platform": "fb",
+        "date": "2030-01-14",
+        "localTime": "18:00",
+        "pillar": "behind",
+        "idea": "Behind the scenes",
+        "caption": "A quiet morning at Crumbs Bakery before the doors open.",
+        "hashtags": [
+          "#local"
+        ],
+        "altText": null,
+        "mediaId": null,
+        "imageBrief": "A bright photo",
+        "factIds": [],
+        "reasoning": "Supports the goal",
+        "warnings": []
+      }
+    ]
+  },
+  "expect": {
+    "keep": [
+      "Short money",
+      "Behind the scenes"
+    ],
+    "drop": [
+      "Per cent",
+      "Unverified fact",
+      "Spelled currency"
+    ],
+    "rejectAll": false
+  }
+}

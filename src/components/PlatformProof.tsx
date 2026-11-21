@@ -63,7 +63,7 @@ export function PlatformProof() {
       {/* Left Side (White) */}
       <div className="flex-1 px-5 sm:px-6 py-12 sm:py-20 lg:py-32 lg:px-20 flex flex-col justify-center items-start border-b-2 lg:border-b-0 lg:border-r-2 border-brand-black bg-[#fcfcfc]">
         <div className="platform-header max-w-[500px]">
-          <h2 className="font-display font-black text-[32px] sm:text-[48px] leading-[1.05] tracking-tight text-brand-black mb-4 sm:mb-6">
+          <h2 className="font-display font-black text-[28px] sm:text-[48px] leading-[1.05] tracking-tight text-brand-black mb-4 sm:mb-6">
             Know exactly what’s working. <br />
             And what isn’t.
           </h2>

@@ -13,7 +13,7 @@ export function Marquee() {
     >
       {PLATFORMS.map((p) => (
         <li key={p} className="flex items-center gap-14 whitespace-nowrap">
-          <span className="font-sans text-[clamp(2.5rem,6vw,5rem)] leading-none font-semibold tracking-[-0.04em] text-ink">
+          <span className="font-sans text-[clamp(1.75rem,6vw,5rem)] leading-none font-semibold tracking-[-0.04em] text-ink">
             {p}
           </span>
           <span className="size-3 rounded-full bg-primary" />

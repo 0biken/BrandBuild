@@ -42,11 +42,11 @@ export function Students() {
     <section
       ref={root}
       id="students"
-      className="scroll-mt-24 overflow-hidden bg-forest px-6 py-32 text-forest-text md:px-12 md:py-48"
+      className="scroll-mt-24 overflow-hidden bg-forest px-5 py-20 text-forest-text md:px-12 md:py-48"
     >
       <div className="mx-auto grid max-w-[1280px] items-center gap-16 md:grid-cols-12">
         <div className="flex flex-col gap-8 md:col-span-6">
-          <h2 className="m-0 font-sans text-[clamp(2.5rem,5vw,4.5rem)] leading-[1] font-semibold tracking-[-0.045em] text-white">
+          <h2 className="m-0 font-sans text-[clamp(2rem,5vw,4.5rem)] leading-[1] font-semibold tracking-[-0.045em] text-white">
             Running a brand from your hostel? It&apos;s free.
           </h2>
           <p className="m-0 max-w-lg text-[19px] leading-relaxed text-forest-ink">

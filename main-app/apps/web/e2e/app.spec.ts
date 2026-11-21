@@ -1,5 +1,5 @@
 import AxeBuilder from "@axe-core/playwright";
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./fixtures";
 
 // Signed in via the mock session cookie the proxy checks.
 test.beforeEach(async ({ context, baseURL }) => {
@@ -46,16 +46,99 @@ test("search with no match offers a way back", async ({ page }) => {
   await expect(page.getByRole("article")).toHaveCount(6);
 });
 
-test("planned screens say they're coming, unknown ones 404", async ({ page }) => {
-  await page.goto("/app/settings");
-  await expect(page.getByText("This screen is on its way")).toBeVisible();
+test("brand profile edits are saved, and Home picks up the new name", async ({ page }) => {
+  await page.goto("/app/brand");
+  const save = page.getByRole("button", { name: "Save changes" });
+  await expect(page.getByLabel("Brand name")).toHaveValue("Nova Studio");
+  await expect(save).toBeDisabled();
+  await page.getByLabel("Brand name").fill("Nova Studio Co");
+  await expect(save).toBeEnabled();
+  await save.click();
+  await expect(page.getByText("Brand kit saved.")).toBeVisible();
+  await expect(save).toBeDisabled();
+  await page.goto("/app");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Nova Studio Co");
+});
+
+test("discarding brand profile changes restores the saved values", async ({ page }) => {
+  await page.goto("/app/brand");
+  await page.getByLabel("Brand name").fill("Something else");
+  await page.getByRole("button", { name: "Discard changes" }).click();
+  await expect(page.getByLabel("Brand name")).toHaveValue("Nova Studio");
+});
+
+test("the Home bell shows unread notifications and opens the list", async ({ page }) => {
+  await page.goto("/app");
+  await page.getByRole("link", { name: "Notifications, 3 unread" }).click();
+  await expect(page).toHaveURL(/\/app\/notifications$/);
+  await expect(page.getByText("3 unread")).toBeVisible();
+});
+
+test("opening a notification marks it read and goes to the post", async ({ page }) => {
+  await page.goto("/app/notifications");
+  await page.getByRole("link", { name: /Weekend gloss giveaway needs your approval/ }).click();
+  await expect(page).toHaveURL(/\/app\/approvals\?post=post-9$/);
+  // The mock store saves after a short delay; wait for Approvals' data
+  // (fetched after the save started) before reloading.
+  await expect(page.getByRole("main").getByText("Weekend gloss giveaway").filter({ visible: true }).first()).toBeVisible();
+  await page.goto("/app/notifications");
+  await expect(page.getByText("2 unread")).toBeVisible();
+});
+
+test("mark all as read empties the Unread tab", async ({ page }) => {
+  await page.goto("/app/notifications");
+  await page.getByRole("tab", { name: "Unread (3)" }).click();
+  await expect(page.getByRole("tabpanel").getByRole("listitem")).toHaveCount(3);
+  await page.getByRole("button", { name: "Mark all as read" }).click();
+  await expect(page.getByText("No unread notifications")).toBeVisible();
+  await expect(page.getByText("You're all caught up")).toBeVisible();
+  await page.getByRole("button", { name: "Show all" }).click();
+  await expect(page.getByRole("tabpanel").getByRole("listitem")).toHaveCount(6);
+});
+
+test("billing shows the current plan, unknown app screens 404", async ({ page }) => {
+  await page.goto("/app/billing");
+  await expect(page.getByRole("heading", { level: 1, name: "Plan and billing" })).toBeVisible();
+  await expect(page.getByText("Student", { exact: true })).toBeVisible();
+  await expect(page.getByText("No invoices yet")).toBeVisible();
+  await expect(page.getByRole("link", { name: "Compare plans" })).toHaveAttribute("href", "/pricing");
   const res = await page.goto("/app/not-a-screen");
   expect(res?.status()).toBe(404);
 });
 
+test("log out asks first; Cancel keeps you signed in", async ({ page }) => {
+  await page.goto("/app/settings");
+  await page.getByRole("button", { name: "Log out" }).click();
+  const confirm = page.getByRole("dialog", { name: "Log out?" });
+  await expect(confirm).toBeVisible();
+  await confirm.getByRole("button", { name: "Cancel" }).click();
+  await expect(confirm).toBeHidden();
+  await expect(page).toHaveURL(/\/app\/settings$/);
+
+  await page.getByRole("button", { name: "Log out" }).click();
+  await confirm.getByRole("button", { name: "Log out" }).click();
+  await expect(page).toHaveURL(/\/login$/);
+});
+
+test("deleting the account asks first, then signs out with a notice", async ({ page }) => {
+  await page.goto("/app/settings");
+  await page.getByRole("button", { name: "Delete account" }).click();
+  const confirm = page.getByRole("dialog", { name: "Delete your account?" });
+  await expect(confirm.getByText(/can't be undone/)).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(confirm).toBeHidden();
+
+  await page.getByRole("button", { name: "Delete account" }).click();
+  await confirm.getByRole("button", { name: "Delete account" }).click();
+  await expect(page).toHaveURL(/\/login\?deleted=1$/);
+  await expect(page.getByText("Your account has been deleted.")).toBeVisible();
+  await page.goto("/app");
+  await expect(page).toHaveURL(/\/login\?next=/);
+});
+
 test.describe("accessibility", () => {
   test.use({ reducedMotion: "reduce" });
-  for (const path of ["/app", "/app/drafts"]) {
+  for (const path of ["/app", "/app/drafts", "/app/notifications", "/app/billing"]) {
     test(`no serious accessibility violations on ${path}`, async ({ page }) => {
       await page.goto(path);
       await page.getByRole("heading", { level: 1 }).waitFor();

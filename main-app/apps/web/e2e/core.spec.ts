@@ -1,5 +1,5 @@
 import AxeBuilder from "@axe-core/playwright";
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Page } from "./fixtures";
 
 test.beforeEach(async ({ context, baseURL }) => {
   await context.addCookies([{ name: "bb_session", value: "mock", url: baseURL! }]);
