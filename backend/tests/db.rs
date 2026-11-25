@@ -44,6 +44,7 @@ const RLS_TABLES: &[&str] = &[
     "notification_prefs",
     "brand_facts",
     "draft_keys",
+    "student_submissions",
 ];
 /// Tables with a tenant_id that are deliberately left without RLS (see migration 0005).
 const NO_RLS_TABLES: &[&str] = &["tenant_memberships", "outbox", "agent_runs"];
@@ -51,6 +52,7 @@ const NO_RLS_TABLES: &[&str] = &["tenant_memberships", "outbox", "agent_runs"];
 struct Pools {
     owner: PgPool,
     app: PgPool,
+    admin: PgPool,
 }
 
 async fn pools() -> Option<Pools> {
@@ -90,6 +92,10 @@ async fn pools() -> Option<Pools> {
     .await
     .unwrap();
     db::migrate(&owner).await.unwrap();
+    sqlx::query("ALTER ROLE brandbuild_admin LOGIN PASSWORD 'brandbuild_admin'")
+        .execute(&mut *conn)
+        .await
+        .unwrap();
     sqlx::query("SELECT pg_advisory_unlock(727001)")
         .execute(&mut *conn)
         .await
@@ -100,7 +106,27 @@ async fn pools() -> Option<Pools> {
         .connect(&app_url)
         .await
         .unwrap();
-    Some(Pools { owner, app })
+    let admin_url = std::env::var("TEST_ADMIN_DATABASE_URL").unwrap_or_else(|_| {
+        let mut url = reqwest::Url::parse(&owner_url).unwrap();
+        url.set_username("brandbuild_admin").unwrap();
+        url.set_password(Some("brandbuild_admin")).unwrap();
+        url.to_string()
+    });
+    let admin = PgPoolOptions::new()
+        .max_connections(2)
+        .connect(&admin_url)
+        .await
+        .unwrap();
+    Some(Pools { owner, app, admin })
+}
+
+fn admin_app(p: &Pools) -> Router {
+    api::router(AppState {
+        pool: p.app.clone(),
+        admin_pool: p.admin.clone(),
+        storage: Storage::local(std::env::temp_dir().join("brandbuild-test-media")).unwrap(),
+        ai: std::sync::Arc::new(brandbuild_backend::ai::Gateway::disabled()),
+    })
 }
 
 /// A workspace with one member of the given role, created as the owner.
@@ -455,8 +481,8 @@ async fn student_check_sets_the_plan() {
     assert_eq!(plan, "creator");
 
     let (status, body) = call(app(&p.app), "POST", "/v1/student-check/id", who, None).await;
-    assert_eq!(status, StatusCode::NOT_IMPLEMENTED);
-    assert_eq!(body["error"]["code"], "not_available");
+    assert_eq!(status, StatusCode::BAD_REQUEST);
+    assert_eq!(body["error"]["code"], "invalid_request");
 }
 
 #[tokio::test]
@@ -1726,7 +1752,7 @@ async fn staff_roles_and_session_revocation_work() {
             .to_string(),
         ))
         .unwrap();
-    let res = app(&p.owner).oneshot(req).await.unwrap();
+    let res = admin_app(&p).oneshot(req).await.unwrap();
     assert_eq!(res.status(), StatusCode::CREATED);
     let bytes = to_bytes(res.into_body(), 64 * 1024).await.unwrap();
     let created: Value = serde_json::from_slice(&bytes).unwrap();
@@ -1739,7 +1765,7 @@ async fn staff_roles_and_session_revocation_work() {
         .header("x-dev-admin-email", &support_email)
         .body(Body::empty())
         .unwrap();
-    let res = app(&p.owner).oneshot(req).await.unwrap();
+    let res = admin_app(&p).oneshot(req).await.unwrap();
     assert_eq!(res.status(), StatusCode::FORBIDDEN);
 
     // Give support user a real session, then disable the user and verify session is revoked.
@@ -1761,7 +1787,7 @@ async fn staff_roles_and_session_revocation_work() {
         .header(header::COOKIE, format!("bb_admin_session={raw_token}"))
         .body(Body::empty())
         .unwrap();
-    let res = app(&p.owner).oneshot(req).await.unwrap();
+    let res = admin_app(&p).oneshot(req).await.unwrap();
     assert_eq!(res.status(), StatusCode::OK);
 
     // Disable support user via admin API.
@@ -1772,7 +1798,7 @@ async fn staff_roles_and_session_revocation_work() {
         .header(header::CONTENT_TYPE, "application/json")
         .body(Body::from(json!({ "isActive": false }).to_string()))
         .unwrap();
-    let res = app(&p.owner).oneshot(req).await.unwrap();
+    let res = admin_app(&p).oneshot(req).await.unwrap();
     assert_eq!(res.status(), StatusCode::OK);
 
     // Old session cookie is now rejected.
@@ -1782,7 +1808,7 @@ async fn staff_roles_and_session_revocation_work() {
         .header(header::COOKIE, format!("bb_admin_session={raw_token}"))
         .body(Body::empty())
         .unwrap();
-    let res = app(&p.owner).oneshot(req).await.unwrap();
+    let res = admin_app(&p).oneshot(req).await.unwrap();
     assert_eq!(res.status(), StatusCode::UNAUTHORIZED);
 
     // Audit log is append-only.
@@ -1819,7 +1845,7 @@ async fn admin_overview_and_workspace_search_enforce_roles_and_isolation() {
         .header("x-dev-admin-email", &reviewer_email)
         .body(Body::empty())
         .unwrap();
-    let res = app(&p.owner).oneshot(req).await.unwrap();
+    let res = admin_app(&p).oneshot(req).await.unwrap();
     assert_eq!(res.status(), StatusCode::FORBIDDEN);
 
     // Support can fetch overview, search workspaces, view detail, and add a staff note.
@@ -1829,7 +1855,7 @@ async fn admin_overview_and_workspace_search_enforce_roles_and_isolation() {
         .header("x-dev-admin-email", &support_email)
         .body(Body::empty())
         .unwrap();
-    let res = app(&p.owner).oneshot(req).await.unwrap();
+    let res = admin_app(&p).oneshot(req).await.unwrap();
     assert_eq!(res.status(), StatusCode::OK);
 
     let req = Request::builder()
@@ -1838,7 +1864,7 @@ async fn admin_overview_and_workspace_search_enforce_roles_and_isolation() {
         .header("x-dev-admin-email", &support_email)
         .body(Body::empty())
         .unwrap();
-    let res = app(&p.owner).oneshot(req).await.unwrap();
+    let res = admin_app(&p).oneshot(req).await.unwrap();
     assert_eq!(res.status(), StatusCode::OK);
 
     let req = Request::builder()
@@ -1850,7 +1876,7 @@ async fn admin_overview_and_workspace_search_enforce_roles_and_isolation() {
             json!({ "note": "Owner asked about scheduling" }).to_string(),
         ))
         .unwrap();
-    let res = app(&p.owner).oneshot(req).await.unwrap();
+    let res = admin_app(&p).oneshot(req).await.unwrap();
     assert_eq!(res.status(), StatusCode::CREATED);
 
     // Customer role cannot call admin SECURITY DEFINER functions.
@@ -1927,7 +1953,7 @@ async fn publishing_holds_compose_and_release_does_not_burst_overdue_posts() {
         ))
         .unwrap();
     assert_eq!(
-        app(&p.owner).oneshot(req).await.unwrap().status(),
+        admin_app(&p).oneshot(req).await.unwrap().status(),
         StatusCode::FORBIDDEN
     );
 
@@ -1946,7 +1972,7 @@ async fn publishing_holds_compose_and_release_does_not_burst_overdue_posts() {
             .to_string(),
         ))
         .unwrap();
-    let res = app(&p.owner).oneshot(req).await.unwrap();
+    let res = admin_app(&p).oneshot(req).await.unwrap();
     assert_eq!(res.status(), StatusCode::CREATED);
     let ws_hold: Value =
         serde_json::from_slice(&to_bytes(res.into_body(), 64 * 1024).await.unwrap()).unwrap();
@@ -1966,7 +1992,7 @@ async fn publishing_holds_compose_and_release_does_not_burst_overdue_posts() {
             .to_string(),
         ))
         .unwrap();
-    let res = app(&p.owner).oneshot(req).await.unwrap();
+    let res = admin_app(&p).oneshot(req).await.unwrap();
     assert_eq!(res.status(), StatusCode::CREATED);
     let global_hold: Value =
         serde_json::from_slice(&to_bytes(res.into_body(), 64 * 1024).await.unwrap()).unwrap();
@@ -1980,7 +2006,7 @@ async fn publishing_holds_compose_and_release_does_not_burst_overdue_posts() {
         .body(Body::from(json!({ "reason": "Card updated" }).to_string()))
         .unwrap();
     assert_eq!(
-        app(&p.owner).oneshot(req).await.unwrap().status(),
+        admin_app(&p).oneshot(req).await.unwrap().status(),
         StatusCode::OK
     );
 
@@ -2002,7 +2028,7 @@ async fn publishing_holds_compose_and_release_does_not_burst_overdue_posts() {
         .body(Body::from(json!({ "reason": "All clear" }).to_string()))
         .unwrap();
     assert_eq!(
-        app(&p.owner).oneshot(req).await.unwrap().status(),
+        admin_app(&p).oneshot(req).await.unwrap().status(),
         StatusCode::OK
     );
 
@@ -2034,18 +2060,20 @@ async fn ai_guardrails_reserve_cap_and_suspend_workspace() {
     .await
     .unwrap();
 
-    // Lower global daily budget to $0.05 via admin API.
+    let used: f64 = sqlx::query_scalar("SELECT COALESCE(sum(CASE WHEN status='reserved' THEN reserved_usd ELSE COALESCE(settled_usd,reserved_usd) END),0)::float8 FROM admin.ai_reservations WHERE status IN ('reserved','settled','uncertain') AND created_at>=date_trunc('day',now() AT TIME ZONE 'UTC') AT TIME ZONE 'UTC'")
+        .fetch_one(&p.owner).await.unwrap();
+    // Leave $0.05 of headroom without depending on other tests' existing usage.
     let req = Request::builder()
         .method("PATCH")
         .uri("/admin/v1/ai/policy")
         .header("x-dev-admin-email", &ops_email)
         .header(header::CONTENT_TYPE, "application/json")
         .body(Body::from(
-            json!({ "globalDailyUsdBudget": 0.05, "reason": "Test cap" }).to_string(),
+            json!({ "globalDailyUsdBudget": used + 0.05, "reason": "Test cap" }).to_string(),
         ))
         .unwrap();
     assert_eq!(
-        app(&p.owner).oneshot(req).await.unwrap().status(),
+        admin_app(&p).oneshot(req).await.unwrap().status(),
         StatusCode::OK
     );
 
@@ -2083,7 +2111,7 @@ async fn ai_guardrails_reserve_cap_and_suspend_workspace() {
         .header("x-dev-admin-email", &ops_email)
         .body(Body::empty())
         .unwrap();
-    let res = app(&p.owner).oneshot(req).await.unwrap();
+    let res = admin_app(&p).oneshot(req).await.unwrap();
     assert_eq!(res.status(), StatusCode::OK);
     let body: Value =
         serde_json::from_slice(&to_bytes(res.into_body(), 64 * 1024).await.unwrap()).unwrap();
@@ -2100,7 +2128,7 @@ async fn ai_guardrails_reserve_cap_and_suspend_workspace() {
         ))
         .unwrap();
     assert_eq!(
-        app(&p.owner).oneshot(req).await.unwrap().status(),
+        admin_app(&p).oneshot(req).await.unwrap().status(),
         StatusCode::OK
     );
 
@@ -2113,6 +2141,11 @@ async fn ai_guardrails_reserve_cap_and_suspend_workspace() {
     .unwrap();
     assert!(!r3.0);
     assert_eq!(r3.1.as_deref(), Some("workspace_suspended"));
+    // A global policy must not leak into unrelated planner tests.
+    sqlx::query("UPDATE admin.ai_policies SET global_daily_usd_budget=50 WHERE id=1")
+        .execute(&p.owner)
+        .await
+        .unwrap();
 }
 
 #[tokio::test]
@@ -2163,7 +2196,7 @@ async fn student_id_review_optimistic_version_and_expiry_work() {
         ))
         .unwrap();
     assert_eq!(
-        app(&p.owner).oneshot(req).await.unwrap().status(),
+        admin_app(&p).oneshot(req).await.unwrap().status(),
         StatusCode::CONFLICT
     );
 
@@ -2186,7 +2219,7 @@ async fn student_id_review_optimistic_version_and_expiry_work() {
         ))
         .unwrap();
     assert_eq!(
-        app(&p.owner).oneshot(req).await.unwrap().status(),
+        admin_app(&p).oneshot(req).await.unwrap().status(),
         StatusCode::OK
     );
 
@@ -2223,8 +2256,8 @@ async fn support_session_approval_attribution_and_isolation_work() {
     std::env::set_var("ALLOW_DEV_ADMIN_AUTH", "true");
     let (ws_id, owner_id) = workspace(&p.owner, "owner").await;
     let draft_id: Uuid = sqlx::query_scalar(
-        "INSERT INTO posts(tenant_id, title, body, platforms, state, created_by)
-         VALUES($1, 'Old title', 'Old body', ARRAY['ig'], 'draft', $2) RETURNING id",
+        "INSERT INTO posts(tenant_id, title, platforms, state, created_by)
+         VALUES($1, 'Old title', ARRAY['ig'], 'draft', $2) RETURNING id",
     )
     .bind(ws_id)
     .bind(owner_id)
@@ -2232,6 +2265,10 @@ async fn support_session_approval_attribution_and_isolation_work() {
     .await
     .unwrap();
 
+    let initial = json!({"schema":"social_content.v1","caption":"Old body","hashtags":[],"media":[],"aspectRatio":"1:1"});
+    sqlx::query("INSERT INTO post_versions(tenant_id,post_id,version,content,content_hash,created_by) VALUES($1,$2,1,$3,$4,$5)")
+        .bind(ws_id).bind(draft_id).bind(&initial).bind(brandbuild_backend::domain::content_hash(&initial)).bind(owner_id)
+        .execute(&p.owner).await.unwrap();
     let sup_email = format!("sup-sess-{}@brandbuild.co", Uuid::new_v4());
     let ops_email = format!("ops-sess-{}@brandbuild.co", Uuid::new_v4());
     sqlx::query(
@@ -2262,7 +2299,7 @@ async fn support_session_approval_attribution_and_isolation_work() {
             .to_string(),
         ))
         .unwrap();
-    let res = app(&p.owner).oneshot(req).await.unwrap();
+    let res = admin_app(&p).oneshot(req).await.unwrap();
     assert_eq!(res.status(), StatusCode::CREATED);
     let body: Value =
         serde_json::from_slice(&to_bytes(res.into_body(), 64 * 1024).await.unwrap()).unwrap();
@@ -2276,7 +2313,7 @@ async fn support_session_approval_attribution_and_isolation_work() {
         .body(Body::empty())
         .unwrap();
     assert_eq!(
-        app(&p.owner).oneshot(req).await.unwrap().status(),
+        admin_app(&p).oneshot(req).await.unwrap().status(),
         StatusCode::FORBIDDEN
     );
 
@@ -2288,7 +2325,7 @@ async fn support_session_approval_attribution_and_isolation_work() {
         .body(Body::empty())
         .unwrap();
     assert_eq!(
-        app(&p.owner).oneshot(req).await.unwrap().status(),
+        admin_app(&p).oneshot(req).await.unwrap().status(),
         StatusCode::OK
     );
 
@@ -2299,7 +2336,7 @@ async fn support_session_approval_attribution_and_isolation_work() {
         .body(Body::empty())
         .unwrap();
     assert_eq!(
-        app(&p.owner).oneshot(req).await.unwrap().status(),
+        admin_app(&p).oneshot(req).await.unwrap().status(),
         StatusCode::OK
     );
 
@@ -2315,7 +2352,7 @@ async fn support_session_approval_attribution_and_isolation_work() {
         ))
         .unwrap();
     assert_eq!(
-        app(&p.owner).oneshot(req).await.unwrap().status(),
+        admin_app(&p).oneshot(req).await.unwrap().status(),
         StatusCode::OK
     );
 
@@ -2346,8 +2383,8 @@ async fn unclear_publish_resolution_fencing_and_idempotency_work() {
     .unwrap();
 
     let post_id: Uuid = sqlx::query_scalar(
-        "INSERT INTO posts(tenant_id, title, body, platforms, state, created_by)
-         VALUES($1, 'Launch post', 'Hello world', ARRAY['ig'], 'unknown_outcome', $2) RETURNING id",
+        "INSERT INTO posts(tenant_id, title, platforms, state, created_by)
+         VALUES($1, 'Launch post', ARRAY['ig'], 'reconciling', $2) RETURNING id",
     )
     .bind(ws_id)
     .bind(owner_id)
@@ -2367,8 +2404,8 @@ async fn unclear_publish_resolution_fencing_and_idempotency_work() {
     .unwrap();
 
     let attempt_id: Uuid = sqlx::query_scalar(
-        "INSERT INTO publish_attempts(tenant_id, post_id, post_version_id, idempotency_key, state, worker_id)
-         VALUES($1, $2, $3, 'idem-1', 'unknown', 'worker-old') RETURNING id",
+        "INSERT INTO publish_attempts(tenant_id, post_id, post_version_id, idempotency_key, state, worker_id, finished_at)
+         VALUES($1, $2, $3, 'idem-1', 'unknown', 'worker-old', now()) RETURNING id",
     )
     .bind(ws_id)
     .bind(post_id)
@@ -2394,12 +2431,17 @@ async fn unclear_publish_resolution_fencing_and_idempotency_work() {
         ))
         .unwrap();
     assert_eq!(
-        app(&p.owner).oneshot(req).await.unwrap().status(),
+        admin_app(&p).oneshot(req).await.unwrap().status(),
         StatusCode::UNPROCESSABLE_ENTITY
     );
 
     // Save connector evidence confirming retry eligibility, then retry with fencing + idempotency.
-    sqlx::query("SELECT admin.save_reconcile_evidence($1, '{\"status\":\"confirmed_not_published\",\"retryEligible\":true}'::jsonb, NULL, NULL)")
+    sqlx::query("UPDATE publish_attempts SET finished_at=now(),lease_token=NULL WHERE id=$1")
+        .bind(attempt_id)
+        .execute(&p.owner)
+        .await
+        .unwrap();
+    sqlx::query("SELECT admin.save_reconcile_evidence($1, 1, '{\"status\":\"confirmed_not_published\",\"retryEligible\":true}'::jsonb, NULL, NULL)")
         .bind(attempt_id)
         .execute(&p.owner)
         .await
@@ -2420,7 +2462,7 @@ async fn unclear_publish_resolution_fencing_and_idempotency_work() {
         .header(header::CONTENT_TYPE, "application/json")
         .body(Body::from(retry_body.clone()))
         .unwrap();
-    let res1 = app(&p.owner).oneshot(req).await.unwrap();
+    let res1 = admin_app(&p).oneshot(req).await.unwrap();
     assert_eq!(res1.status(), StatusCode::OK);
 
     // Replaying the same idempotencyKey returns the cached result without creating a 3rd attempt.
@@ -2431,7 +2473,7 @@ async fn unclear_publish_resolution_fencing_and_idempotency_work() {
         .header(header::CONTENT_TYPE, "application/json")
         .body(Body::from(retry_body))
         .unwrap();
-    let res2 = app(&p.owner).oneshot(req).await.unwrap();
+    let res2 = admin_app(&p).oneshot(req).await.unwrap();
     assert_eq!(res2.status(), StatusCode::OK);
 
     let count: i64 = sqlx::query_scalar("SELECT count(*) FROM publish_attempts WHERE post_id = $1")
