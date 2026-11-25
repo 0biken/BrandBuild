@@ -6,7 +6,7 @@ PRD: https://claude.ai/artifact/RWL9oMe2LsNdvCusZ4haXo
 
 Phase numbers here differ from the 10-phase roadmap: TASKS Phase 0 = roadmap Phase 3 (backend foundations), Phase 1 = roadmap 4 (content), Phase 2 = roadmap 5 (AI planner), Phase 3 = roadmap 6 (social connections), Phase 4 = roadmap 7 (approvals and publishing). The admin console is roadmap Phase 8.
 
-Status last checked against the code on 15 Nov 2026 (branch `feat/content-backend`). Database tests in `backend/tests/db.rs` run in CI only; there is no local Postgres on the main dev machine.
+Status last checked against the code on 16 Nov 2026. The admin implementation and corrective migrations 0017–0024 were verified with PostgreSQL 16 and the customer/admin runtime roles: 88 backend tests passed without skips. Database tests can run locally with the test URLs in `docs/admin-runtime.md` and also run in CI.
 
 Stack: Rust (Axum + SQLx) API + worker · Next.js/React + TypeScript web · PostgreSQL (RLS) ·
 S3-compatible object storage · KMS/secret manager · Redis (cache/rate limits only)
@@ -75,7 +75,7 @@ Release path: Now → Build MVP → 🚦 Beta gate → Private beta → 🚦 Lau
 - [~] Cargo workspace + both Next.js apps; CI runs fmt, clippy, tests, web lint/build — CI done (`.github/workflows/backend.yml`, `web.yml`); single crate in `backend/`, no `apps/admin` yet
 - [~] Local dev: docker-compose with Postgres + MinIO + Redis — Postgres only (`backend/docker-compose.yml`)
 - [~] Sign up with email or Google; create a workspace (CA-1) — email sign-up creates a workspace; Google sign-in missing
-- [ ] Staff sign-in for the admin console via SSO; separate staff role, never a tenant member
+- [~] Staff sign-in for the admin console via SSO; separate staff role, never a tenant member — Google Workspace OIDC and staff role/session boundaries implemented; production organisation/client configuration and live SSO verification remain
 - [x] Tables: `tenants`, `memberships`, `brands`, `audit_events` with composite `(tenant_id, id)` keys
 - [x] Server-built `TenantContext`; `set_config('app.tenant_id', …, true)` per transaction
 - [x] RLS `ENABLE` + `FORCE` on every tenant table; runtime DB role without BYPASSRLS, separate migration role
@@ -150,10 +150,10 @@ Release path: Now → Build MVP → 🚦 Beta gate → Private beta → 🚦 Lau
 - [ ] ✅ Exit: failure-injection tests show no blind retries on ambiguous timeout; two workers can't publish one job
 
 ### Admin console (built alongside Phases 0–4)
-- [ ] Find a workspace by email or name; see plan, connected accounts, post job states (AD-1)
-- [ ] Pause publishing: everyone, one workspace, one account (AD-2) — pausing stops new claims but can't cancel a request already sent; say so in the UI. Today "paused" exists only in web mock data
-- [ ] Review and resolve "outcome unclear" posts (AD-3)
-- [ ] AI spend and usage per workspace, with limits (AD-4)
+- [x] Find a workspace by email or name; see plan, connected accounts, post job states (AD-1) — admin app and tenant-safe staff API implemented
+- [x] Pause publishing: everyone, one workspace, one account (AD-2) — persistent composed holds, pre-submit checks, and overdue-post handling verified; requests already sent cannot be canceled by a hold
+- [~] Review and resolve "outcome unclear" posts (AD-3) — evidence/version checks, fencing, terminal retry guards and crash recovery verified; live provider reconciliation is not configured
+- [x] AI spend and usage per workspace, with limits (AD-4) — reservations, uncertain-cost accounting and staff guardrails implemented and verified with runtime roles
 
 ### Metrics honesty (moved up from section I)
 - [x] Missing ≠ zero: a metric we don't have is shown as "no data", never 0 (24HR)
@@ -162,7 +162,7 @@ Release path: Now → Build MVP → 🚦 Beta gate → Private beta → 🚦 Lau
 - [ ] Invite teammates as Owner, Editor or Reviewer (CA-13)
 - [ ] Per-post reach and engagement + weekly summary email (CA-14)
 - [ ] AI-generated images (CA-15)
-- [ ] Read-only support access with stated reason, logged (AD-5)
+- [x] Read-only support access with stated reason, logged (AD-5) — limited draft edits require a live second approver; role changes/logout revoke access; customer notifications are durably queued
 - [ ] Feature flags and AI prompt versions per workspace (AD-6)
 
 ---
