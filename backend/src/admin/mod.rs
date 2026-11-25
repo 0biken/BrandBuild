@@ -27,6 +27,7 @@ pub mod overview;
 pub mod publish_attempts;
 pub mod staff;
 pub mod student_reviews;
+pub mod support_email;
 pub mod support_sessions;
 pub mod workspaces;
 

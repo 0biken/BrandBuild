@@ -253,22 +253,26 @@ pub(crate) async fn send_code_email(
     code: &str,
     purpose: &str,
 ) -> Result<(), AuthApiError> {
-    let from: Mailbox = std::env::var("SMTP_FROM")
-        .map_err(|_| AuthApiError::EmailUnavailable)?
-        .parse()
-        .map_err(|_| AuthApiError::EmailUnavailable)?;
     let subject = match purpose {
         "verify_email" => "Your BrandBuild verification code",
         "student_email" => "Your BrandBuild student check code",
         _ => "Your BrandBuild password reset code",
     };
+    send_email(to, subject, &format!(
+        "Your BrandBuild code is {code}. It expires in {CODE_TTL_MINUTES} minutes. If you did not request this, you can ignore this email."
+    )).await
+}
+
+pub(crate) async fn send_email(to: &str, subject: &str, body: &str) -> Result<(), AuthApiError> {
+    let from: Mailbox = std::env::var("SMTP_FROM")
+        .map_err(|_| AuthApiError::EmailUnavailable)?
+        .parse()
+        .map_err(|_| AuthApiError::EmailUnavailable)?;
     let message = Message::builder()
         .from(from)
         .to(to.parse().map_err(|_| AuthApiError::Invalid)?)
         .subject(subject)
-        .body(format!(
-            "Your BrandBuild code is {code}. It expires in {CODE_TTL_MINUTES} minutes. If you did not request this, you can ignore this email."
-        ))
+        .body(body.to_owned())
         .map_err(|_| AuthApiError::Internal)?;
     smtp_transport()?.send(message).await.map_err(|error| {
         tracing::error!(error=?error, "code email delivery failed");

@@ -617,7 +617,7 @@ function WorkspaceDetailContent({
               Request support access
             </h2>
             <p className="m-0 text-sm text-muted">
-              Customer is notified on activation. Write-enabled sessions require approval from another Operations or Staff admin.
+              A customer notification is queued on activation. Write-enabled sessions require approval from another Operations or Staff admin.
             </p>
             <label className="flex flex-col gap-1 text-sm font-semibold">
               Access mode

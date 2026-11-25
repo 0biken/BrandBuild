@@ -6,7 +6,7 @@ use axum::{
 use chrono::{DateTime, Duration, Utc};
 use serde::Deserialize;
 use serde_json::{json, Value};
-use sqlx::Row;
+use sqlx::{Postgres, Row, Transaction};
 use uuid::Uuid;
 
 use crate::{
@@ -224,6 +224,16 @@ pub async fn activate_session(
         StaffRole::StaffAdmin,
     ])?;
     let mut tx = state.admin_pool.begin().await?;
+    let eligible: Option<Value> =
+        sqlx::query_scalar("SELECT admin.support_session_guard($1,$2,false,true)")
+            .bind(id)
+            .bind(staff.staff_user_id)
+            .fetch_one(&mut *tx)
+            .await?;
+    if eligible.is_none() {
+        return Err(AuthError::Forbidden.into());
+    }
+
     let row = sqlx::query(
         "SELECT tenant_id, requested_by, status, duration_minutes, ticket_ref, reason
          FROM admin.support_sessions WHERE id = $1 FOR UPDATE",
@@ -252,7 +262,7 @@ pub async fn activate_session(
 
     sqlx::query(
         "UPDATE admin.support_sessions
-         SET status = 'active', customer_notified_at = $2, activated_at = $2, expires_at = $3
+         SET status = 'active', customer_notification_queued_at = $2, activated_at = $2, expires_at = $3
          WHERE id = $1",
     )
     .bind(id)
@@ -260,6 +270,14 @@ pub async fn activate_session(
     .bind(expires_at)
     .execute(&mut *tx)
     .await?;
+
+    let queued: bool = sqlx::query_scalar("SELECT admin.queue_support_notification($1)")
+        .bind(id)
+        .fetch_one(&mut *tx)
+        .await?;
+    if !queued {
+        return Err(ApiError::Conflict);
+    }
 
     let active_roles: Vec<String> = staff.roles.iter().map(|r| r.as_str().to_string()).collect();
     record(
@@ -278,7 +296,7 @@ pub async fn activate_session(
             support_session_id: Some(id),
             before_state: Some(json!({ "status": "approved" })),
             after_state: Some(
-                json!({ "status": "active", "expiresAt": expires_at, "customerNotifiedAt": now }),
+                json!({ "status": "active", "expiresAt": expires_at, "customerNotificationQueuedAt": now }),
             ),
             outcome: "success",
         },
@@ -286,7 +304,7 @@ pub async fn activate_session(
     .await?;
 
     tx.commit().await?;
-    tracing::info!(%id, %tenant_id, %ticket_ref, "support session activated; customer notification recorded");
+    tracing::info!(%id, %tenant_id, %ticket_ref, "support session activated; customer notification queued");
 
     Ok(Json(json!({
         "data": {
@@ -368,40 +386,28 @@ pub async fn end_session(
 }
 
 async fn require_active_session(
-    state: &AppState,
+    tx: &mut Transaction<'_, Postgres>,
     staff: &StaffContext,
     session_id: Uuid,
     require_write: bool,
 ) -> Result<(Uuid, String, DateTime<Utc>, String), ApiError> {
-    let row = sqlx::query(
-        "SELECT tenant_id, mode, status, requested_by, expires_at, ticket_ref
-         FROM admin.support_sessions WHERE id = $1",
-    )
-    .bind(session_id)
-    .fetch_optional(&state.admin_pool)
-    .await?
-    .ok_or(ApiError::NotFound)?;
-
-    let tenant_id: Uuid = row.try_get("tenant_id")?;
-    let mode: String = row.try_get("mode")?;
-    let status: String = row.try_get("status")?;
-    let requested_by: Uuid = row.try_get("requested_by")?;
-    let expires_at: Option<DateTime<Utc>> = row.try_get("expires_at")?;
-    let ticket_ref: String = row.try_get("ticket_ref")?;
-
-    if requested_by != staff.staff_user_id {
-        return Err(AuthError::Forbidden.into());
-    }
-    let Some(exp) = expires_at else {
-        return Err(AuthError::Forbidden.into());
-    };
-    if status != "active" || exp <= Utc::now() {
-        return Err(AuthError::Forbidden.into());
-    }
-    if require_write && mode != "read_write" {
-        return Err(AuthError::Forbidden.into());
-    }
-    Ok((tenant_id, mode, exp, ticket_ref))
+    let row: Option<Value> =
+        sqlx::query_scalar("SELECT admin.support_session_guard($1,$2,$3,false)")
+            .bind(session_id)
+            .bind(staff.staff_user_id)
+            .bind(require_write)
+            .fetch_one(&mut **tx)
+            .await?;
+    let row = row.ok_or(AuthError::Forbidden)?;
+    Ok((
+        serde_json::from_value(row["tenant_id"].clone()).map_err(|_| ApiError::Internal)?,
+        row["mode"].as_str().ok_or(ApiError::Internal)?.to_owned(),
+        serde_json::from_value(row["expires_at"].clone()).map_err(|_| ApiError::Internal)?,
+        row["ticket_ref"]
+            .as_str()
+            .ok_or(ApiError::Internal)?
+            .to_owned(),
+    ))
 }
 
 pub async fn view_workspace(
@@ -409,12 +415,13 @@ pub async fn view_workspace(
     staff: StaffContext,
     Path(id): Path<Uuid>,
 ) -> Result<Json<Value>, ApiError> {
+    let mut tx = state.admin_pool.begin().await?;
     let (tenant_id, mode, expires_at, ticket_ref) =
-        require_active_session(&state, &staff, id, false).await?;
+        require_active_session(&mut tx, &staff, id, false).await?;
 
     let mut view: Value = sqlx::query_scalar("SELECT admin.support_workspace_view($1)")
         .bind(tenant_id)
-        .fetch_one(&state.admin_pool)
+        .fetch_one(&mut *tx)
         .await?;
     view["session"] = json!({
         "id": id,
@@ -423,7 +430,6 @@ pub async fn view_workspace(
         "ticketRef": ticket_ref,
     });
 
-    let mut tx = state.admin_pool.begin().await?;
     let active_roles: Vec<String> = staff.roles.iter().map(|r| r.as_str().to_string()).collect();
     record(
         &mut tx,
@@ -464,29 +470,45 @@ pub async fn edit_draft(
     Path((id, post_id)): Path<(Uuid, Uuid)>,
     Json(input): Json<SupportDraftEditInput>,
 ) -> Result<Json<Value>, ApiError> {
+    let mut tx = state.admin_pool.begin().await?;
     let (tenant_id, _mode, _expires_at, ticket_ref) =
-        require_active_session(&state, &staff, id, true).await?;
+        require_active_session(&mut tx, &staff, id, true).await?;
     let title = input.title.trim();
     let body = input.body.trim();
     if title.is_empty() || title.chars().count() > 200 || body.chars().count() > 5000 {
         return Err(ApiError::InvalidInput);
     }
 
-    let mut tx = state.admin_pool.begin().await?;
+    let row: Option<Value> = sqlx::query_scalar("SELECT admin.support_draft_for_edit($1,$2,$3,$4)")
+        .bind(tenant_id)
+        .bind(post_id)
+        .bind(staff.staff_user_id)
+        .bind(id)
+        .fetch_one(&mut *tx)
+        .await?;
+    let row = row.ok_or(ApiError::NotFound)?;
+    let version = row["version"].as_i64().ok_or(ApiError::Internal)? as i32;
+    let mut content = row["content"].clone();
+    content["caption"] = json!(body);
+    crate::content::check_content(&content)?;
+    let hash = crate::domain::content_hash(&content);
     let res: Value =
-        sqlx::query_scalar("SELECT admin.support_update_draft($1, $2, $3, $4, $5, $6)")
+        sqlx::query_scalar("SELECT admin.support_update_draft($1, $2, $3, $4, $5, $6, $7, $8)")
             .bind(tenant_id)
             .bind(post_id)
             .bind(title)
-            .bind(body)
+            .bind(&content)
+            .bind(hash)
             .bind(staff.staff_user_id)
             .bind(id)
+            .bind(version)
             .fetch_one(&mut *tx)
             .await?;
 
     if !res["ok"].as_bool().unwrap_or(false) {
         return match res["reason"].as_str() {
             Some("not_found") => Err(ApiError::NotFound),
+            Some("forbidden") => Err(AuthError::Forbidden.into()),
             _ => Err(ApiError::Conflict),
         };
     }

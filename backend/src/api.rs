@@ -157,6 +157,8 @@ pub enum ApiError {
     NotAvailable,
     #[error("we couldn't send the email; try again in a moment")]
     EmailUnavailable,
+    #[error("student ID scanning is unavailable; please try again later")]
+    ScannerUnavailable,
     #[error("internal server error")]
     Internal,
     #[error("AI planning isn't available right now; you can still plan posts yourself")]
@@ -199,6 +201,7 @@ impl IntoResponse for ApiError {
             Self::CodeExpired => (StatusCode::GONE, "code_expired"),
             Self::NotAvailable => (StatusCode::NOT_IMPLEMENTED, "not_available"),
             Self::EmailUnavailable => (StatusCode::SERVICE_UNAVAILABLE, "email_unavailable"),
+            Self::ScannerUnavailable => (StatusCode::SERVICE_UNAVAILABLE, "scanner_unavailable"),
             Self::Internal => (StatusCode::INTERNAL_SERVER_ERROR, "internal_error"),
             Self::AiUnavailable => (StatusCode::SERVICE_UNAVAILABLE, "ai_unavailable"),
             Self::AiBudget => (StatusCode::TOO_MANY_REQUESTS, "ai_budget"),
@@ -669,46 +672,16 @@ async fn customer_notices(
     State(s): State<AppState>,
     ctx: TenantContext,
 ) -> Result<Json<Value>, ApiError> {
-    let incidents = sqlx::query(
-        "SELECT id, title, platforms, customer_message, created_at FROM admin.active_customer_incidents()",
-    )
-    .fetch_all(&s.admin_pool)
-    .await?;
-    let holds = sqlx::query(
-        "SELECT id, scope, channel_id, customer_message, created_at FROM admin.active_holds_for_target($1, NULL)",
-    )
-    .bind(ctx.tenant_id)
-    .fetch_all(&s.admin_pool)
-    .await?;
-
-    let incident_items: Vec<Value> = incidents
-        .into_iter()
-        .map(|r| {
-            json!({
-                "id": r.get::<Uuid, _>("id"),
-                "title": r.get::<String, _>("title"),
-                "platforms": r.get::<Vec<String>, _>("platforms"),
-                "customerMessage": r.get::<String, _>("customer_message"),
-                "createdAt": r.get::<DateTime<Utc>, _>("created_at"),
-            })
-        })
-        .collect();
-
-    let hold_items: Vec<Value> = holds
-        .into_iter()
-        .map(|r| {
-            json!({
-                "id": r.get::<Uuid, _>("id"),
-                "scope": r.get::<String, _>("scope"),
-                "channelId": r.get::<Option<Uuid>, _>("channel_id"),
-                "customerMessage": r.get::<String, _>("customer_message"),
-                "createdAt": r.get::<DateTime<Utc>, _>("created_at"),
-            })
-        })
-        .collect();
+    let incidents: Value = sqlx::query_scalar("SELECT admin.active_customer_incidents()")
+        .fetch_one(&s.admin_pool)
+        .await?;
+    let holds: Value = sqlx::query_scalar("SELECT admin.active_holds_for_target($1, NULL)")
+        .bind(ctx.tenant_id)
+        .fetch_one(&s.admin_pool)
+        .await?;
 
     Ok(Json(
-        json!({"data": {"incidents": incident_items, "holds": hold_items}}),
+        json!({"data": {"incidents": incidents, "holds": holds}}),
     ))
 }
 

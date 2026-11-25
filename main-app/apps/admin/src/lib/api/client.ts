@@ -516,6 +516,7 @@ export interface SupportSession {
   approvedBy: string | null;
   approvedByName: string | null;
   customerNotifiedAt: string | null;
+  customerNotificationQueuedAt?: string | null;
   activatedAt: string | null;
   expiresAt: string | null;
   endedAt: string | null;
