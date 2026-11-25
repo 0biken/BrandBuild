@@ -420,8 +420,8 @@ async fn publish(
     }
     let key = domain::publish_idempotency_key(ctx.tenant_id, id, facts.version_id);
     let inserted: Option<Uuid> = sqlx::query_scalar(
-        "INSERT INTO publish_attempts(tenant_id,post_id,post_version_id,channel_id,idempotency_key,state,started_at)
-         VALUES($1,$2,$3,(SELECT channel_id FROM posts WHERE id=$2),$4,'running',now())
+        "INSERT INTO publish_attempts(tenant_id,post_id,post_version_id,channel_id,idempotency_key,state)
+         VALUES($1,$2,$3,(SELECT channel_id FROM posts WHERE id=$2),$4,'queued')
          ON CONFLICT(tenant_id,idempotency_key) DO NOTHING RETURNING id",
     )
     .bind(ctx.tenant_id)
@@ -442,6 +442,13 @@ async fn publish(
             )
             .await?;
             set_state(&mut tx, id, "publishing", None).await?;
+            outbox::enqueue(
+                &mut tx,
+                ctx.tenant_id,
+                "post.publish",
+                json!({"attempt_id": attempt, "post_id": id}),
+            )
+            .await?;
             attempt
         }
         None => {
@@ -451,9 +458,14 @@ async fn publish(
                 .await?
         }
     };
+    let attempt_state: String =
+        sqlx::query_scalar("SELECT state::text FROM publish_attempts WHERE id=$1")
+            .bind(attempt)
+            .fetch_one(&mut *tx)
+            .await?;
     tx.commit().await?;
     Ok(Json(json!({
-        "data": { "id": attempt, "postId": id, "postVersionId": facts.version_id, "state": "running" }
+        "data": { "id": attempt, "postId": id, "postVersionId": facts.version_id, "state": attempt_state }
     })))
 }
 

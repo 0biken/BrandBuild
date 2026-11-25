@@ -4,7 +4,6 @@ use axum::{
 };
 use serde::Deserialize;
 use serde_json::{json, Value};
-use sqlx::Row;
 use uuid::Uuid;
 
 use crate::{
@@ -49,27 +48,25 @@ pub async fn reconcile_attempt(
     Path(id): Path<Uuid>,
 ) -> Result<Json<Value>, ApiError> {
     staff.require(&[StaffRole::Operations, StaffRole::StaffAdmin])?;
-    let row = sqlx::query(
-        "SELECT pa.tenant_id, pa.idempotency_key, pa.platform_post_id, c.provider
-         FROM publish_attempts pa
-         LEFT JOIN channels c ON c.id = pa.channel_id
-         WHERE pa.id = $1",
-    )
-    .bind(id)
-    .fetch_optional(&state.admin_pool)
-    .await?
-    .ok_or(ApiError::NotFound)?;
-
-    let tenant_id: Uuid = row.try_get("tenant_id")?;
-    let idempotency_key: String = row.try_get("idempotency_key")?;
-    let platform_post_id: Option<String> = row.try_get("platform_post_id")?;
-    let provider: String = row
-        .try_get::<Option<String>, _>("provider")?
-        .unwrap_or_else(|| "ig".to_owned());
+    let target: Option<Value> = sqlx::query_scalar("SELECT admin.get_reconcile_target($1)")
+        .bind(id)
+        .fetch_one(&state.admin_pool)
+        .await?;
+    let target = target.ok_or(ApiError::NotFound)?;
+    let tenant_id = target["tenantId"]
+        .as_str()
+        .and_then(|s| Uuid::parse_str(s).ok())
+        .ok_or(ApiError::InvalidInput)?;
+    let idempotency_key = target["idempotencyKey"]
+        .as_str()
+        .ok_or(ApiError::InvalidInput)?;
+    let platform_post_id = target["platformPostId"].as_str();
+    let provider = target["provider"].as_str().ok_or(ApiError::InvalidInput)?;
+    let expected_version = target["version"].as_i64().ok_or(ApiError::InvalidInput)? as i32;
 
     let connector = DefaultNoopConnector;
     let outcome = connector
-        .reconcile(&provider, &idempotency_key, platform_post_id.as_deref())
+        .reconcile(provider, idempotency_key, platform_post_id)
         .await;
 
     let (evidence, receipt, resolved_pid) = match &outcome {
@@ -108,15 +105,19 @@ pub async fn reconcile_attempt(
         ),
     };
 
-    let saved: Value = sqlx::query_scalar("SELECT admin.save_reconcile_evidence($1, $2, $3, $4)")
-        .bind(id)
-        .bind(&evidence)
-        .bind(&receipt)
-        .bind(&resolved_pid)
-        .fetch_one(&state.admin_pool)
-        .await?;
-
     let mut tx = state.admin_pool.begin().await?;
+    let saved: Value =
+        sqlx::query_scalar("SELECT admin.save_reconcile_evidence($1, $2, $3, $4, $5)")
+            .bind(id)
+            .bind(expected_version)
+            .bind(&evidence)
+            .bind(&receipt)
+            .bind(&resolved_pid)
+            .fetch_one(&mut *tx)
+            .await?;
+    if saved["ok"] != true {
+        return Err(ApiError::Conflict);
+    }
     let active_roles: Vec<String> = staff.roles.iter().map(|r| r.as_str().to_string()).collect();
     record(
         &mut tx,
@@ -188,9 +189,10 @@ pub async fn resolve_attempt(
     if !res["ok"].as_bool().unwrap_or(false) {
         return match res["reason"].as_str() {
             Some("not_found") => Err(ApiError::NotFound),
-            Some("missing_receipt") | Some("retry_not_confirmed") | Some("invalid_action") => {
-                Err(ApiError::InvalidInput)
-            }
+            Some("missing_receipt")
+            | Some("failure_not_confirmed")
+            | Some("retry_not_confirmed")
+            | Some("invalid_action") => Err(ApiError::InvalidInput),
             _ => Err(ApiError::Conflict),
         };
     }
