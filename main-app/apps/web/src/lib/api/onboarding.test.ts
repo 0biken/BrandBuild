@@ -5,6 +5,7 @@ import { signUp } from "./auth";
 import { completeStep, getOnboarding, nextStepPath } from "./onboarding";
 import {
   isAcademicEmail,
+  getStudentCheck,
   sendStudentCode,
   skipStudentCheck,
   studentIdProblem,
@@ -56,9 +57,13 @@ describe("onboarding (mock)", () => {
     }
   });
 
-  it("student ID upload isn't available yet", async () => {
+  it("student ID upload waits for review", async () => {
     const file = new File(["x"], "id.png", { type: "image/png" });
-    expect(await submitStudentId(file)).toEqual({ ok: false, error: "network" });
+    const result = await submitStudentId(file, {
+      applicantName: "Ada Student", school: "University of Lagos", cardExpiryDate: "2027-12-31",
+    });
+    expect(result).toEqual({ ok: true, data: { status: "pending_review", method: "id" } });
+    expect(await getStudentCheck()).toEqual(result);
   });
 
   it("checks student ID files", () => {
