@@ -1,7 +1,7 @@
 import { read, write } from "@/lib/mock/store";
 import { mockCodeResult } from "./auth";
 import { API_MODE } from "./config";
-import { apiFetch, apiUpload } from "./http";
+import { apiFetch } from "./http";
 import type { ApiResult, StudentCheck } from "./types";
 
 /**

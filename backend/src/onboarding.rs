@@ -186,39 +186,131 @@ pub fn sniff_student_id(bytes: &[u8]) -> Option<&'static str> {
     }
 }
 
-/// Attempts to rasterize page 1 of a PDF to PNG using `pdftoppm` when installed;
-/// falls back to `None` if `pdftoppm` is unavailable in the runtime container.
-async fn rasterize_pdf_page_one(pdf_bytes: &[u8]) -> Option<Vec<u8>> {
-    let tmp_dir = std::env::temp_dir().join(format!("bb-pdf-{}", Uuid::new_v4()));
-    tokio::fs::create_dir_all(&tmp_dir).await.ok()?;
-    let in_path = tmp_dir.join("input.pdf");
-    let out_prefix = tmp_dir.join("page");
-    let out_png = tmp_dir.join("page.png");
-    tokio::fs::write(&in_path, pdf_bytes).await.ok()?;
-    let in_clone = in_path.clone();
-    let out_clone = out_prefix.clone();
-    let status = tokio::task::spawn_blocking(move || {
-        std::process::Command::new("pdftoppm")
-            .arg("-png")
-            .arg("-f")
-            .arg("1")
-            .arg("-l")
-            .arg("1")
-            .arg("-singlefile")
-            .arg(&in_clone)
-            .arg(&out_clone)
-            .status()
+/// Fail closed: only an explicitly configured ClamAV executable may clear uploads.
+/// Processes are bounded by time, input size, output dimensions and concurrency.
+async fn scanned_preview(bytes: Vec<u8>, mime: &'static str) -> Result<Vec<u8>, ApiError> {
+    static WORKERS: std::sync::OnceLock<std::sync::Arc<tokio::sync::Semaphore>> =
+        std::sync::OnceLock::new();
+    let permit = WORKERS
+        .get_or_init(|| std::sync::Arc::new(tokio::sync::Semaphore::new(2)))
+        .clone()
+        .try_acquire_owned()
+        .map_err(|_| ApiError::ScannerUnavailable)?;
+    let scanner = std::env::var("STUDENT_ID_SCANNER")
+        .ok()
+        .filter(|s| !s.trim().is_empty())
+        .ok_or(ApiError::ScannerUnavailable)?;
+    tokio::task::spawn_blocking(move || {
+        let _permit = permit;
+        let dir = std::env::temp_dir().join(format!("bb-student-{}", Uuid::new_v4()));
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::DirBuilderExt;
+            std::fs::DirBuilder::new()
+                .mode(0o700)
+                .create(&dir)
+                .map_err(|_| ApiError::Internal)?;
+        }
+        #[cfg(not(unix))]
+        std::fs::create_dir(&dir).map_err(|_| ApiError::Internal)?;
+        struct Cleanup(std::path::PathBuf);
+        impl Drop for Cleanup {
+            fn drop(&mut self) {
+                let _ = std::fs::remove_dir_all(&self.0);
+            }
+        }
+        let _cleanup = Cleanup(dir.clone());
+        let input = dir.join("input");
+        std::fs::write(&input, &bytes).map_err(|_| ApiError::Internal)?;
+        fn run(command: &mut std::process::Command) -> Result<i32, ApiError> {
+            use std::{
+                process::Stdio,
+                time::{Duration, Instant},
+            };
+            let mut child = command
+                .stdin(Stdio::null())
+                .stdout(Stdio::null())
+                .stderr(Stdio::null())
+                .spawn()
+                .map_err(|_| ApiError::ScannerUnavailable)?;
+            let deadline = Instant::now() + Duration::from_secs(30);
+            loop {
+                match child.try_wait() {
+                    Ok(Some(status)) => return status.code().ok_or(ApiError::ScannerUnavailable),
+                    Ok(None) if Instant::now() < deadline => {
+                        std::thread::sleep(Duration::from_millis(50))
+                    }
+                    _ => {
+                        let _ = child.kill();
+                        let _ = child.wait();
+                        return Err(ApiError::ScannerUnavailable);
+                    }
+                }
+            }
+        }
+        match run(std::process::Command::new(&scanner)
+            .arg("--no-summary")
+            .arg("--")
+            .arg(&input))?
+        {
+            0 => {}
+            1 => return Err(ApiError::InvalidInput),
+            _ => return Err(ApiError::ScannerUnavailable),
+        }
+        if mime != "application/pdf" {
+            return Ok(bytes);
+        }
+        let prefix = dir.join("preview");
+        // Bound parser address space, CPU time and output on Linux. Missing
+        // prlimit/pdftoppm is an unavailable pipeline, never a raw-PDF fallback.
+        if run(std::process::Command::new("prlimit")
+            .args([
+                "--as=536870912",
+                "--cpu=20",
+                "--fsize=10485760",
+                "--",
+                "pdftoppm",
+            ])
+            .args([
+                "-png",
+                "-f",
+                "1",
+                "-l",
+                "1",
+                "-singlefile",
+                "-scale-to",
+                "1800",
+            ])
+            .arg(&input)
+            .arg(&prefix))?
+            != 0
+        {
+            return Err(ApiError::InvalidInput);
+        }
+        let output = dir.join("preview.png");
+        let size = std::fs::metadata(&output)
+            .map_err(|_| ApiError::ScannerUnavailable)?
+            .len();
+        if size == 0 || size > 10 * 1024 * 1024 {
+            return Err(ApiError::InvalidInput);
+        }
+        match run(std::process::Command::new(&scanner)
+            .arg("--no-summary")
+            .arg("--")
+            .arg(&output))?
+        {
+            0 => {}
+            1 => return Err(ApiError::InvalidInput),
+            _ => return Err(ApiError::ScannerUnavailable),
+        }
+        let png = std::fs::read(&output).map_err(|_| ApiError::Internal)?;
+        if sniff_student_id(&png) != Some("image/png") {
+            return Err(ApiError::InvalidInput);
+        }
+        Ok(png)
     })
     .await
-    .ok()
-    .and_then(Result::ok);
-    let png = if status.is_some_and(|s| s.success()) {
-        tokio::fs::read(&out_png).await.ok()
-    } else {
-        None
-    };
-    let _ = tokio::fs::remove_dir_all(&tmp_dir).await;
-    png
+    .map_err(|_| ApiError::Internal)?
 }
 
 /// Accepts private student-ID submissions from the workspace owner (JPEG, PNG, or PDF up to 10 MB).
@@ -274,6 +366,7 @@ async fn submit_student_id(
     let file_bytes = file_bytes.ok_or(ApiError::InvalidInput)?;
     let mime = sniff_student_id(&file_bytes).ok_or(ApiError::InvalidInput)?;
 
+    let preview_bytes = scanned_preview(file_bytes.clone(), mime).await?;
     let submission_id = Uuid::new_v4();
     let file_key = format!("student-ids/{}/{submission_id}", ctx.tenant_id);
     let mut upload = s.storage.begin(&file_key).await?;
@@ -284,18 +377,14 @@ async fn submit_student_id(
         .map_err(crate::storage::StorageError::from)?;
 
     let preview_key = if mime == "application/pdf" {
-        if let Some(png) = rasterize_pdf_page_one(&file_bytes).await {
-            let p_key = format!("student-ids/{}/{submission_id}-preview.png", ctx.tenant_id);
-            let mut prev_up = s.storage.begin(&p_key).await?;
-            prev_up.put(png.into());
-            prev_up
-                .finish()
-                .await
-                .map_err(crate::storage::StorageError::from)?;
-            Some(p_key)
-        } else {
-            None
-        }
+        let p_key = format!("student-ids/{}/{submission_id}-preview.png", ctx.tenant_id);
+        let mut prev_up = s.storage.begin(&p_key).await?;
+        prev_up.put(preview_bytes.into());
+        prev_up
+            .finish()
+            .await
+            .map_err(crate::storage::StorageError::from)?;
+        Some(p_key)
     } else {
         Some(file_key.clone())
     };
@@ -320,7 +409,7 @@ async fn submit_student_id(
     .execute(&mut *tx)
     .await?;
 
-    set_student(&mut tx, &ctx, "pending", Some("id_card"), None).await?;
+    set_student(&mut tx, &ctx, "pending_review", Some("id"), None).await?;
     let mut state = student_state(&mut tx).await?;
     state["submissionId"] = json!(submission_id);
     tx.commit().await?;

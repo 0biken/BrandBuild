@@ -60,7 +60,7 @@ pub async fn get_preview(
     .ok_or(ApiError::NotFound)?;
 
     let tenant_id: Uuid = row.try_get("tenant_id")?;
-    let file_key: String = row.try_get("file_storage_key")?;
+
     let preview_key: Option<String> = row.try_get("preview_storage_key")?;
     let mime_type: String = row.try_get("mime_type")?;
     let scan_status: String = row.try_get("scan_status")?;
@@ -78,9 +78,13 @@ pub async fn get_preview(
             };
             (pk, ct)
         }
-        None => (file_key, mime_type),
+        None => return Err(ApiError::Conflict),
     };
 
+    // PDFs are never served as active documents, even for legacy rows.
+    if content_type != "image/png" && content_type != "image/jpeg" {
+        return Err(ApiError::Conflict);
+    }
     let bytes = state.storage.read(&storage_key).await?;
 
     let mut tx = state.admin_pool.begin().await?;
@@ -112,6 +116,10 @@ pub async fn get_preview(
         .header(header::CONTENT_TYPE, content_type)
         .header(header::CACHE_CONTROL, "no-store, private")
         .header(header::X_CONTENT_TYPE_OPTIONS, "nosniff")
+        .header(
+            header::CONTENT_SECURITY_POLICY,
+            "default-src 'none'; sandbox",
+        )
         .body(Body::from(bytes))
         .unwrap())
 }
@@ -235,4 +243,36 @@ pub async fn decide_review(
             "planEndsAt": plan_ends_at,
         }
     })))
+}
+
+/// Worker entry point: expiry is atomic and document deletion retries on failure.
+pub async fn maintain_student_documents(state: &AppState) -> Result<(), ApiError> {
+    sqlx::query("SELECT admin.expire_student_entitlements()")
+        .execute(&state.admin_pool)
+        .await?;
+    let due = sqlx::query("SELECT id,file_storage_key,preview_storage_key FROM admin.student_documents_due_for_purge()")
+        .fetch_all(&state.admin_pool).await?;
+    for row in due {
+        let id: Uuid = row.try_get("id")?;
+        let file: String = row.try_get("file_storage_key")?;
+        let preview: Option<String> = row.try_get("preview_storage_key")?;
+        async fn delete_if_present(state: &AppState, key: &str) -> Result<(), ApiError> {
+            match state.storage.delete(key).await {
+                Ok(()) => Ok(()),
+                Err(crate::storage::StorageError::Store(object_store::Error::NotFound {
+                    ..
+                })) => Ok(()),
+                Err(err) => Err(err.into()),
+            }
+        }
+        delete_if_present(state, &file).await?;
+        if let Some(key) = preview.filter(|key| key != &file) {
+            delete_if_present(state, &key).await?;
+        }
+        sqlx::query("SELECT admin.mark_student_documents_purged($1)")
+            .bind(id)
+            .execute(&state.admin_pool)
+            .await?;
+    }
+    Ok(())
 }

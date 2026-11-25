@@ -9,6 +9,22 @@ const MAX_ATTEMPTS: i32 = 8;
 /// At-least-once consumer. External platform adapters remain intentionally no-op until
 /// credentials and provider implementations are configured. Agent jobs are recorded as runs.
 pub async fn run(state: AppState) {
+    let maintenance_state = state.clone();
+    tokio::spawn(async move {
+        loop {
+            if let Err(error) =
+                crate::admin::support_email::deliver_pending(&maintenance_state.admin_pool).await
+            {
+                tracing::error!(%error, "support notification delivery pass failed");
+            }
+            if let Err(error) =
+                crate::admin::student_reviews::maintain_student_documents(&maintenance_state).await
+            {
+                tracing::error!(%error, "student entitlement and document maintenance failed");
+            }
+            sleep(Duration::from_secs(60)).await;
+        }
+    });
     let worker_id = format!("worker-{}", Uuid::new_v4());
     loop {
         match outbox::claim_batch(&state.pool, &worker_id, 32, LEASE_SECONDS).await {

@@ -221,7 +221,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** submitStudentId */
+        /**
+         * submitStudentId
+         * @description Private student-ID upload. A configured malware scanner is required; unavailable processing returns 503 scanner_unavailable.
+         */
         post: operations["submitStudentId"];
         delete?: never;
         options?: never;
@@ -1752,12 +1755,16 @@ export interface operations {
                 "multipart/form-data": {
                     /** Format: binary */
                     file: string;
+                    applicantName: string;
+                    school: string;
+                    /** Format: date */
+                    cardExpiryDate: string;
                 };
             };
         };
         responses: {
-            /** @description OK */
-            200: {
+            /** @description Scanned document submitted for review */
+            201: {
                 headers: {
                     [name: string]: unknown;
                 };
