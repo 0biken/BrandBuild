@@ -9,13 +9,29 @@ const MAX_ATTEMPTS: i32 = 8;
 /// At-least-once consumer. External platform adapters remain intentionally no-op until
 /// credentials and provider implementations are configured. Agent jobs are recorded as runs.
 pub async fn run(state: AppState) {
+    let maintenance_state = state.clone();
+    tokio::spawn(async move {
+        loop {
+            if let Err(error) =
+                crate::admin::support_email::deliver_pending(&maintenance_state.admin_pool).await
+            {
+                tracing::error!(%error, "support notification delivery pass failed");
+            }
+            if let Err(error) =
+                crate::admin::student_reviews::maintain_student_documents(&maintenance_state).await
+            {
+                tracing::error!(%error, "student entitlement and document maintenance failed");
+            }
+            sleep(Duration::from_secs(60)).await;
+        }
+    });
     let worker_id = format!("worker-{}", Uuid::new_v4());
     loop {
         match outbox::claim_batch(&state.pool, &worker_id, 32, LEASE_SECONDS).await {
             Ok(events) if events.is_empty() => sleep(Duration::from_secs(2)).await,
             Ok(events) => {
                 for event in events {
-                    let result = dispatch(&state, &event).await;
+                    let result = dispatch(&state, &worker_id, &event).await;
                     match result {
                         Ok(()) => {
                             if let Err(error) =
@@ -50,8 +66,25 @@ pub async fn run(state: AppState) {
     }
 }
 
-async fn dispatch(state: &AppState, event: &outbox::ClaimedEvent) -> Result<(), String> {
+async fn dispatch(
+    state: &AppState,
+    worker_id: &str,
+    event: &outbox::ClaimedEvent,
+) -> Result<(), String> {
     match event.topic.as_str() {
+        "post.publish" => {
+            let attempt_id = payload_id(event, "attempt_id")?;
+            let connector = crate::publishing::DefaultNoopConnector;
+            crate::publishing::execute_publish_attempt(
+                &state.pool,
+                &state.admin_pool,
+                &connector,
+                worker_id,
+                event.tenant_id,
+                attempt_id,
+            )
+            .await
+        }
         "agent.run" => match payload_id(event, "run_id") {
             Ok(run) => crate::ai::planner::run(state, event.tenant_id, run).await,
             Err(_) => run_agent_placeholder(state, event).await,
@@ -83,8 +116,8 @@ async fn dispatch(state: &AppState, event: &outbox::ClaimedEvent) -> Result<(), 
             .await
         }
         // Notifications, metrics, and publish are safe no-op consumers until adapter services are configured.
-        "post.publish" | "metrics.collect" | "notification.send" | "post.scheduled"
-        | "post.published" | "post.failed" => {
+        "metrics.collect" | "notification.send" | "post.scheduled" | "post.published"
+        | "post.failed" => {
             tracing::info!(event_id=%event.id, topic=%event.topic, "accepted by scaffold adapter; no external platform action configured");
             Ok(())
         }

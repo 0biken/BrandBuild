@@ -268,19 +268,23 @@ paths:
       operationId: submitStudentId
       tags: [onboarding]
       summary: submitStudentId
-      x-status: deferred
+      x-status: matches
+      description: Private student-ID upload. A configured malware scanner is required; unavailable processing returns 503 scanner_unavailable.
       requestBody:
         required: true
         content:
           multipart/form-data:
             schema:
               type: object
-              required: [file]
+              required: [file, applicantName, school, cardExpiryDate]
               properties:
                 file: {type: string, format: binary}
+                applicantName: {type: string, minLength: 1, maxLength: 200}
+                school: {type: string, minLength: 1, maxLength: 200}
+                cardExpiryDate: {type: string, format: date}
       responses:
-        '200':
-          description: OK
+        '201':
+          description: Scanned document submitted for review
           content:
             application/json:
               schema:

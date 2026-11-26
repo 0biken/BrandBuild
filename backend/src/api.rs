@@ -157,6 +157,8 @@ pub enum ApiError {
     NotAvailable,
     #[error("we couldn't send the email; try again in a moment")]
     EmailUnavailable,
+    #[error("student ID scanning is unavailable; please try again later")]
+    ScannerUnavailable,
     #[error("internal server error")]
     Internal,
     #[error("AI planning isn't available right now; you can still plan posts yourself")]
@@ -199,6 +201,7 @@ impl IntoResponse for ApiError {
             Self::CodeExpired => (StatusCode::GONE, "code_expired"),
             Self::NotAvailable => (StatusCode::NOT_IMPLEMENTED, "not_available"),
             Self::EmailUnavailable => (StatusCode::SERVICE_UNAVAILABLE, "email_unavailable"),
+            Self::ScannerUnavailable => (StatusCode::SERVICE_UNAVAILABLE, "scanner_unavailable"),
             Self::Internal => (StatusCode::INTERNAL_SERVER_ERROR, "internal_error"),
             Self::AiUnavailable => (StatusCode::SERVICE_UNAVAILABLE, "ai_unavailable"),
             Self::AiBudget => (StatusCode::TOO_MANY_REQUESTS, "ai_budget"),
@@ -665,6 +668,23 @@ async fn oauth_start(
     ))
 }
 
+async fn customer_notices(
+    State(s): State<AppState>,
+    ctx: TenantContext,
+) -> Result<Json<Value>, ApiError> {
+    let incidents: Value = sqlx::query_scalar("SELECT admin.active_customer_incidents()")
+        .fetch_one(&s.admin_pool)
+        .await?;
+    let holds: Value = sqlx::query_scalar("SELECT admin.active_holds_for_target($1, NULL)")
+        .bind(ctx.tenant_id)
+        .fetch_one(&s.admin_pool)
+        .await?;
+
+    Ok(Json(
+        json!({"data": {"incidents": incidents, "holds": holds}}),
+    ))
+}
+
 pub fn router(state: AppState) -> Router {
     let v1 = Router::new()
         .route("/channels", get(list_channel).post(create_channel))
@@ -688,6 +708,7 @@ pub fn router(state: AppState) -> Router {
         )
         .route("/analytics", get(analytics))
         .route("/audit", get(audit))
+        .route("/notices", get(customer_notices))
         .route("/auth/session", get(crate::auth_api::session))
         .merge(crate::onboarding::routes())
         .merge(crate::brand::routes())
@@ -734,6 +755,7 @@ pub fn router(state: AppState) -> Router {
                 .merge(v1),
         )
         .nest("/v2", v2)
+        .nest("/admin/v1", crate::admin::router(state.clone()))
         .layer(middleware::from_fn(json_errors))
         .with_state(state)
 }

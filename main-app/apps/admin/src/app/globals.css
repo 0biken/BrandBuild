@@ -1,0 +1,76 @@
+@import "tailwindcss";
+
+@custom-variant fine {
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      @slot;
+    }
+  }
+}
+
+@theme inline {
+  --color-primary: #12a150;
+  --color-primary-strong: #0e8743;
+  --color-primary-hover: #0b7a3b;
+  --color-primary-soft: #e6f5ec;
+  --color-primary-ink: #0b5e2e;
+  --color-forest: #0f2a1b;
+  --color-forest-2: #16371f;
+  --color-forest-ink: #b9cbbe;
+  --color-forest-text: #e8f1ea;
+  --color-lime: #d4f25c;
+  --color-ink: #0f1a13;
+  --color-ink-2: #2b352e;
+  --color-muted: #5b655d;
+  --color-page: #eef0ea;
+  --color-page-2: #f3f4ef;
+  --color-surface: #ffffff;
+  --color-surface-2: #fbfbf8;
+  --color-line: #eef0ea;
+  --color-line-strong: #d5d9cf;
+  --color-border-btn: #c7ccc1;
+  --color-danger: #d92d20;
+  --color-danger-strong: #b42318;
+  --color-danger-soft: #fdecea;
+  --color-danger-ink: #8f1d14;
+  --color-danger-dark: #5c130d;
+  --color-amber-soft: #fff1d6;
+  --color-amber-ink: #6b4300;
+  --color-info-soft: #e7f1fb;
+  --color-info-ink: #0a3d73;
+
+  --font-display: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+
+  --breakpoint-md: 860px;
+}
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  margin: 0;
+  background: var(--color-page);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+@layer base {
+  a {
+    color: var(--color-primary-hover);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 1ms !important;
+    transition-duration: 1ms !important;
+  }
+}

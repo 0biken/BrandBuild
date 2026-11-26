@@ -1,0 +1,339 @@
+openapi: 3.1.0
+info:
+  title: BrandBuild Admin API
+  version: 0.1.0
+  description: Staff-only operational API for admin.brandbuild.co.
+servers:
+  - url: /admin/v1
+paths:
+  /auth/google/start:
+    get:
+      summary: Start Google Workspace OIDC login
+      parameters:
+        - name: format
+          in: query
+          schema:
+            type: string
+            enum: [json]
+        - name: redirect_to
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Auth URL returned as JSON
+        "302":
+          description: Redirect to Google OIDC
+        "501":
+          description: Google OIDC is not configured
+  /auth/google/callback:
+    get:
+      summary: Google Workspace OIDC callback
+      parameters:
+        - name: code
+          in: query
+          schema:
+            type: string
+        - name: state
+          in: query
+          schema:
+            type: string
+      responses:
+        "302":
+          description: Session cookie set and redirected to admin console
+        "403":
+          description: Unallowlisted, disabled, or invalid OIDC claim
+  /auth/logout:
+    post:
+      summary: Revoke current staff session and clear cookie
+      responses:
+        "200":
+          description: Logged out
+  /me:
+    get:
+      summary: Get current authenticated staff member
+      responses:
+        "200":
+          description: Current staff identity and roles
+  /staff:
+    get:
+      summary: List allowlisted staff members (StaffAdmin)
+      responses:
+        "200":
+          description: Staff list
+    post:
+      summary: Add a staff member to the allowlist (StaffAdmin)
+      responses:
+        "201":
+          description: Staff member created
+  /staff/{id}:
+    patch:
+      summary: Update staff roles or active status (StaffAdmin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Updated staff member
+  /audit:
+    get:
+      summary: List staff audit log entries
+      parameters:
+        - name: staffUserId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: workspaceId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: action
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Audit log entries
+  /overview:
+    get:
+      summary: Aggregated operational overview
+      responses:
+        "200":
+          description: Overview summary
+  /workspaces:
+    get:
+      summary: Search workspaces by name, owner email, workspace ID, or post ID
+      parameters:
+        - name: q
+          in: query
+          schema:
+            type: string
+        - name: plan
+          in: query
+          schema:
+            type: string
+            enum: [student, creator, business]
+        - name: limit
+          in: query
+          schema:
+            type: integer
+        - name: offset
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Paginated workspace search results
+  /workspaces/{id}:
+    get:
+      summary: Get operational detail for a workspace
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Workspace operational detail
+  /workspaces/{id}/notes:
+    post:
+      summary: Add an internal staff-only note to a workspace
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "201":
+          description: Note added
+  /publishing-holds:
+    get:
+      summary: List active publishing holds
+      parameters:
+        - name: workspaceId
+          in: query
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Active publishing holds
+    post:
+      summary: Create a global, workspace, or channel publishing hold (Operations / StaffAdmin)
+      responses:
+        "201":
+          description: Publishing hold created
+  /publishing-holds/{id}/release:
+    post:
+      summary: Release an active publishing hold (Operations / StaffAdmin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Hold released; returns count of overdue posts kept held for rescheduling
+  /incidents:
+    post:
+      summary: Create a provider incident notice (Operations / StaffAdmin)
+      responses:
+        "201":
+          description: Incident created
+  /incidents/{id}:
+    patch:
+      summary: Toggle customer banner or resolve an incident (Operations / StaffAdmin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Incident updated
+  /ai:
+    get:
+      summary: Get AI spend summary, daily chart, feature breakdown, and top workspaces
+      responses:
+        "200":
+          description: AI spend summary
+  /ai/policy:
+    patch:
+      summary: Update global AI budget and default workspace caps (Operations / StaffAdmin)
+      responses:
+        "200":
+          description: Updated AI policy
+  /ai/workspaces/{id}:
+    patch:
+      summary: Update per-workspace AI caps or suspend AI (Operations / StaffAdmin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Updated workspace AI control
+  /student-reviews:
+    get:
+      summary: List student-ID review submissions oldest-first (StudentReviewer / StaffAdmin)
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, approved, rejected, all]
+      responses:
+        "200":
+          description: Student-ID review queue
+  /student-reviews/{id}/preview:
+    get:
+      summary: Stream private student-ID preview with no-store caching and audit logging
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Student-ID image or rasterized PDF preview
+  /student-reviews/{id}/decision:
+    post:
+      summary: Approve or reject a student-ID submission with optimistic version check
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Decision recorded and student entitlement updated if approved
+  /support-sessions:
+    get:
+      summary: List support access sessions
+      responses:
+        "200":
+          description: Support session list
+    post:
+      summary: Request a read-only or read-write support session (Support+)
+      responses:
+        "201":
+          description: Support session created
+  /support-sessions/{id}/approve:
+    post:
+      summary: Approve a pending read-write support session (Operations / StaffAdmin, non-self)
+      responses:
+        "200":
+          description: Support session approved
+  /support-sessions/{id}/activate:
+    post:
+      summary: Notify customer and activate an approved support session
+      responses:
+        "200":
+          description: Support session active
+  /support-sessions/{id}/end:
+    post:
+      summary: End or revoke an active support session
+      responses:
+        "200":
+          description: Support session ended
+  /support-sessions/{id}/workspace:
+    get:
+      summary: Inspect workspace drafts, brand profile, and facts within an active support session
+      responses:
+        "200":
+          description: Scoped workspace view
+  /support-sessions/{id}/drafts/{postId}:
+    patch:
+      summary: Edit a draft within an active read-write support session with staff attribution
+      responses:
+        "200":
+          description: Draft updated
+  /audit/export:
+    get:
+      summary: Export filtered staff audit log as formula-injection-safe CSV (audited)
+      responses:
+        "200":
+          description: CSV download
+  /publish-attempts:
+    get:
+      summary: List unclear or escalated publish attempts oldest-first
+      responses:
+        "200":
+          description: Unclear publish attempts
+  /publish-attempts/{id}/reconcile:
+    post:
+      summary: Run connector reconciliation check for an unclear attempt (Operations / StaffAdmin)
+      responses:
+        "200":
+          description: Updated reconciliation evidence
+  /publish-attempts/{id}/resolve:
+    post:
+      summary: Resolve an unclear attempt with optimistic version and idempotency key (Operations / StaffAdmin)
+      responses:
+        "200":
+          description: Resolution recorded

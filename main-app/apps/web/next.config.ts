@@ -1,8 +1,9 @@
 import type { NextConfig } from "next";
+import path from "node:path";
 
 const nextConfig: NextConfig = {
   turbopack: {
-    root: process.cwd(),
+    root: path.resolve(import.meta.dirname, "../.."),
   },
   // The browser reaches the Rust API same-origin, so its session cookie is
   // first-party and proxy.ts can see it.

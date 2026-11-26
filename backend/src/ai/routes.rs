@@ -190,7 +190,7 @@ async fn generate(
     if !s.ai.enabled() {
         return Err(ApiError::AiUnavailable);
     }
-    planner::check_budget(&s.pool, &s.ai, ctx.tenant_id).await?;
+    let reservation_id = planner::reserve_budget(&s.pool, &s.ai, ctx.tenant_id, "generate").await?;
     let today = Utc::now().date_naive();
     let mut tx = tenant_tx(&s.pool, ctx.tenant_id).await?;
     let snap = context::build(&mut tx, ctx.tenant_id, today, 8, &input.platforms).await?;
@@ -215,26 +215,61 @@ async fn generate(
     let result = s.ai.generate::<GenerateAnswer>(&request).await;
     let (answer, usage) = match result {
         Ok(ok) => ok,
-        Err(AiError::NotConfigured) => return Err(ApiError::AiUnavailable),
+        Err(AiError::Timeout) => {
+            let max_cost = s.ai.max_cost_usd();
+            let run_id: Uuid = sqlx::query_scalar(
+                "INSERT INTO agent_runs(tenant_id,kind,status,input,created_by,model,prompt_version,pricing_version,cost_usd,usage_units,error,started_at,finished_at)
+                 VALUES($1,'generate','uncertain',$2,$3,$4,$5,$6,$7,1,$8,now(),now()) RETURNING id",
+            )
+            .bind(ctx.tenant_id)
+            .bind(json!({ "idea": input.idea, "platforms": input.platforms, "tweak": input.tweak }))
+            .bind(ctx.actor_id)
+            .bind(&s.ai.model)
+            .bind(GENERATE_PROMPT_VERSION)
+            .bind(s.ai.pricing_version())
+            .bind(max_cost)
+            .bind("Model request timed out; charge kept reserved pending reconciliation.")
+            .fetch_one(&s.pool)
+            .await?;
+            planner::settle_reservation(
+                &s.pool,
+                reservation_id,
+                "uncertain",
+                max_cost,
+                Some(run_id),
+            )
+            .await?;
+            return Err(ApiError::AiUnavailable);
+        }
+        Err(AiError::NotConfigured) => {
+            let _ =
+                planner::settle_reservation(&s.pool, reservation_id, "released", 0.0, None).await;
+            return Err(ApiError::AiUnavailable);
+        }
         Err(e) => {
+            let _ =
+                planner::settle_reservation(&s.pool, reservation_id, "released", 0.0, None).await;
             tracing::warn!(error=%e, "generate failed");
             return Err(ApiError::AiUnavailable);
         }
     };
-    sqlx::query(
-        "INSERT INTO agent_runs(tenant_id,kind,status,input,created_by,model,prompt_version,input_tokens,output_tokens,cost_usd,usage_units,started_at,finished_at)
-         VALUES($1,'generate','succeeded',$2,$3,$4,$5,$6,$7,$8,1,now(),now())",
+    let cost = s.ai.cost_usd(usage);
+    let run_id: Uuid = sqlx::query_scalar(
+        "INSERT INTO agent_runs(tenant_id,kind,status,input,created_by,model,prompt_version,pricing_version,input_tokens,output_tokens,cost_usd,usage_units,started_at,finished_at)
+         VALUES($1,'generate','succeeded',$2,$3,$4,$5,$6,$7,$8,$9,1,now(),now()) RETURNING id",
     )
     .bind(ctx.tenant_id)
     .bind(json!({ "idea": input.idea, "platforms": input.platforms, "tweak": input.tweak }))
     .bind(ctx.actor_id)
     .bind(&s.ai.model)
     .bind(GENERATE_PROMPT_VERSION)
+    .bind(s.ai.pricing_version())
     .bind(usage.input_tokens.min(i64::from(i32::MAX)) as i32)
     .bind(usage.output_tokens.min(i64::from(i32::MAX)) as i32)
-    .bind(s.ai.cost_usd(usage))
-    .execute(&s.pool)
+    .bind(cost)
+    .fetch_one(&s.pool)
     .await?;
+    planner::settle_reservation(&s.pool, reservation_id, "settled", cost, Some(run_id)).await?;
 
     // A best time outside the next week (or in the past) becomes tomorrow evening.
     let best = answer.best_time.with_timezone(&Utc);

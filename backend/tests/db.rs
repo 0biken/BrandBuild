@@ -44,6 +44,7 @@ const RLS_TABLES: &[&str] = &[
     "notification_prefs",
     "brand_facts",
     "draft_keys",
+    "student_submissions",
 ];
 /// Tables with a tenant_id that are deliberately left without RLS (see migration 0005).
 const NO_RLS_TABLES: &[&str] = &["tenant_memberships", "outbox", "agent_runs"];
@@ -51,6 +52,7 @@ const NO_RLS_TABLES: &[&str] = &["tenant_memberships", "outbox", "agent_runs"];
 struct Pools {
     owner: PgPool,
     app: PgPool,
+    admin: PgPool,
 }
 
 async fn pools() -> Option<Pools> {
@@ -90,6 +92,10 @@ async fn pools() -> Option<Pools> {
     .await
     .unwrap();
     db::migrate(&owner).await.unwrap();
+    sqlx::query("ALTER ROLE brandbuild_admin LOGIN PASSWORD 'brandbuild_admin'")
+        .execute(&mut *conn)
+        .await
+        .unwrap();
     sqlx::query("SELECT pg_advisory_unlock(727001)")
         .execute(&mut *conn)
         .await
@@ -100,7 +106,27 @@ async fn pools() -> Option<Pools> {
         .connect(&app_url)
         .await
         .unwrap();
-    Some(Pools { owner, app })
+    let admin_url = std::env::var("TEST_ADMIN_DATABASE_URL").unwrap_or_else(|_| {
+        let mut url = reqwest::Url::parse(&owner_url).unwrap();
+        url.set_username("brandbuild_admin").unwrap();
+        url.set_password(Some("brandbuild_admin")).unwrap();
+        url.to_string()
+    });
+    let admin = PgPoolOptions::new()
+        .max_connections(2)
+        .connect(&admin_url)
+        .await
+        .unwrap();
+    Some(Pools { owner, app, admin })
+}
+
+fn admin_app(p: &Pools) -> Router {
+    api::router(AppState {
+        pool: p.app.clone(),
+        admin_pool: p.admin.clone(),
+        storage: Storage::local(std::env::temp_dir().join("brandbuild-test-media")).unwrap(),
+        ai: std::sync::Arc::new(brandbuild_backend::ai::Gateway::disabled()),
+    })
 }
 
 /// A workspace with one member of the given role, created as the owner.
@@ -140,6 +166,7 @@ async fn brand(owner: &PgPool, tenant: Uuid) -> Uuid {
 fn app(pool: &PgPool) -> Router {
     api::router(AppState {
         pool: pool.clone(),
+        admin_pool: pool.clone(),
         storage: Storage::local(std::env::temp_dir().join("brandbuild-test-media")).unwrap(),
         ai: std::sync::Arc::new(brandbuild_backend::ai::Gateway::disabled()),
     })
@@ -454,8 +481,8 @@ async fn student_check_sets_the_plan() {
     assert_eq!(plan, "creator");
 
     let (status, body) = call(app(&p.app), "POST", "/v1/student-check/id", who, None).await;
-    assert_eq!(status, StatusCode::NOT_IMPLEMENTED);
-    assert_eq!(body["error"]["code"], "not_available");
+    assert_eq!(status, StatusCode::BAD_REQUEST);
+    assert_eq!(body["error"]["code"], "invalid_request");
 }
 
 #[tokio::test]
@@ -1000,6 +1027,7 @@ async fn brand_facts_need_verifying_and_stay_in_their_workspace() {
 fn ai_app(pool: &PgPool, replies: Vec<Result<String, String>>) -> (Router, AppState) {
     let state = AppState {
         pool: pool.clone(),
+        admin_pool: pool.clone(),
         storage: Storage::local(std::env::temp_dir().join("brandbuild-test-media")).unwrap(),
         ai: std::sync::Arc::new(brandbuild_backend::ai::Gateway::fake(replies)),
     };
@@ -1663,4 +1691,795 @@ async fn notification_settings_and_home_calls_work() {
     assert_eq!(body["data"].as_array().unwrap().len(), 4);
     // Numbers we don't have are missing, not zero.
     assert_eq!(body["data"][0]["value"], Value::Null);
+}
+
+#[tokio::test]
+async fn admin_tables_are_isolated_from_customer_app_role() {
+    let Some(p) = pools().await else { return };
+    let res1 = sqlx::query("SELECT id FROM admin.staff_users LIMIT 1")
+        .fetch_optional(&p.app)
+        .await;
+    assert!(
+        res1.is_err(),
+        "brandbuild_app must not read admin.staff_users"
+    );
+    let res2 = sqlx::query("SELECT id FROM admin.staff_audit_log LIMIT 1")
+        .fetch_optional(&p.app)
+        .await;
+    assert!(
+        res2.is_err(),
+        "brandbuild_app must not read admin.staff_audit_log"
+    );
+}
+
+#[tokio::test]
+async fn customer_credentials_cannot_access_admin_endpoints() {
+    let Some(p) = pools().await else { return };
+    let who = Some(workspace(&p.owner, "owner").await);
+    let (status, _) = call(app(&p.app), "GET", "/admin/v1/me", who, None).await;
+    assert_eq!(status, StatusCode::UNAUTHORIZED);
+    let (status, _) = call(app(&p.app), "GET", "/admin/v1/staff", who, None).await;
+    assert_eq!(status, StatusCode::UNAUTHORIZED);
+}
+
+#[tokio::test]
+async fn staff_roles_and_session_revocation_work() {
+    let Some(p) = pools().await else { return };
+    std::env::set_var("ALLOW_DEV_ADMIN_AUTH", "true");
+    let admin_email = format!("admin-{}@brandbuild.co", Uuid::new_v4());
+    let support_email = format!("support-{}@brandbuild.co", Uuid::new_v4());
+
+    let admin_id: Uuid = sqlx::query_scalar(
+        "INSERT INTO admin.staff_users(email, display_name, roles) VALUES($1, 'Admin', ARRAY['staff_admin']) RETURNING id",
+    )
+    .bind(&admin_email)
+    .fetch_one(&p.owner)
+    .await
+    .unwrap();
+
+    // Admin creates a support user via API.
+    let req = Request::builder()
+        .method("POST")
+        .uri("/admin/v1/staff")
+        .header("x-dev-admin-email", &admin_email)
+        .header(header::CONTENT_TYPE, "application/json")
+        .body(Body::from(
+            json!({
+                "email": support_email,
+                "displayName": "Support Staff",
+                "roles": ["support"]
+            })
+            .to_string(),
+        ))
+        .unwrap();
+    let res = admin_app(&p).oneshot(req).await.unwrap();
+    assert_eq!(res.status(), StatusCode::CREATED);
+    let bytes = to_bytes(res.into_body(), 64 * 1024).await.unwrap();
+    let created: Value = serde_json::from_slice(&bytes).unwrap();
+    let support_id = Uuid::parse_str(created["data"]["id"].as_str().unwrap()).unwrap();
+
+    // Support user can access /admin/v1/me, but not /admin/v1/staff.
+    let req = Request::builder()
+        .method("GET")
+        .uri("/admin/v1/staff")
+        .header("x-dev-admin-email", &support_email)
+        .body(Body::empty())
+        .unwrap();
+    let res = admin_app(&p).oneshot(req).await.unwrap();
+    assert_eq!(res.status(), StatusCode::FORBIDDEN);
+
+    // Give support user a real session, then disable the user and verify session is revoked.
+    let raw_token = format!("tok-{}", Uuid::new_v4());
+    let token_hash = brandbuild_backend::admin::hash_token(&raw_token);
+    sqlx::query(
+        "INSERT INTO admin.staff_sessions(staff_user_id, token_hash, expires_at)
+         VALUES ($1, $2, now() + interval '8 hours')",
+    )
+    .bind(support_id)
+    .bind(&token_hash)
+    .execute(&p.owner)
+    .await
+    .unwrap();
+
+    let req = Request::builder()
+        .method("GET")
+        .uri("/admin/v1/me")
+        .header(header::COOKIE, format!("bb_admin_session={raw_token}"))
+        .body(Body::empty())
+        .unwrap();
+    let res = admin_app(&p).oneshot(req).await.unwrap();
+    assert_eq!(res.status(), StatusCode::OK);
+
+    // Disable support user via admin API.
+    let req = Request::builder()
+        .method("PATCH")
+        .uri(format!("/admin/v1/staff/{support_id}"))
+        .header("x-dev-admin-email", &admin_email)
+        .header(header::CONTENT_TYPE, "application/json")
+        .body(Body::from(json!({ "isActive": false }).to_string()))
+        .unwrap();
+    let res = admin_app(&p).oneshot(req).await.unwrap();
+    assert_eq!(res.status(), StatusCode::OK);
+
+    // Old session cookie is now rejected.
+    let req = Request::builder()
+        .method("GET")
+        .uri("/admin/v1/me")
+        .header(header::COOKIE, format!("bb_admin_session={raw_token}"))
+        .body(Body::empty())
+        .unwrap();
+    let res = admin_app(&p).oneshot(req).await.unwrap();
+    assert_eq!(res.status(), StatusCode::UNAUTHORIZED);
+
+    // Audit log is append-only.
+    let del = sqlx::query("DELETE FROM admin.staff_audit_log WHERE staff_user_id = $1")
+        .bind(admin_id)
+        .execute(&p.owner)
+        .await;
+    assert!(del.is_err(), "admin.staff_audit_log must reject DELETE");
+}
+
+#[tokio::test]
+async fn admin_overview_and_workspace_search_enforce_roles_and_isolation() {
+    let Some(p) = pools().await else { return };
+    std::env::set_var("ALLOW_DEV_ADMIN_AUTH", "true");
+    let (ws_id, _) = workspace(&p.owner, "owner").await;
+    let support_email = format!("sup-{}@brandbuild.co", Uuid::new_v4());
+    let reviewer_email = format!("rev-{}@brandbuild.co", Uuid::new_v4());
+
+    sqlx::query(
+        "INSERT INTO admin.staff_users(email, display_name, roles) VALUES
+         ($1, 'Support', ARRAY['support']),
+         ($2, 'Reviewer', ARRAY['student_reviewer'])",
+    )
+    .bind(&support_email)
+    .bind(&reviewer_email)
+    .execute(&p.owner)
+    .await
+    .unwrap();
+
+    // Student reviewer cannot browse workspaces.
+    let req = Request::builder()
+        .method("GET")
+        .uri("/admin/v1/workspaces")
+        .header("x-dev-admin-email", &reviewer_email)
+        .body(Body::empty())
+        .unwrap();
+    let res = admin_app(&p).oneshot(req).await.unwrap();
+    assert_eq!(res.status(), StatusCode::FORBIDDEN);
+
+    // Support can fetch overview, search workspaces, view detail, and add a staff note.
+    let req = Request::builder()
+        .method("GET")
+        .uri("/admin/v1/overview")
+        .header("x-dev-admin-email", &support_email)
+        .body(Body::empty())
+        .unwrap();
+    let res = admin_app(&p).oneshot(req).await.unwrap();
+    assert_eq!(res.status(), StatusCode::OK);
+
+    let req = Request::builder()
+        .method("GET")
+        .uri(format!("/admin/v1/workspaces/{ws_id}"))
+        .header("x-dev-admin-email", &support_email)
+        .body(Body::empty())
+        .unwrap();
+    let res = admin_app(&p).oneshot(req).await.unwrap();
+    assert_eq!(res.status(), StatusCode::OK);
+
+    let req = Request::builder()
+        .method("POST")
+        .uri(format!("/admin/v1/workspaces/{ws_id}/notes"))
+        .header("x-dev-admin-email", &support_email)
+        .header(header::CONTENT_TYPE, "application/json")
+        .body(Body::from(
+            json!({ "note": "Owner asked about scheduling" }).to_string(),
+        ))
+        .unwrap();
+    let res = admin_app(&p).oneshot(req).await.unwrap();
+    assert_eq!(res.status(), StatusCode::CREATED);
+
+    // Customer role cannot call admin SECURITY DEFINER functions.
+    let err = sqlx::query_scalar::<_, Value>("SELECT admin.overview_summary()")
+        .fetch_one(&p.app)
+        .await;
+    assert!(
+        err.is_err(),
+        "brandbuild_app must not execute admin.overview_summary"
+    );
+}
+
+#[tokio::test]
+async fn publishing_holds_compose_and_release_does_not_burst_overdue_posts() {
+    let Some(p) = pools().await else { return };
+    std::env::set_var("ALLOW_DEV_ADMIN_AUTH", "true");
+    let (ws_id, owner_id) = workspace(&p.owner, "owner").await;
+    let ch_id: Uuid = sqlx::query_scalar(
+        "INSERT INTO channels(tenant_id, provider, display_name) VALUES($1, 'ig', '@test') RETURNING id",
+    )
+    .bind(ws_id)
+    .fetch_one(&p.owner)
+    .await
+    .unwrap();
+
+    let overdue_post: Uuid = sqlx::query_scalar(
+        "INSERT INTO posts(tenant_id, channel_id, state, scheduled_for, created_by)
+         VALUES($1, $2, 'scheduled', now() - interval '1 hour', $3) RETURNING id",
+    )
+    .bind(ws_id)
+    .bind(ch_id)
+    .bind(owner_id)
+    .fetch_one(&p.owner)
+    .await
+    .unwrap();
+
+    let future_post: Uuid = sqlx::query_scalar(
+        "INSERT INTO posts(tenant_id, channel_id, state, scheduled_for, created_by)
+         VALUES($1, $2, 'scheduled', now() + interval '2 hours', $3) RETURNING id",
+    )
+    .bind(ws_id)
+    .bind(ch_id)
+    .bind(owner_id)
+    .fetch_one(&p.owner)
+    .await
+    .unwrap();
+
+    let ops_email = format!("ops-{}@brandbuild.co", Uuid::new_v4());
+    let sup_email = format!("sup-{}@brandbuild.co", Uuid::new_v4());
+    sqlx::query(
+        "INSERT INTO admin.staff_users(email, display_name, roles) VALUES
+         ($1, 'Ops', ARRAY['operations']),
+         ($2, 'Sup', ARRAY['support'])",
+    )
+    .bind(&ops_email)
+    .bind(&sup_email)
+    .execute(&p.owner)
+    .await
+    .unwrap();
+
+    let req = Request::builder()
+        .method("POST")
+        .uri("/admin/v1/publishing-holds")
+        .header("x-dev-admin-email", &sup_email)
+        .header(header::CONTENT_TYPE, "application/json")
+        .body(Body::from(
+            json!({
+                "scope": "workspace",
+                "workspaceId": ws_id,
+                "internalReason": "test",
+                "customerMessage": "test"
+            })
+            .to_string(),
+        ))
+        .unwrap();
+    assert_eq!(
+        admin_app(&p).oneshot(req).await.unwrap().status(),
+        StatusCode::FORBIDDEN
+    );
+
+    let req = Request::builder()
+        .method("POST")
+        .uri("/admin/v1/publishing-holds")
+        .header("x-dev-admin-email", &ops_email)
+        .header(header::CONTENT_TYPE, "application/json")
+        .body(Body::from(
+            json!({
+                "scope": "workspace",
+                "workspaceId": ws_id,
+                "internalReason": "Payment failed",
+                "customerMessage": "Update your card to resume."
+            })
+            .to_string(),
+        ))
+        .unwrap();
+    let res = admin_app(&p).oneshot(req).await.unwrap();
+    assert_eq!(res.status(), StatusCode::CREATED);
+    let ws_hold: Value =
+        serde_json::from_slice(&to_bytes(res.into_body(), 64 * 1024).await.unwrap()).unwrap();
+    let ws_hold_id = ws_hold["data"]["id"].as_str().unwrap().to_owned();
+
+    let req = Request::builder()
+        .method("POST")
+        .uri("/admin/v1/publishing-holds")
+        .header("x-dev-admin-email", &ops_email)
+        .header(header::CONTENT_TYPE, "application/json")
+        .body(Body::from(
+            json!({
+                "scope": "global",
+                "internalReason": "Emergency pause",
+                "customerMessage": "Publishing is temporarily paused."
+            })
+            .to_string(),
+        ))
+        .unwrap();
+    let res = admin_app(&p).oneshot(req).await.unwrap();
+    assert_eq!(res.status(), StatusCode::CREATED);
+    let global_hold: Value =
+        serde_json::from_slice(&to_bytes(res.into_body(), 64 * 1024).await.unwrap()).unwrap();
+    let global_hold_id = global_hold["data"]["id"].as_str().unwrap().to_owned();
+
+    let req = Request::builder()
+        .method("POST")
+        .uri(format!("/admin/v1/publishing-holds/{ws_hold_id}/release"))
+        .header("x-dev-admin-email", &ops_email)
+        .header(header::CONTENT_TYPE, "application/json")
+        .body(Body::from(json!({ "reason": "Card updated" }).to_string()))
+        .unwrap();
+    assert_eq!(
+        admin_app(&p).oneshot(req).await.unwrap().status(),
+        StatusCode::OK
+    );
+
+    let active: Value = sqlx::query_scalar("SELECT admin.active_holds_for_target($1, $2)")
+        .bind(ws_id)
+        .bind(ch_id)
+        .fetch_one(&p.app)
+        .await
+        .unwrap();
+    assert_eq!(active.as_array().unwrap().len(), 1);
+
+    let req = Request::builder()
+        .method("POST")
+        .uri(format!(
+            "/admin/v1/publishing-holds/{global_hold_id}/release"
+        ))
+        .header("x-dev-admin-email", &ops_email)
+        .header(header::CONTENT_TYPE, "application/json")
+        .body(Body::from(json!({ "reason": "All clear" }).to_string()))
+        .unwrap();
+    assert_eq!(
+        admin_app(&p).oneshot(req).await.unwrap().status(),
+        StatusCode::OK
+    );
+
+    let overdue_state: String = sqlx::query_scalar("SELECT state::text FROM posts WHERE id = $1")
+        .bind(overdue_post)
+        .fetch_one(&p.owner)
+        .await
+        .unwrap();
+    let future_state: String = sqlx::query_scalar("SELECT state::text FROM posts WHERE id = $1")
+        .bind(future_post)
+        .fetch_one(&p.owner)
+        .await
+        .unwrap();
+    assert_eq!(overdue_state, "approved");
+    assert_eq!(future_state, "scheduled");
+}
+
+#[tokio::test]
+async fn ai_guardrails_reserve_cap_and_suspend_workspace() {
+    let Some(p) = pools().await else { return };
+    std::env::set_var("ALLOW_DEV_ADMIN_AUTH", "true");
+    let (ws_id, _) = workspace(&p.owner, "owner").await;
+    let ops_email = format!("ops-ai-{}@brandbuild.co", Uuid::new_v4());
+    sqlx::query(
+        "INSERT INTO admin.staff_users(email, display_name, roles) VALUES($1, 'Ops AI', ARRAY['operations'])",
+    )
+    .bind(&ops_email)
+    .execute(&p.owner)
+    .await
+    .unwrap();
+
+    let used: f64 = sqlx::query_scalar("SELECT COALESCE(sum(CASE WHEN status='reserved' THEN reserved_usd ELSE COALESCE(settled_usd,reserved_usd) END),0)::float8 FROM admin.ai_reservations WHERE status IN ('reserved','settled','uncertain') AND created_at>=date_trunc('day',now() AT TIME ZONE 'UTC') AT TIME ZONE 'UTC'")
+        .fetch_one(&p.owner).await.unwrap();
+    // Leave $0.05 of headroom without depending on other tests' existing usage.
+    let req = Request::builder()
+        .method("PATCH")
+        .uri("/admin/v1/ai/policy")
+        .header("x-dev-admin-email", &ops_email)
+        .header(header::CONTENT_TYPE, "application/json")
+        .body(Body::from(
+            json!({ "globalDailyUsdBudget": used + 0.05, "reason": "Test cap" }).to_string(),
+        ))
+        .unwrap();
+    assert_eq!(
+        admin_app(&p).oneshot(req).await.unwrap().status(),
+        StatusCode::OK
+    );
+
+    // First $0.04 reservation succeeds; second $0.04 reservation exceeds global $0.05 cap.
+    let r1: (bool, Option<Uuid>) = sqlx::query_as(
+        "SELECT allowed, reservation_id FROM admin.reserve_ai_budget($1, 'generate', 'fake', 'v1', 0.04)",
+    )
+    .bind(ws_id)
+    .fetch_one(&p.app)
+    .await
+    .unwrap();
+    assert!(r1.0);
+
+    let r2: (bool, Option<String>) = sqlx::query_as(
+        "SELECT allowed, denial_reason FROM admin.reserve_ai_budget($1, 'generate', 'fake', 'v1', 0.04)",
+    )
+    .bind(ws_id)
+    .fetch_one(&p.app)
+    .await
+    .unwrap();
+    assert!(!r2.0);
+    assert_eq!(r2.1.as_deref(), Some("global_daily_budget"));
+
+    // Mark first reservation uncertain (timeout); it stays counted toward spend.
+    sqlx::query("SELECT admin.settle_ai_reservation($1, 'uncertain', 0.04, NULL)")
+        .bind(r1.1.unwrap())
+        .execute(&p.app)
+        .await
+        .unwrap();
+
+    // Admin summary reflects the uncertain charge.
+    let req = Request::builder()
+        .method("GET")
+        .uri("/admin/v1/ai")
+        .header("x-dev-admin-email", &ops_email)
+        .body(Body::empty())
+        .unwrap();
+    let res = admin_app(&p).oneshot(req).await.unwrap();
+    assert_eq!(res.status(), StatusCode::OK);
+    let body: Value =
+        serde_json::from_slice(&to_bytes(res.into_body(), 64 * 1024).await.unwrap()).unwrap();
+    assert!(body["data"]["today"]["uncertainUsd"].as_f64().unwrap() >= 0.04);
+
+    // Suspend workspace AI and verify reservation is blocked even after raising global cap.
+    let req = Request::builder()
+        .method("PATCH")
+        .uri(format!("/admin/v1/ai/workspaces/{ws_id}"))
+        .header("x-dev-admin-email", &ops_email)
+        .header(header::CONTENT_TYPE, "application/json")
+        .body(Body::from(
+            json!({ "suspendHours": 24, "reason": "Abuse check" }).to_string(),
+        ))
+        .unwrap();
+    assert_eq!(
+        admin_app(&p).oneshot(req).await.unwrap().status(),
+        StatusCode::OK
+    );
+
+    let r3: (bool, Option<String>) = sqlx::query_as(
+        "SELECT allowed, denial_reason FROM admin.reserve_ai_budget($1, 'generate', 'fake', 'v1', 0.01)",
+    )
+    .bind(ws_id)
+    .fetch_one(&p.app)
+    .await
+    .unwrap();
+    assert!(!r3.0);
+    assert_eq!(r3.1.as_deref(), Some("workspace_suspended"));
+    // A global policy must not leak into unrelated planner tests.
+    sqlx::query("UPDATE admin.ai_policies SET global_daily_usd_budget=50 WHERE id=1")
+        .execute(&p.owner)
+        .await
+        .unwrap();
+}
+
+#[tokio::test]
+async fn student_id_review_optimistic_version_and_expiry_work() {
+    let Some(p) = pools().await else { return };
+    std::env::set_var("ALLOW_DEV_ADMIN_AUTH", "true");
+    let (ws_id, owner_id) = workspace(&p.owner, "owner").await;
+    let rev_email = format!("rev-id-{}@brandbuild.co", Uuid::new_v4());
+    sqlx::query(
+        "INSERT INTO admin.staff_users(email, display_name, roles) VALUES($1, 'Reviewer', ARRAY['student_reviewer'])",
+    )
+    .bind(&rev_email)
+    .execute(&p.owner)
+    .await
+    .unwrap();
+
+    // Insert a scanned student ID submission expiring in 6 months (earlier than 12 months).
+    let sub_id: Uuid = sqlx::query_scalar(
+        "INSERT INTO public.student_submissions (
+           tenant_id, applicant_user_id, applicant_name, school, card_expiry_date,
+           file_storage_key, preview_storage_key, mime_type, file_size_bytes, scan_status
+         ) VALUES ($1,$2,'Ada Student','UNILAG',(now() + interval '180 days')::date,
+           'student-ids/test/card.png','student-ids/test/card.png','image/png',1024,'ready')
+         RETURNING id",
+    )
+    .bind(ws_id)
+    .bind(owner_id)
+    .fetch_one(&p.owner)
+    .await
+    .unwrap();
+
+    // Wrong version conflicts.
+    let req = Request::builder()
+        .method("POST")
+        .uri(format!("/admin/v1/student-reviews/{sub_id}/decision"))
+        .header("x-dev-admin-email", &rev_email)
+        .header(header::CONTENT_TYPE, "application/json")
+        .body(Body::from(
+            json!({
+                "expectedVersion": 99,
+                "decision": "approved",
+                "nameMatches": true,
+                "schoolRecognised": true,
+                "expiryFutureDated": true,
+                "genuineCard": true
+            })
+            .to_string(),
+        ))
+        .unwrap();
+    assert_eq!(
+        admin_app(&p).oneshot(req).await.unwrap().status(),
+        StatusCode::CONFLICT
+    );
+
+    // Correct version approves and sets plan='student' with plan_ends_at <= 12 months.
+    let req = Request::builder()
+        .method("POST")
+        .uri(format!("/admin/v1/student-reviews/{sub_id}/decision"))
+        .header("x-dev-admin-email", &rev_email)
+        .header(header::CONTENT_TYPE, "application/json")
+        .body(Body::from(
+            json!({
+                "expectedVersion": 1,
+                "decision": "approved",
+                "nameMatches": true,
+                "schoolRecognised": true,
+                "expiryFutureDated": true,
+                "genuineCard": true
+            })
+            .to_string(),
+        ))
+        .unwrap();
+    assert_eq!(
+        admin_app(&p).oneshot(req).await.unwrap().status(),
+        StatusCode::OK
+    );
+
+    let plan: String = sqlx::query_scalar("SELECT plan FROM tenants WHERE id = $1")
+        .bind(ws_id)
+        .fetch_one(&p.owner)
+        .await
+        .unwrap();
+    assert_eq!(plan, "student");
+
+    // Backdate plan_ends_at to the past and run expiry; plan reverts to 'creator'.
+    sqlx::query("UPDATE tenants SET plan_ends_at = now() - interval '1 day' WHERE id = $1")
+        .bind(ws_id)
+        .execute(&p.owner)
+        .await
+        .unwrap();
+    let expired: i32 = sqlx::query_scalar("SELECT admin.expire_student_entitlements()")
+        .fetch_one(&p.owner)
+        .await
+        .unwrap();
+    assert!(expired >= 1);
+
+    let plan_after: String = sqlx::query_scalar("SELECT plan FROM tenants WHERE id = $1")
+        .bind(ws_id)
+        .fetch_one(&p.owner)
+        .await
+        .unwrap();
+    assert_eq!(plan_after, "creator");
+}
+
+#[tokio::test]
+async fn support_session_approval_attribution_and_isolation_work() {
+    let Some(p) = pools().await else { return };
+    std::env::set_var("ALLOW_DEV_ADMIN_AUTH", "true");
+    let (ws_id, owner_id) = workspace(&p.owner, "owner").await;
+    let draft_id: Uuid = sqlx::query_scalar(
+        "INSERT INTO posts(tenant_id, title, platforms, state, created_by)
+         VALUES($1, 'Old title', ARRAY['ig'], 'draft', $2) RETURNING id",
+    )
+    .bind(ws_id)
+    .bind(owner_id)
+    .fetch_one(&p.owner)
+    .await
+    .unwrap();
+
+    let initial = json!({"schema":"social_content.v1","caption":"Old body","hashtags":[],"media":[],"aspectRatio":"1:1"});
+    sqlx::query("INSERT INTO post_versions(tenant_id,post_id,version,content,content_hash,created_by) VALUES($1,$2,1,$3,$4,$5)")
+        .bind(ws_id).bind(draft_id).bind(&initial).bind(brandbuild_backend::domain::content_hash(&initial)).bind(owner_id)
+        .execute(&p.owner).await.unwrap();
+    let sup_email = format!("sup-sess-{}@brandbuild.co", Uuid::new_v4());
+    let ops_email = format!("ops-sess-{}@brandbuild.co", Uuid::new_v4());
+    sqlx::query(
+        "INSERT INTO admin.staff_users(email, display_name, roles) VALUES
+         ($1, 'Support', ARRAY['support','operations']),
+         ($2, 'Ops Peer', ARRAY['operations'])",
+    )
+    .bind(&sup_email)
+    .bind(&ops_email)
+    .execute(&p.owner)
+    .await
+    .unwrap();
+
+    // Request read_write session.
+    let req = Request::builder()
+        .method("POST")
+        .uri("/admin/v1/support-sessions")
+        .header("x-dev-admin-email", &sup_email)
+        .header(header::CONTENT_TYPE, "application/json")
+        .body(Body::from(
+            json!({
+                "workspaceId": ws_id,
+                "mode": "read_write",
+                "ticketRef": "SUP-101",
+                "reason": "Fix draft copy",
+                "durationMinutes": 30
+            })
+            .to_string(),
+        ))
+        .unwrap();
+    let res = admin_app(&p).oneshot(req).await.unwrap();
+    assert_eq!(res.status(), StatusCode::CREATED);
+    let body: Value =
+        serde_json::from_slice(&to_bytes(res.into_body(), 64 * 1024).await.unwrap()).unwrap();
+    let sess_id = body["data"]["id"].as_str().unwrap().to_owned();
+
+    // Self-approval is forbidden even though requester holds operations role.
+    let req = Request::builder()
+        .method("POST")
+        .uri(format!("/admin/v1/support-sessions/{sess_id}/approve"))
+        .header("x-dev-admin-email", &sup_email)
+        .body(Body::empty())
+        .unwrap();
+    assert_eq!(
+        admin_app(&p).oneshot(req).await.unwrap().status(),
+        StatusCode::FORBIDDEN
+    );
+
+    // Peer Operations approves, requester activates, and edits draft with staff attribution.
+    let req = Request::builder()
+        .method("POST")
+        .uri(format!("/admin/v1/support-sessions/{sess_id}/approve"))
+        .header("x-dev-admin-email", &ops_email)
+        .body(Body::empty())
+        .unwrap();
+    assert_eq!(
+        admin_app(&p).oneshot(req).await.unwrap().status(),
+        StatusCode::OK
+    );
+
+    let req = Request::builder()
+        .method("POST")
+        .uri(format!("/admin/v1/support-sessions/{sess_id}/activate"))
+        .header("x-dev-admin-email", &sup_email)
+        .body(Body::empty())
+        .unwrap();
+    assert_eq!(
+        admin_app(&p).oneshot(req).await.unwrap().status(),
+        StatusCode::OK
+    );
+
+    let req = Request::builder()
+        .method("PATCH")
+        .uri(format!(
+            "/admin/v1/support-sessions/{sess_id}/drafts/{draft_id}"
+        ))
+        .header("x-dev-admin-email", &sup_email)
+        .header(header::CONTENT_TYPE, "application/json")
+        .body(Body::from(
+            json!({ "title": "Fixed title", "body": "Fixed body" }).to_string(),
+        ))
+        .unwrap();
+    assert_eq!(
+        admin_app(&p).oneshot(req).await.unwrap().status(),
+        StatusCode::OK
+    );
+
+    // Verify staff_actor_id is set and customer created_by is NULL on the new post_version.
+    let ver_row: (Option<Uuid>, Option<Uuid>) = sqlx::query_as(
+        "SELECT created_by, staff_actor_id FROM post_versions WHERE post_id = $1 ORDER BY version DESC LIMIT 1",
+    )
+    .bind(draft_id)
+    .fetch_one(&p.owner)
+    .await
+    .unwrap();
+    assert!(ver_row.0.is_none(), "customer created_by must be NULL");
+    assert!(ver_row.1.is_some(), "staff_actor_id must be set");
+}
+
+#[tokio::test]
+async fn unclear_publish_resolution_fencing_and_idempotency_work() {
+    let Some(p) = pools().await else { return };
+    std::env::set_var("ALLOW_DEV_ADMIN_AUTH", "true");
+    let (ws_id, owner_id) = workspace(&p.owner, "owner").await;
+    let ops_email = format!("ops-unclear-{}@brandbuild.co", Uuid::new_v4());
+    sqlx::query(
+        "INSERT INTO admin.staff_users(email, display_name, roles) VALUES($1, 'Ops', ARRAY['operations'])",
+    )
+    .bind(&ops_email)
+    .execute(&p.owner)
+    .await
+    .unwrap();
+
+    let post_id: Uuid = sqlx::query_scalar(
+        "INSERT INTO posts(tenant_id, title, platforms, state, created_by)
+         VALUES($1, 'Launch post', ARRAY['ig'], 'reconciling', $2) RETURNING id",
+    )
+    .bind(ws_id)
+    .bind(owner_id)
+    .fetch_one(&p.owner)
+    .await
+    .unwrap();
+
+    let ver_id: Uuid = sqlx::query_scalar(
+        "INSERT INTO post_versions(post_id, tenant_id, version, content, created_by)
+         VALUES($1, $2, 1, '{\"title\":\"Launch post\",\"body\":\"Hello world\"}'::jsonb, $3) RETURNING id",
+    )
+    .bind(post_id)
+    .bind(ws_id)
+    .bind(owner_id)
+    .fetch_one(&p.owner)
+    .await
+    .unwrap();
+
+    let attempt_id: Uuid = sqlx::query_scalar(
+        "INSERT INTO publish_attempts(tenant_id, post_id, post_version_id, idempotency_key, state, worker_id, finished_at)
+         VALUES($1, $2, $3, 'idem-1', 'unknown', 'worker-old', now()) RETURNING id",
+    )
+    .bind(ws_id)
+    .bind(post_id)
+    .bind(ver_id)
+    .fetch_one(&p.owner)
+    .await
+    .unwrap();
+
+    // Retry is rejected without connector confirmation of retry eligibility.
+    let req = Request::builder()
+        .method("POST")
+        .uri(format!("/admin/v1/publish-attempts/{attempt_id}/resolve"))
+        .header("x-dev-admin-email", &ops_email)
+        .header(header::CONTENT_TYPE, "application/json")
+        .body(Body::from(
+            json!({
+                "expectedVersion": 1,
+                "idempotencyKey": "k-retry-no-evidence",
+                "action": "retry",
+                "note": "Try again"
+            })
+            .to_string(),
+        ))
+        .unwrap();
+    assert_eq!(
+        admin_app(&p).oneshot(req).await.unwrap().status(),
+        StatusCode::UNPROCESSABLE_ENTITY
+    );
+
+    // Save connector evidence confirming retry eligibility, then retry with fencing + idempotency.
+    sqlx::query("UPDATE publish_attempts SET finished_at=now(),lease_token=NULL WHERE id=$1")
+        .bind(attempt_id)
+        .execute(&p.owner)
+        .await
+        .unwrap();
+    sqlx::query("SELECT admin.save_reconcile_evidence($1, 1, '{\"status\":\"confirmed_not_published\",\"retryEligible\":true}'::jsonb, NULL, NULL)")
+        .bind(attempt_id)
+        .execute(&p.owner)
+        .await
+        .unwrap();
+
+    let retry_body = json!({
+        "expectedVersion": 2,
+        "idempotencyKey": "k-retry-1",
+        "action": "retry",
+        "note": "Connector confirmed not published; fencing old worker"
+    })
+    .to_string();
+
+    let req = Request::builder()
+        .method("POST")
+        .uri(format!("/admin/v1/publish-attempts/{attempt_id}/resolve"))
+        .header("x-dev-admin-email", &ops_email)
+        .header(header::CONTENT_TYPE, "application/json")
+        .body(Body::from(retry_body.clone()))
+        .unwrap();
+    let res1 = admin_app(&p).oneshot(req).await.unwrap();
+    assert_eq!(res1.status(), StatusCode::OK);
+
+    // Replaying the same idempotencyKey returns the cached result without creating a 3rd attempt.
+    let req = Request::builder()
+        .method("POST")
+        .uri(format!("/admin/v1/publish-attempts/{attempt_id}/resolve"))
+        .header("x-dev-admin-email", &ops_email)
+        .header(header::CONTENT_TYPE, "application/json")
+        .body(Body::from(retry_body))
+        .unwrap();
+    let res2 = admin_app(&p).oneshot(req).await.unwrap();
+    assert_eq!(res2.status(), StatusCode::OK);
+
+    let count: i64 = sqlx::query_scalar("SELECT count(*) FROM publish_attempts WHERE post_id = $1")
+        .bind(post_id)
+        .fetch_one(&p.owner)
+        .await
+        .unwrap();
+    assert_eq!(count, 2);
 }

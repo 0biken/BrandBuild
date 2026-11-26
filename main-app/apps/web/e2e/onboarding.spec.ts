@@ -23,7 +23,7 @@ async function signUp(page: Page) {
 test("full onboarding: email check, two accounts, brand voice, then Home", async ({ page }) => {
   await signUp(page);
   await expect(heading(page)).toHaveText("Confirm you're a student");
-  await expect(page.getByRole("radio", { name: /Student ID/ })).toBeDisabled();
+  await expect(page.getByRole("radio", { name: /Student ID/ })).toBeEnabled();
 
   await page.getByLabel("School email address").fill("ada@gmail.com");
   await page.getByRole("button", { name: "Continue" }).click();

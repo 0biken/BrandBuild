@@ -63,12 +63,12 @@ impl PlanGoal {
     }
 }
 
-/// Refuses a new run when the workspace is out of runs or spend for the month.
+/// Refuses a new run when the workspace is suspended or out of runs/spend.
 pub async fn check_budget(pool: &PgPool, ai: &Gateway, tenant: Uuid) -> Result<(), ApiError> {
     let row = sqlx::query(
         "SELECT count(*) AS runs, COALESCE(sum(cost_usd),0)::float8 AS spent,
            COALESCE((SELECT agent_runs_limit FROM usage_caps WHERE tenant_id=$1),100)::bigint AS run_limit
-         FROM agent_runs WHERE tenant_id=$1 AND created_at >= date_trunc('month', now())",
+         FROM agent_runs WHERE tenant_id=$1 AND created_at >= date_trunc('month', now() AT TIME ZONE 'UTC') AT TIME ZONE 'UTC'",
     )
     .bind(tenant)
     .fetch_one(pool)
@@ -79,6 +79,62 @@ pub async fn check_budget(pool: &PgPool, ai: &Gateway, tenant: Uuid) -> Result<(
     if runs >= limit || spent >= ai.monthly_usd_cap {
         return Err(ApiError::AiBudget);
     }
+    Ok(())
+}
+
+/// Atomically reserves the maximum permitted charge before calling the AI provider.
+pub async fn reserve_budget(
+    pool: &PgPool,
+    ai: &Gateway,
+    tenant: Uuid,
+    kind: &str,
+) -> Result<Uuid, ApiError> {
+    let row = sqlx::query(
+        "SELECT allowed, reservation_id, denial_reason, global_pct, workspace_pct
+         FROM admin.reserve_ai_budget($1, $2, $3, $4, $5::numeric)",
+    )
+    .bind(tenant)
+    .bind(kind)
+    .bind(&ai.model)
+    .bind(ai.pricing_version())
+    .bind(ai.max_cost_usd())
+    .fetch_one(pool)
+    .await?;
+    let allowed: bool = row.try_get("allowed")?;
+    let global_pct: i32 = row.try_get("global_pct")?;
+    let workspace_pct: i32 = row.try_get("workspace_pct")?;
+    if global_pct >= 80 || workspace_pct >= 80 {
+        tracing::warn!(
+            %tenant,
+            kind,
+            global_pct,
+            workspace_pct,
+            "AI budget threshold alert (>=80%)"
+        );
+    }
+    if !allowed {
+        let reason: Option<String> = row.try_get("denial_reason")?;
+        tracing::warn!(%tenant, kind, ?reason, "AI reservation denied");
+        return Err(ApiError::AiBudget);
+    }
+    let res_id: Option<Uuid> = row.try_get("reservation_id")?;
+    res_id.ok_or(ApiError::AiBudget)
+}
+
+pub async fn settle_reservation(
+    pool: &PgPool,
+    reservation_id: Uuid,
+    status: &str,
+    settled_usd: f64,
+    agent_run_id: Option<Uuid>,
+) -> Result<(), sqlx::Error> {
+    sqlx::query("SELECT admin.settle_ai_reservation($1, $2, $3::numeric, $4)")
+        .bind(reservation_id)
+        .bind(status)
+        .bind(settled_usd)
+        .bind(agent_run_id)
+        .execute(pool)
+        .await?;
     Ok(())
 }
 
@@ -340,11 +396,36 @@ async fn plan(
     if !set_status(pool, run, "generating").await? {
         return Err(Step::Stopped);
     }
+    let reservation_id = reserve_budget(pool, &state.ai, ctx.tenant_id, "plan")
+        .await
+        .map_err(|_| Step::Ai(AiError::OverBudget))?;
     let result = state.ai.generate::<PlanAnswer>(&request).await;
     let answer = match result {
         Ok((answer, usage)) => {
             record_usage(pool, &state.ai, run, usage).await?;
+            settle_reservation(
+                pool,
+                reservation_id,
+                "settled",
+                state.ai.cost_usd(usage),
+                Some(run),
+            )
+            .await?;
             answer
+        }
+        Err(AiError::Timeout) => {
+            let max_cost = state.ai.max_cost_usd();
+            sqlx::query(
+                "UPDATE agent_runs SET status='uncertain', cost_usd=cost_usd+$2, error=$3, finished_at=now(), updated_at=now()
+                 WHERE id=$1 AND status NOT IN ('canceled','awaiting_review')",
+            )
+            .bind(run)
+            .bind(max_cost)
+            .bind("The AI request timed out; the reserved charge was kept pending reconciliation.")
+            .execute(pool)
+            .await?;
+            settle_reservation(pool, reservation_id, "uncertain", max_cost, Some(run)).await?;
+            return Err(Step::Stopped);
         }
         Err(e) => {
             // A bad answer still used tokens; count a nominal call so spend isn't hidden.
@@ -360,6 +441,7 @@ async fn plan(
                 )
                 .await?;
             }
+            settle_reservation(pool, reservation_id, "released", 0.0, Some(run)).await?;
             return Err(Step::Ai(e));
         }
     };

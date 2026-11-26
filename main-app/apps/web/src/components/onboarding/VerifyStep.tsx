@@ -31,6 +31,9 @@ export function VerifyStep() {
   const [sentTo, setSentTo] = useState<string | null>(null);
   const [code, setCode] = useState("");
   const [file, setFile] = useState<File | null>(null);
+  const [applicantName, setApplicantName] = useState("");
+  const [school, setSchool] = useState("");
+  const [cardExpiryDate, setCardExpiryDate] = useState("");
   const [seconds, setSeconds] = useState(0);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -77,6 +80,10 @@ export function VerifyStep() {
   }
 
   async function submitId() {
+    if (!applicantName.trim() || !school.trim() || !cardExpiryDate) {
+      setError("Enter your name, school, and card expiry date.");
+      return;
+    }
     if (!file) {
       setError("Choose a photo or PDF of your student ID.");
       return;
@@ -88,7 +95,11 @@ export function VerifyStep() {
     }
     setBusy(true);
     setError("");
-    const res = await submitStudentId(file);
+    const res = await submitStudentId(file, {
+      applicantName: applicantName.trim(),
+      school: school.trim(),
+      cardExpiryDate,
+    });
     if (!res.ok) {
       setBusy(false);
       setError("We couldn't upload that file. Try again.");
@@ -236,7 +247,41 @@ export function VerifyStep() {
         )}
 
         {method === "id" && (
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+              <label className="flex flex-col gap-1 text-sm font-medium">
+                Full name on ID
+                <input
+                  type="text"
+                  required
+                  value={applicantName}
+                  onChange={(e) => setApplicantName(e.target.value)}
+                  placeholder="Chinedu Okafor"
+                  className="h-11 rounded-xl border border-line-strong bg-surface px-3 text-sm"
+                />
+              </label>
+              <label className="flex flex-col gap-1 text-sm font-medium">
+                School name
+                <input
+                  type="text"
+                  required
+                  value={school}
+                  onChange={(e) => setSchool(e.target.value)}
+                  placeholder="University of Lagos"
+                  className="h-11 rounded-xl border border-line-strong bg-surface px-3 text-sm"
+                />
+              </label>
+              <label className="flex flex-col gap-1 text-sm font-medium">
+                Card expiry date
+                <input
+                  type="date"
+                  required
+                  value={cardExpiryDate}
+                  onChange={(e) => setCardExpiryDate(e.target.value)}
+                  className="h-11 rounded-xl border border-line-strong bg-surface px-3 text-sm"
+                />
+              </label>
+            </div>
             <label
               onDragOver={(e) => e.preventDefault()}
               onDrop={(e) => {
