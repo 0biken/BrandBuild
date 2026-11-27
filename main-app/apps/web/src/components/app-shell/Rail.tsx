@@ -18,6 +18,7 @@ import {
 import { listAccounts } from "@/lib/api/accounts";
 import { getBrand } from "@/lib/api/brand";
 import { useQuery } from "@/lib/api/hooks";
+import { studentStatusLabel } from "@/lib/plans";
 import { listPosts } from "@/lib/api/posts";
 import { ROUTES } from "@/lib/routes";
 import { NavItem } from "./NavItem";
@@ -113,7 +114,7 @@ export function Rail() {
         {brand.data?.plan === "student" && (
           <div className="flex flex-col gap-1 rounded-[14px] bg-forest p-3.5 text-forest-text">
             <span className="text-xs font-semibold text-lime">Student Access</span>
-            <span className="text-sm">Free until {brand.data.planEndsLabel}</span>
+            <span className="text-sm">{studentStatusLabel(brand.data.planEndsLabel)}</span>
             <Link href={ROUTES.billing} className="mt-1 w-fit text-sm font-semibold text-white underline-offset-2 fine:underline">
               See plans
             </Link>

@@ -9,6 +9,7 @@ import { CheckIcon, DraftsIcon } from "@/components/ui/icons";
 import { getBrand } from "@/lib/api/brand";
 import { useQuery } from "@/lib/api/hooks";
 import type { Brand } from "@/lib/api/types";
+import { studentStatusLabel } from "@/lib/plans";
 
 const SUPPORT = "mailto:hello@brandbuild.co?subject=Billing";
 
@@ -52,7 +53,7 @@ export function BillingScreen() {
               <div className="flex flex-wrap items-baseline justify-between gap-2">
                 <span className="font-display text-2xl font-bold tracking-[-0.02em]">{plan.name}</span>
                 <span className="text-sm font-semibold text-primary-ink">
-                  {brand.data.plan === "student" ? `Free until ${brand.data.planEndsLabel}` : "Active"}
+                  {brand.data.plan === "student" ? studentStatusLabel(brand.data.planEndsLabel) : "Active"}
                 </span>
               </div>
               <ul className="m-0 flex list-none flex-col gap-2 p-0">

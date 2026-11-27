@@ -18,6 +18,7 @@ import { getBrand } from "@/lib/api/brand";
 import { invalidate, useQuery } from "@/lib/api/hooks";
 import { getNotificationPrefs, updateNotificationPrefs } from "@/lib/api/settings";
 import type { ConnectedAccount, NotificationPrefs } from "@/lib/api/types";
+import { studentStatusLabel } from "@/lib/plans";
 import { ROUTES } from "@/lib/routes";
 
 const PREFS: { key: keyof NotificationPrefs; label: string; description: string }[] = [
@@ -184,7 +185,7 @@ export function SettingsScreen() {
           <div className="flex min-w-0 flex-1 flex-col">
             <span className="font-semibold capitalize">{brand.data ? `${brand.data.plan} access` : " "}</span>
             <span className="text-sm text-muted">
-              {brand.data?.plan === "student" ? `Free until ${brand.data.planEndsLabel}` : " "}
+              {brand.data?.plan === "student" ? studentStatusLabel(brand.data.planEndsLabel) : " "}
             </span>
           </div>
           <ButtonLink href={ROUTES.billing}>Upgrade plan</ButtonLink>

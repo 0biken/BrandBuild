@@ -197,7 +197,7 @@ export function fromApiBrand(b: ApiBrand): Brand {
           month: "short",
           year: "numeric",
         })
-      : "[END DATE]",
+      : "",
   };
 }
 

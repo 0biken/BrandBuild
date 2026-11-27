@@ -50,8 +50,8 @@ export function Students() {
             Running a brand from your hostel? It&apos;s free.
           </h2>
           <p className="m-0 max-w-lg text-[19px] leading-relaxed text-forest-ink">
-            Verify with your school email and get Student Access free until [END DATE].
-            Every core feature, no card.
+            Verify with your school email and Student Access stays free: 15 AI posts
+            a month, scheduling and insights. No card, just re-verify once a year.
           </p>
           <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
             <ButtonLink href="/signup" variant="lime" size="lg" className="rounded-full">

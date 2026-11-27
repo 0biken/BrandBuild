@@ -478,7 +478,7 @@ export const SEED_BRAND: Brand = {
   name: "Nova Studio",
   voice: "warm, confident",
   plan: "student",
-  planEndsLabel: "[END DATE]",
+  planEndsLabel: "26 Nov 2027",
   sells: "Handmade lip gloss and lip care",
   audience: ["Students", "Young professionals", "Gen Z"],
   tones: ["Warm", "Playful"],

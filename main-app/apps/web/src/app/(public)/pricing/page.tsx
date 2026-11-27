@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import { PricingPlans } from "@/components/pricing/PricingPlans";
+import { PLANS, aiPostsLabel } from "@/lib/plans";
+
+const { student: s, creator: c, business: b } = PLANS;
 
 export const metadata: Metadata = {
   title: "Pricing",
@@ -10,10 +13,10 @@ const NONE = "—";
 
 // [feature, student, creator, business]; NONE means not included.
 const ROWS: [string, string, string, string][] = [
-  ["AI posts per month", "[N]", "Unlimited", "Unlimited"],
-  ["Connected accounts", "[N]", "[N]", "[N]"],
-  ["Brand voices", "1", "1", "[N]"],
-  ["Analytics history", "[N] days", "[N] months", "[N] months"],
+  ["AI posts per month", aiPostsLabel(s), aiPostsLabel(c), aiPostsLabel(b)],
+  ["Connected accounts", `${s.connectedAccounts}`, `${c.connectedAccounts}`, `${b.connectedAccounts}`],
+  ["Brand voices", `${s.brands}`, `${c.brands}`, `${b.brands}`],
+  ["Analytics history", s.analyticsHistory, c.analyticsHistory, b.analyticsHistory],
   ["Graphic maker", NONE, "Included", "Included"],
   ["Team seats and approvals", NONE, NONE, "Included"],
   ["Support", "Help centre", "Email", "Priority"],
@@ -79,7 +82,9 @@ export default function PricingPage() {
             </table>
           </div>
           <p className="m-0 text-sm text-muted">
-            Prices in naira. Pay with card or bank transfer. Cancel any time from Settings.
+            Prices in naira, or US dollars outside Nigeria. Pay with card or bank
+            transfer. Unlimited AI posts are subject to fair use. Cancel any time
+            from Settings.
           </p>
         </section>
       </div>

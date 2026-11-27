@@ -15,6 +15,7 @@ import {
   submitStudentId,
   verifyStudentCode,
 } from "@/lib/api/verify";
+import { PLANS } from "@/lib/plans";
 import { OnboardingShell, StepActions } from "./OnboardingShell";
 import { useOnboardingNav } from "./useOnboardingNav";
 
@@ -22,7 +23,7 @@ const RESEND_SECONDS = 30;
 
 type Method = "email" | "id";
 
-const BENEFITS = ["AI captions in your brand voice", "Scheduling to [N] connected accounts", "Weekly performance insights"];
+const BENEFITS = ["AI captions in your brand voice", `${PLANS.student.aiPostsPerMonth} AI posts a month`, `Scheduling to ${PLANS.student.connectedAccounts} connected accounts`, "Weekly performance insights"];
 
 export function VerifyStep() {
   const advance = useOnboardingNav();
@@ -132,7 +133,7 @@ export function VerifyStep() {
       panel={
         <div className="flex flex-col gap-3 rounded-[20px] bg-forest-2 p-5">
           <span className="text-xs font-semibold tracking-[0.06em] text-lime uppercase">Student Access</span>
-          <span className="font-display text-2xl font-bold text-white">Free until [END DATE]</span>
+          <span className="font-display text-2xl font-bold text-white">Free forever</span>
           <ul className="m-0 flex list-none flex-col gap-2 p-0 text-[15px]">
             {BENEFITS.map((b) => (
               <li key={b} className="flex items-center gap-2.5">
